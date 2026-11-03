@@ -12,7 +12,15 @@ for(let attempt=0;attempt<60;attempt++){try{assert.equal((await server.getNetwor
 assert.ok(ready,'Local RPC did not become ready');
 const buyer=Keypair.random(),seller=Keypair.random(),operator=Keypair.random(),receipts=[];
 const delay=ms=>new Promise(resolve=>setTimeout(resolve,ms));
-for(const k of [buyer,seller,operator]){const response=await fetch('http://127.0.0.1:8000/friendbot?addr='+k.publicKey());assert.ok(response.ok,'Local Friendbot failed');}
+for(const k of [buyer,seller,operator]){
+ let funded=false,lastStatus='not ready';
+ for(let attempt=0;attempt<60;attempt++){
+  try{await server.getAccount(k.publicKey());funded=true;break;}catch{}
+  try{const response=await fetch('http://127.0.0.1:8000/friendbot?addr='+k.publicKey(),{signal:AbortSignal.timeout(15000)});lastStatus=String(response.status)+' '+(await response.text()).slice(0,600);}catch(error){lastStatus=error.message;}
+  await delay(2000);
+ }
+ assert.ok(funded,'Local Friendbot failed: '+lastStatus);
+}
 const addr=a=>new Address(a).toScVal(),val=(v,type)=>nativeToScVal(v,{type});
 async function raw(k,op,data){return new TransactionBuilder(await server.getAccount(k.publicKey()),{fee:'10000',networkPassphrase:network}).addOperation(op).setTimeout(120).setSorobanData(data||new SorobanDataBuilder().build()).build();}
 async function send(k,op,label,data){
