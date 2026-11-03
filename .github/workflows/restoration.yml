@@ -1,5 +1,10 @@
 name: Restoration rehearsal
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/restoration.yml'
+      - 'scripts/verify-restoration.mjs'
 permissions:
   contents: read
 jobs:
