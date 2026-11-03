@@ -52,4 +52,12 @@ drawerToggle.onclick=()=>toggleControls(studioControls.hidden);toggleControls(fa
 room.querySelector('.room-tutorial').open=false;
 const stationCard=document.createElement('div');stationCard.className='room-station-card';stationCard.append(document.getElementById('room-title'),document.getElementById('room-action'));room.querySelector('.room-layout').append(stationCard);
 // Navigation help always reveals the drawer before focusing its contents.
-document.querySelectorAll('a[href="#studio-room"]').forEach(link=>link.addEventListener('click',()=>toggleControls(true)));
+document.querySelectorAll('a[href="#studio-room"]').forEach(link=>link.addEventListener('click',()=>toggleControls(true)));// Keep scene commands compact while preserving their original handlers and IDs.
+const commandList=room.querySelector('.room-view-controls');
+const commandMenu=document.createElement('details');commandMenu.className='studio-command-menu';
+const commandSummary=document.createElement('summary');commandSummary.textContent='Studio menu';
+commandList.before(commandMenu);commandMenu.append(commandSummary,commandList);
+commandList.setAttribute('aria-label','Studio actions');
+commandList.addEventListener('click',event=>{if(!event.target.closest('button'))return;commandMenu.open=false;if(commandList.contains(document.activeElement))commandSummary.focus({preventScroll:true});});
+document.addEventListener('pointerdown',event=>{if(commandMenu.open&&!commandMenu.contains(event.target))commandMenu.open=false;});
+commandMenu.addEventListener('keydown',event=>{if(event.key==='Escape'){event.preventDefault();commandMenu.open=false;commandSummary.focus();}});
