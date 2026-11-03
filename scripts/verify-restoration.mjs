@@ -24,7 +24,7 @@ for(const k of [buyer,seller,operator]){
 const addr=a=>new Address(a).toScVal(),val=(v,type)=>nativeToScVal(v,{type});
 async function raw(k,op,data){return new TransactionBuilder(await server.getAccount(k.publicKey()),{fee:'10000',networkPassphrase:network}).addOperation(op).setTimeout(120).setSorobanData(data||new SorobanDataBuilder().build()).build();}
 async function send(k,op,label,data){
- let tx=await server.prepareTransaction(await raw(k,op,data));tx.sign(k);
+ let tx;try{tx=await server.prepareTransaction(await raw(k,op,data));}catch(error){throw new Error(label+': '+error.message,{cause:error});}tx.sign(k);
  const sent=await server.sendTransaction(tx);assert.ok(['PENDING','DUPLICATE'].includes(sent.status),'Submission rejected: '+label+' '+sent.status);
  for(let i=0;i<60;i++){await delay(1000);const result=await server.getTransaction(sent.hash);if(result.status==='SUCCESS'){receipts.push({label,hash:sent.hash,ledger:result.ledger});console.log('PASS '+label);return result;}assert.notEqual(result.status,'FAILED',label+' failed');}
  throw Error('Confirmation timeout: '+label);
@@ -69,11 +69,14 @@ await send(operator,Operation.extendFootprintTtl({extendTo:10000}),'extend resto
 const extended=await server.getLedgerEntries(agreementKey);assert.ok(extended.entries[0].liveUntilLedgerSeq>ttlBeforeExtension);
 assert.equal(extended.entries[0].val.toXDR('base64'),beforeXdr);
 await send(seller,contract.call('submit',key,val(randomBytes(32),'bytes')),'submit after restoration');
+const sellerBeforeRelease=await readBalance(seller.publicKey());
 await send(buyer,contract.call('release',key),'release after restoration');
-const finalBalances=await balances();assert.equal(finalBalances.escrow,'0');
+const finalBalances=await balances();assert.equal(finalBalances.escrow,'0');assert.equal(BigInt(finalBalances.seller)-BigInt(sellerBeforeRelease),10000000n);
 // Seller pays the submit fee, so compare the release delta separately via receipt fee.
 const final=await simulate('get');assert.ok(rpc.Api.isSimulationSuccess(final));
 assert.equal(scValToNative(final.result.retval).state[0],'Released');
 await fs.mkdir('work',{recursive:true});
 await fs.writeFile('work/restoration-evidence.json',JSON.stringify({result:'PASS',observedAt:new Date().toISOString(),network:'LOCAL_STANDALONE',contractId,fixtureWasmSha256:hash.toString('hex'),expiryLedger:expires,observedExpiredLedger:expiredLedger,beforeBalances,finalBalances,restoredValueUnchanged:true,restorationBalancesUnchanged:true,ttlAfterRestore:after.entries[0].liveUntilLedgerSeq,ttlAfterExtension:extended.entries[0].liveUntilLedgerSeq,receipts,limitations:['Isolated local network, not public Testnet or Mainnet','Fixture replaces only TTL constants: threshold 32, extension 96','A real restore preamble after observed expiry is required; no-op restoration cannot pass','No wallet extension signing or independent audit']},null,2));
 console.log('PASS: expired agreement restored byte-for-byte, balances unchanged, TTL extended and release completed.');
+
+console.log('::notice title=Restoration evidence::'+(await fs.readFile('work/restoration-evidence.json','utf8')).replaceAll('%','%25').replaceAll('\n','%0A'));

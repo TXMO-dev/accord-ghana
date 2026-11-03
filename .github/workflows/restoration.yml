@@ -35,7 +35,7 @@ jobs:
           cp work/fixture/target/wasm32v1-none/release/accord_escrow.wasm work/short-ttl.wasm
       - name: Start isolated accelerated Stellar network
         run: |
-          curl -fsSL https://raw.githubusercontent.com/stellar/quickstart/cb64aee580f1589c79264a98eaad839628074cd8/local/core/etc/config-settings/p23/testnet.json -o work/settings.json
+          curl -fsSL https://raw.githubusercontent.com/stellar/quickstart/cb64aee580f1589c79264a98eaad839628074cd8/local/core/etc/config-settings/p30/testnet.json -o work/settings.json
           python3 - <<'PY'
           import json
           from pathlib import Path
@@ -46,7 +46,9 @@ jobs:
           settings['starting_eviction_scan_level']=1
           p.write_text(json.dumps(config))
           PY
-          docker run -d --name accord-restoration -p 127.0.0.1:8000:8000 -v "$PWD/work/settings.json:/opt/stellar-default/local/core/etc/config-settings/p23/testnet.json:ro" stellar/quickstart:latest --local --protocol-version 23 --limits testnet --enable rpc
+          docker pull stellar/quickstart:latest
+          docker image inspect stellar/quickstart:latest --format "{{json .RepoDigests}}" > work/network-image.json
+          docker run -d --name accord-restoration -p 127.0.0.1:8000:8000 -v "$PWD/work/settings.json:/opt/stellar-default/local/core/etc/config-settings/p30/testnet.json:ro" stellar/quickstart:latest --local --protocol-version 30 --limits testnet --enable rpc
           for i in $(seq 1 120); do
             if docker exec accord-restoration test -f /opt/stellar/core/.upgrade-config-initialized; then exit 0; fi
             sleep 2
@@ -64,5 +66,6 @@ jobs:
           name: restoration-evidence
           path: |
             work/restoration-evidence.json
+            work/network-image.json
             work/network-log.txt
             work/settings.json
