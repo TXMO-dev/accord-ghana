@@ -55,13 +55,18 @@ for(let i=0;i<240;i++){
  const latest=await server.getLatestLedger();
  if(latest.sequence>expires){
   const sim=await simulate('get');
-  if(rpc.Api.isSimulationRestore(sim)){restoredSimulation=sim;expiredLedger=latest.sequence;break;}
+  if(rpc.Api.isSimulationSuccess(sim)){
+   const data=sim.transactionData.build();
+   const indices=data.ext.type==='resourceExt'?data.ext.resourceExt.archivedSorobanEntries:[];
+   const agreementArchived=indices.some(index=>data.resources.footprint.readWrite[index]?.toXDR('base64')===agreementKey.toXDR('base64'));
+   if(agreementArchived||rpc.Api.isSimulationRestore(sim)){restoredSimulation=sim;expiredLedger=latest.sequence;break;}
+  }
  }
  await delay(2000);
 }
-assert.ok(restoredSimulation,'Did not observe restore preamble after expiry; never treat a live-entry no-op as restoration');
+assert.ok(restoredSimulation,'Did not observe archived agreement footprint after expiry; never treat a live-entry no-op as restoration');
 assert.ok(expiredLedger>expires);
-await send(operator,Operation.restoreFootprint(),'restore expired agreement',restoredSimulation.restorePreamble.transactionData.build());
+await send(operator,Operation.restoreFootprint(),'restore expired agreement',new SorobanDataBuilder().setReadWrite([agreementKey]).build());
 const after=await server.getLedgerEntries(agreementKey);assert.equal(after.entries.length,1);
 assert.equal(after.entries[0].val.toXDR('base64'),beforeXdr,'Restored agreement changed');
 assert.ok(after.entries[0].liveUntilLedgerSeq>after.latestLedger,'Restored TTL is not live');
@@ -78,7 +83,7 @@ const finalBalances=await balances();assert.equal(finalBalances.escrow,'0');asse
 const final=await simulate('get');assert.ok(rpc.Api.isSimulationSuccess(final));
 assert.equal(scValToNative(final.result.retval).state[0],'Released');
 await fs.mkdir('work',{recursive:true});
-await fs.writeFile('work/restoration-evidence.json',JSON.stringify({result:'PASS',observedAt:new Date().toISOString(),network:'LOCAL_STANDALONE',contractId,fixtureWasmSha256:hash.toString('hex'),expiryLedger:expires,observedExpiredLedger:expiredLedger,beforeBalances,finalBalances,restoredValueUnchanged:true,restorationBalancesUnchanged:true,ttlAfterRestore:after.entries[0].liveUntilLedgerSeq,ttlAfterExtension:extended.entries[0].liveUntilLedgerSeq,receipts,limitations:['Isolated local network, not public Testnet or Mainnet','Fixture replaces only TTL constants: threshold 32, extension 96','A real restore preamble after observed expiry is required; no-op restoration cannot pass','No wallet extension signing or independent audit']},null,2));
+await fs.writeFile('work/restoration-evidence.json',JSON.stringify({result:'PASS',observedAt:new Date().toISOString(),network:'LOCAL_STANDALONE',contractId,fixtureWasmSha256:hash.toString('hex'),expiryLedger:expires,observedExpiredLedger:expiredLedger,beforeBalances,finalBalances,restoredValueUnchanged:true,restorationBalancesUnchanged:true,ttlAfterRestore:after.entries[0].liveUntilLedgerSeq,ttlAfterExtension:extended.entries[0].liveUntilLedgerSeq,receipts,limitations:['Isolated local network, not public Testnet or Mainnet','Fixture replaces only TTL constants: threshold 32, extension 96','Archived agreement footprint after observed expiry is required; no-op restoration cannot pass','No wallet extension signing or independent audit']},null,2));
 console.log('PASS: expired agreement restored byte-for-byte, balances unchanged, TTL extended and release completed.');
 
 console.log('::notice title=Restoration evidence::'+(await fs.readFile('work/restoration-evidence.json','utf8')).replaceAll('%','%25').replaceAll('\n','%0A'));
