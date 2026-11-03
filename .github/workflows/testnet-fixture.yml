@@ -28,7 +28,6 @@ jobs:
           cp work/fixture/target/wasm32v1-none/release/accord_escrow.wasm /tmp/short-ttl.wasm
           cp work/fixture/src/lib.rs /tmp/fixture-source.rs
           git switch --orphan testnet-restoration-fixture
-          git rm -rf .
           cp /tmp/short-ttl.wasm ./short-ttl.wasm
           cp /tmp/fixture-source.rs ./fixture-source.rs
           printf 'Isolated Testnet rehearsal only. TTL constants 32/96. Public network minimum still applies.\nSource commit: %s\n' "$GITHUB_SHA" > README.txt
