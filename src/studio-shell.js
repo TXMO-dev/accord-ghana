@@ -1,16 +1,16 @@
 // Keep the existing wallet and agreement DOM intact while making the room the app shell.
 const room=document.getElementById('studio-room');
 const workspace=document.getElementById('workspace');
-const panel=document.createElement('dialog');panel.id='studio-workspace-panel';panel.setAttribute('aria-label','Your agreements and wallet');
+const panel=document.createElement('section');panel.hidden=true;panel.tabIndex=-1;panel.id='studio-workspace-panel';panel.setAttribute('aria-label','Your agreements and wallet');
 const bar=document.createElement('div');bar.className='workspace-panel-bar';
 const heading=document.createElement('h2');heading.textContent='Your work, in accord.';
-const close=document.createElement('button');close.type='button';close.textContent='Back to studio ×';close.onclick=()=>panel.close();bar.append(heading,document.getElementById("studio-connect"),close);
-document.body.append(room);panel.append(bar,workspace);document.body.append(panel);
+const close=document.createElement('button');close.type='button';close.textContent='Back to studio ×';close.onclick=()=>{if(locked)return;document.getElementById('studio-dialog').close();panel.hidden=true;room.classList.remove('workspace-active');document.querySelector('.room-agreements').focus();};bar.append(heading,document.getElementById("studio-connect"),close);
+document.body.append(room);panel.append(bar,workspace,document.getElementById("studio-dialog"));room.querySelector(".room-layout").append(panel);
 document.documentElement.classList.add('studio-experience');
 let locked=false;
 addEventListener('accord-workspace-lock',event=>{locked=!!event.detail;close.disabled=locked;});
 panel.addEventListener('cancel',event=>{if(locked)event.preventDefault();});
-export function openWorkspace(){if(!panel.open)panel.showModal();}
+export function openWorkspace(event){room.querySelector('.studio-entrance')?.remove();panel.hidden=false;room.classList.add('workspace-active');heading.textContent=typeof event?.detail?.title==='string'?event.detail.title:'Your work, in accord.';panel.focus({preventScroll:true});}
 addEventListener('accord-open-workspace',openWorkspace);
 const nav=document.querySelector('header nav');
 if(nav){nav.querySelectorAll('a').forEach(link=>{if(link.getAttribute('href')==='#workspace'){link.textContent='My agreements';link.onclick=e=>{e.preventDefault();openWorkspace();};}if(link.getAttribute('href')==='#story'){link.textContent='Kobi’s guide';link.href='#studio-room';link.onclick=e=>{e.preventDefault();document.querySelector('.room-tutorial').open=true;document.querySelector('.room-tutorial summary').focus();};}});}
@@ -40,3 +40,16 @@ entrance.querySelector('#entrance-work').onclick=()=>{dismissEntrance();openWork
 const motionOff=()=>matchMedia('(prefers-reduced-motion: reduce)').matches||document.documentElement.classList.contains('still');
 const status=document.getElementById('studio-status');
 if(status)new MutationObserver(()=>{if(!motionOff()&&status.textContent.trim())status.animate([{opacity:.4,transform:'translateY(5px)'},{opacity:1,transform:'translateY(0)'}],{duration:240,easing:'ease-out'});}).observe(status,{childList:true,characterData:true,subtree:true});
+
+const roomHeading=room.querySelector('.room-heading');
+if(roomHeading)new ResizeObserver(()=>document.documentElement.style.setProperty('--studio-toolbar-height',roomHeading.getBoundingClientRect().height+'px')).observe(roomHeading);
+// Scene interactions lead; the equivalent keyboard controls remain one click away.
+const studioControls=room.querySelector('.room-panel');
+const drawerToggle=document.createElement('button');drawerToggle.type='button';drawerToggle.textContent='Studio controls';drawerToggle.setAttribute('aria-expanded','false');drawerToggle.setAttribute('aria-controls','studio-controls');studioControls.id='studio-controls';
+room.querySelector('.room-view-controls').append(drawerToggle);
+function toggleControls(open){room.classList.toggle('controls-open',open);drawerToggle.setAttribute('aria-expanded',String(open));studioControls.hidden=!open;}
+drawerToggle.onclick=()=>toggleControls(studioControls.hidden);toggleControls(false);
+room.querySelector('.room-tutorial').open=false;
+const stationCard=document.createElement('div');stationCard.className='room-station-card';stationCard.append(document.getElementById('room-title'),document.getElementById('room-action'));room.querySelector('.room-layout').append(stationCard);
+// Navigation help always reveals the drawer before focusing its contents.
+document.querySelectorAll('a[href="#studio-room"]').forEach(link=>link.addEventListener('click',()=>toggleControls(true)));
