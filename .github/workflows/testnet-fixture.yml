@@ -1,0 +1,40 @@
+name: Build Testnet restoration fixture
+on:
+  push:
+    paths: ['.github/workflows/testnet-fixture.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build isolated TTL-only fixture
+        run: |
+          rustup toolchain install stable --profile minimal
+          rustup target add wasm32v1-none --toolchain stable
+          mkdir -p work/fixture/src
+          cp contracts/Cargo.toml contracts/Cargo.lock work/fixture/
+          python3 - <<'PY'
+          from pathlib import Path
+          source=Path('contracts/src/lib.rs').read_text()
+          assert source.count('100_000') == 5 and source.count('500_000') == 5
+          Path('work/fixture/src/lib.rs').write_text(source.replace('100_000','32').replace('500_000','96'))
+          PY
+          cargo +stable build --locked --manifest-path work/fixture/Cargo.toml --target wasm32v1-none --release
+      - name: Publish fixture on isolated artifact branch
+        run: |
+          cp work/fixture/target/wasm32v1-none/release/accord_escrow.wasm /tmp/short-ttl.wasm
+          cp work/fixture/src/lib.rs /tmp/fixture-source.rs
+          git switch --orphan testnet-restoration-fixture
+          git rm -rf .
+          cp /tmp/short-ttl.wasm ./short-ttl.wasm
+          cp /tmp/fixture-source.rs ./fixture-source.rs
+          printf 'Isolated Testnet rehearsal only. TTL constants 32/96. Public network minimum still applies.\nSource commit: %s\n' "$GITHUB_SHA" > README.txt
+          sha256sum short-ttl.wasm > SHA256SUMS.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add short-ttl.wasm fixture-source.rs README.txt SHA256SUMS.txt
+          git commit -m 'Build isolated restoration fixture'
+          git push origin HEAD:refs/heads/testnet-restoration-fixture
