@@ -11,7 +11,7 @@ export const studioObstacles=[
  ...[-8,8].flatMap(x=>[-5,4].map(z=>({x,z,w:.22,d:.22}))),{x:-4.2,z:1.8,w:.45,d:.45},{x:1,z:-2.1,w:.45,d:.45}
 ];
 export function blocked(x,z,obstacles=studioObstacles,radius=.27){
- if(x < -12||x>13||z < -9||z>12)return true;
+ if(x < -12||x>13||z < -9||z>17)return true;
  return obstacles.some(o=>{const cx=Math.max(o.x-o.w/2,Math.min(x,o.x+o.w/2)),cz=Math.max(o.z-o.d/2,Math.min(z,o.z+o.d/2));return (x-cx)**2+(z-cz)**2<radius**2-1e-10;});
 }
 export function walkWithCollisions(position,delta,obstacles=studioObstacles){
@@ -28,7 +28,7 @@ export function findStudioPath(start,goal,obstacles=studioObstacles){
  const origin={x:Math.round(start.x/step)*step,z:Math.round(start.z/step)*step};
  if(!clear(start,origin))return [];
  const queue=[origin],parents=new Map([[key(origin),null]]);let end;
- for(let i=0;i<queue.length&&i<9000;i++){
+ for(let i=0;i<queue.length&&i<15000;i++){
   const p=queue[i];if(Math.hypot(p.x-goal.x,p.z-goal.z)<.4&&clear(p,goal)){end=p;break;}
   for(const [dx,dz] of [[step,0],[-step,0],[0,step],[0,-step]]){const q={x:p.x+dx,z:p.z+dz};if(!parents.has(key(q))&&clear(p,q)){parents.set(key(q),p);queue.push(q);}}
  }

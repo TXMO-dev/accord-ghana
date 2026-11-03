@@ -11,26 +11,28 @@ export function buildCourtyard({scene,box,register,actions,focus,speak,wake,paus
   const group=new THREE.Group();group.position.set(p.x,0,p.z);scene.add(group);
   // Flush paving keeps the walking surface continuous; open pergolas retain sightlines.
   box(3.6,.04,2.7,0,-.13,0,'plaster',group);
-  for(const dx of [-1.65,1.65])for(const dz of [-.9,.9])box(.16,3.1,.16,dx,1.4,dz,'wood',group);
-  for(let i=0;i<8;i++)box(.12,.1,2.3,-1.6+i*.46,3,0,i%2?'gold':'wood',group);
+  if(p.id==='room'){for(const dx of [-1.65,1.65])box(.16,2.8,.16,dx,1.25,-.9,'wood',group);
+  for(let i=0;i<4;i++)box(.1,.08,2.1,-1.5+i,2.6,0,'wood',group);}
   box(2.1,.12,.7,0,.85,0,'wood',group);box(.55,.85,.5,0,.35,0,'green',group);
   box(1.7,.025,.48,0,.925,0,'paper',group);
   const c=document.createElement('canvas');c.width=768;c.height=192;const ctx=c.getContext('2d');
   ctx.fillStyle='#123d30';ctx.fillRect(0,0,768,192);ctx.textAlign='center';ctx.fillStyle='#e1ecad';ctx.font='bold 38px Arial';ctx.fillText(p.title,384,72);ctx.fillStyle='#fff8e6';ctx.font='28px Arial';ctx.fillText(p.caption,384,128);
   const texture=new THREE.CanvasTexture(c);texture.colorSpace=THREE.SRGBColorSpace;textures.push(texture);
-  const sign=new THREE.Mesh(new THREE.PlaneGeometry(3,.75),new THREE.MeshBasicMaterial({map:texture,side:THREE.DoubleSide}));sign.position.set(0,2.35,.92);group.add(sign);
+  const sign=new THREE.Mesh(new THREE.PlaneGeometry(2.2,.55),new THREE.MeshBasicMaterial({map:texture,side:THREE.FrontSide}));sign.position.set(0,1.75,.4);group.add(sign);
   // Courtyard is viewed from the entrance as well as from the front-facing overview.
-  const reverse=sign.clone();reverse.material=sign.material.clone();reverse.rotation.y=Math.PI;reverse.position.z=-.92;group.add(reverse);
+  const reverse=sign.clone();reverse.material=sign.material.clone();reverse.rotation.y=Math.PI;reverse.position.z=-.4;group.add(reverse);
   const material=new THREE.MeshStandardMaterial({color:'#e1ecad',emissive:'#a3c887',emissiveIntensity:.25});
   const light=new THREE.Mesh(new THREE.SphereGeometry(.12,10,8),material);light.position.set(.85,1.05,0);group.add(light);lamps.push({id:p.id,material});
   const activate=()=>{focus(p);actions[p.id]();};register(group,p.title+' — '+p.caption,activate);
   const button=document.createElement('button');button.type='button';button.textContent='Visit '+p.title.toLowerCase();button.onclick=()=>{focus(p);speak(p.caption+'. Select the pavilion desk to open it.');};shortcuts.append(button);
  }
+ for(let z=7;z<=15;z+=1)box(2,.02,.8,0,-.18,z,'plaster');
+ for(let x=-9;x<=9;x+=1)box(.8,.02,1.6,x,-.18,6.2,'plaster');
  // Low-cost paving accents connect the three destinations without blocking the entrance.
  for(let x=-6;x<=6;x+=.75)box(.32,.012,.12,x,-.165,6.8,'gold');
  // Instanced planting adds a soft green boundary with one draw call.
  const grass=new THREE.InstancedMesh(new THREE.ConeGeometry(.075,.4,3),new THREE.MeshStandardMaterial({color:'#71884e',roughness:1}),160),dummy=new THREE.Object3D();
- for(let i=0;i<160;i++){const side=i<80?-1:1,j=i%80;dummy.position.set(side*(8.5+(j%8)*.14),-.01,6.5+Math.floor(j/8)*.48);dummy.rotation.y=j*2.4;dummy.scale.set(1,.65+(j%5)*.17,1);dummy.updateMatrix();grass.setMatrixAt(i,dummy.matrix);}scene.add(grass);
+ for(let i=0;i<160;i++){const side=i<80?-1:1,j=i%80;dummy.position.set(side*(11.1+(j%8)*.14),-.01,6.5+Math.floor(j/8)*.48);dummy.rotation.y=j*2.4;dummy.scale.set(1,.65+(j%5)*.17,1);dummy.updateMatrix();grass.setMatrixAt(i,dummy.matrix);}scene.add(grass);
  let unread=false;
  const notice=()=>{unread=true;wake();},read=()=>{unread=false;wake();};
  addEventListener('accord-review-notice',notice);addEventListener('accord-room-new-comment',notice);
