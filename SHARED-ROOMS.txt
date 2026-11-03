@@ -42,3 +42,10 @@ Activation acceptance checklist (must be performed before claiming live multipla
 - Confirm milestone celebrations occur only on newly verified forward state changes.
 
 No mainnet funding, loan eligibility, or production security audit is implied by this feature.
+
+Verification update — 2026-11-03
+- Automated live probe: room-scoped WebSocket subscription and private broadcast received; another room rejected the token.
+- User-reported Varial signoff: both participant wallets joined the same agreement from separate browser sessions.
+- User-reported message test: client and freelancer messages arrived in both directions without refresh; both sessions showed live connection.
+- Room-switch draft clearing checked with a DOM harness.
+- Still outstanding: manual network-loss/reconnect, session-expiry and cross-device layout checks. This is not a security audit or Mainnet signoff.
