@@ -7,7 +7,7 @@ const config=await fetch('/network.json').then(r=>r.json()).catch(()=>({}));
 if(config.contractId){$('contract-id').value=config.contractId;$('contract-id').readOnly=true}
 if(config.assetId){$('asset-id').value=config.assetId;$('asset-id').readOnly=true}
 $('connect-wallet').onclick=async()=>{
- try {status('Waiting for Varial…');const a=await connect();$('wallet-address').textContent=a;status('Wallet connected. Each write still requires your signature.');}
+ try {status('Choose your wallet…');const a=await connect();$('wallet-address').textContent=a;status('Wallet connected. Each write still requires your signature.');}
  catch(e){status(e.message)}
 };
 $('chain-action').onsubmit=async e=>{

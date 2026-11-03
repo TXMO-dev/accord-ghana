@@ -1,0 +1,34 @@
+ACCORD — CUSTOM CHARACTERS AND WALLET CHOICE
+
+Connect a wallet, then choose a character when prompted. Use Studio menu →
+My character to change skin tone, shirt, trousers, hair and glasses later.
+Choices are stored per wallet on this device. They are cosmetic, not identity
+verification, and never authorize payments.
+
+Join the same agreement's project room from independent participant sessions.
+Appearance updates are relayed through Accord's authenticated server and private
+Supabase channel. Only the session's own wallet can publish its appearance.
+No schema migration is needed. New arrivals may see the default character until
+the next appearance heartbeat (normally within 36 seconds). Appearance is not
+persisted in a cross-device profile; choose it again on another device.
+
+Confirmed actions animate their actor: funding, presenting delivery, release,
+dispute and settlement. A release triggers the freelancer to approach the client,
+bow, receive a wave and return. Both must be represented in the current room.
+Furniture-aware routes are used; blocked routes do not force an approach.
+Reduced-motion preferences are respected. Hidden tabs and open dialogs pause
+the studio, so this is event-driven presentation, not a synchronized game server.
+
+Validation: automated wallet identity/network guards, authenticated avatar relay,
+appearance allowlist, and all sixteen workstation-to-workstation approach routes.
+Real multi-device character visual signoff and new wallet-provider signing signoff
+remain required. These changes do not enable Mainnet or constitute an audit.
+
+DEPENDENCY REVIEW
+Pinned Stellar Wallets Kit 2.8.0. npm audit --omit=dev reported 29 advisories:
+12 low, 6 moderate, 11 high, 0 critical in its installed dependency graph.
+The build's module graph included the kit but none of the other packages named
+in that audit report. Accord imports only SDK, Varial and Scopuly modules; unused
+provider dependencies remain in the lockfile. This reduces browser exposure but
+does not resolve upstream advisories or supply-chain risk. Do not treat this as
+a clean security audit or Mainnet signoff. No forced major downgrade applied.

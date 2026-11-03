@@ -1,3 +1,4 @@
+import {cleanAvatar} from '../src/avatar-model.js';
 import {verifiedActivity} from './room-activity.js';
 import {sha,validateRoom} from './room-auth.js';
 import {validateSettlement} from '../src/settlement-model.js';
@@ -16,6 +17,10 @@ export async function roomSettlement(body,{config,membership,stellar,env=process
  const sessions=await rows('/rest/v1/accord_room_sessions?select=wallet,room,expires_at&token=eq.'+sha(body.session)+'&limit=1');
  const parties=(await rows('/rest/v1/accord_rooms?select=client,freelancer&id=eq.'+room+'&limit=1'))[0];
  const wallet=authorizeSettlementSession(sessions[0],room,parties,body.action);validateRoom(wallet,body.id);
+ if(body.action==='avatar'){
+  const sent=await call('/realtime/v1/api/broadcast',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{topic:'accord:'+room,event:'participant_avatar',payload:{wallet,avatar:cleanAvatar(body.avatar)},private:true}]})});
+  if(!sent.ok)throw Error('Character update could not be shared.');return {shared:true};
+ }
  if(body.action==='activity'){
   if(!/^[a-f0-9]{64}$/.test(body.hash||''))throw Error('Invalid transaction receipt.');
   await membership(wallet,body.id);

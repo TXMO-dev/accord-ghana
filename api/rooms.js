@@ -42,7 +42,7 @@ export default async function handler(req,res){
    return res.status(200).json({token,room,expiresIn:1800,realtime});
   }
   if(!/^[a-f0-9]{64}$/.test(b.session||''))return res.status(401).json({error:'Join the room with your wallet first.'});
-  if(['settlement-get','settlement-share','activity'].includes(b.action))return res.status(200).json(await roomSettlement(b,{config,membership,stellar}));
+  if(['settlement-get','settlement-share','activity','avatar'].includes(b.action))return res.status(200).json(await roomSettlement(b,{config,membership,stellar}));
   if(!['poll','comment','leave'].includes(b.action))return res.status(400).json({error:'Unknown room action.'});
   if(b.action==='comment'&&(typeof b.text!=='string'||!b.text.trim()||b.text.length>1500||!/^[a-f0-9-]{36}$/.test(b.messageId||'')))return res.status(400).json({error:'Write a comment of 1–1500 characters.'});
   return res.status(200).json(await db('accord_room_request',{p_token:sha(b.session),p_action:b.action,p_text:b.action==='comment'?b.text.trim():null,p_message:b.action==='comment'?b.messageId:null,p_station:Number.isInteger(b.station)&&b.station>=0&&b.station<4?b.station:0}));

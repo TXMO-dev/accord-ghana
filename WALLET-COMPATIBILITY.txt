@@ -1,0 +1,39 @@
+ACCORD WALLET COMPATIBILITY — 2026-11-03
+
+Integration: @creit.tech/stellar-wallets-kit 2.8.0, pinned.
+Network: Stellar Testnet only. Mainnet is not activated by this integration.
+
+Enabled provider modules:
+- Varial: connection, network discovery, transaction signing, message signing,
+  and authorization-entry signing. Previous Accord signoff used Varial directly;
+  real-wallet regression signoff through the new kit remains required.
+- Scopuly: equivalent methods exposed by its kit module. Requires its injected
+  provider (extension or supported in-app browser). Early access: independent
+  end-to-end wallet signoff has not yet been performed.
+
+Not enabled:
+- LOBSTR and xBull: current kit modules reject signAuthEntry. These cannot cover
+  Accord's freelancer settlement authorization flow through those modules.
+- Hana: current kit module does not expose getNetwork; Accord currently requires
+  explicit network verification before signing.
+- WalletConnect: needs a separately configured project and compatible namespace
+  methods. No placeholder project ID or unverified configuration is shipped.
+- Other kit modules have not been evaluated for the complete Accord workflow.
+
+Refresh restoration:
+The selected provider and public account are remembered, never signing keys.
+Varial restores only previously granted access on the expected network/account.
+Scopuly restoration additionally requires an isAllowed provider method; otherwise
+explicit reconnection is required. Room sessions still require sign-in after reload.
+
+Validation checklist for each enabled wallet:
+1. Select it in Connect wallet, verify the correct account on Testnet.
+2. Reject a create signature; confirm the form remains usable.
+3. Create/fund, switch participant, deliver, then release; inspect receipts.
+4. Join a private room, send comments between independent sessions.
+5. Dispute a separate test milestone and complete both settlement signatures.
+6. Change account/network during review; verify submission is blocked.
+7. Reload and verify restored context or clear reconnection guidance.
+
+Adapter checks do not replace contract authorization. Returned transaction hashes,
+authorization signatures, and room proofs retain the existing validation paths.

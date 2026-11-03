@@ -29,7 +29,7 @@ document.querySelector('#account-connect').onclick=async()=>{
  if(connectButton.disabled)return;
  dialog.setAttribute('aria-busy','true');connectButton.disabled=true;connectButton.textContent='Connecting…';account='';
  document.querySelector('#account-register').disabled=true;
- note.textContent='Opening Varial… If access was already approved, the wallet may reconnect without a popup.';
+ note.textContent='Choose a wallet to continue.';
  try{
   requireWalletReviewClear();
   const {connect,readMethod,address}=await import('./stellar.js');
@@ -39,8 +39,8 @@ document.querySelector('#account-connect').onclick=async()=>{
   const connectedWallet=account;const p=await readMethod(config.contractId,'profile',[address(connectedWallet)]);if(account!==connectedWallet)return;
   if(p){document.querySelector('#account-session').textContent=p.name+' · Testnet';note.textContent='Profile found. Your wallet must approve every agreement action.';document.querySelector('#account-register').disabled=true}
   else{note.textContent='Wallet connected. Register a public display name below.';document.querySelector('#account-register').disabled=false}
- }catch(e){note.textContent=e.message||'Wallet connection failed. Open Varial, unlock it and try again.'}
- finally{dialog.setAttribute('aria-busy','false');connectButton.disabled=false;connectButton.textContent='Connect Varial ↗'}
+ }catch(e){note.textContent=e.message||'Wallet connection failed. Unlock your wallet and try again.'}
+ finally{dialog.setAttribute('aria-busy','false');connectButton.disabled=false;connectButton.textContent='Connect wallet ↗'}
 };
 document.querySelector('#account-form').onsubmit=async e=>{
  e.preventDefault();dialog.setAttribute('aria-busy','true');const button=document.querySelector('#account-register');button.disabled=true;
@@ -54,6 +54,6 @@ document.querySelector('#account-form').onsubmit=async e=>{
   const config=await fetch('/network.json').then(r=>r.json());
   await invoke(config.contractId,'register',[address(account),nativeToScVal(name,{type:'string'})],s=>note.textContent=s);
   document.querySelector('#account-session').textContent=name+' · Testnet';
-  note.textContent='Registration confirmed on Stellar Testnet. Your signing keys remain in Varial.';
+  note.textContent='Registration confirmed on Stellar Testnet. Your signing keys remain in your wallet.';
  }catch(e){note.textContent=e.message;button.disabled=false}finally{dialog.setAttribute('aria-busy','false')}
 };

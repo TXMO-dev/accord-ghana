@@ -28,3 +28,8 @@ test('workstations route by verified role and state, and never bypass pending tr
  assert.equal(workstationIntent(0,{}).target,'studio-connect');
  assert.equal(workstationIntent(1,{...client,verified:false}).target,'studio-refresh');
 });
+import {avatarHome,greetingPath,advanceAvatar} from '../src/avatar-motion.js';
+test('participant greetings approach each workstation without crossing furniture',()=>{
+ const positions=[[-3,0,1],[-3,0,-2.5],[2.5,0,-2.4],[3,0,1.6]];
+ for(const start of positions)for(const end of positions){const p=avatarHome(start,true),partner=avatarHome(end,false);assert.equal(blocked(p.x,p.z),false);const path=greetingPath(p,partner);assert.ok(path.length);let n=0;while(advanceAvatar(p,path,.05)&&n++<1000)assert.equal(blocked(p.x,p.z),false);assert.ok(n<1000);assert.ok(Math.hypot(p.x-partner.x,p.z-partner.z)<1);}
+});

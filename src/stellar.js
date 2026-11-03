@@ -2,7 +2,7 @@ import {discoverRememberedWallet} from './session-restore.js';
 import {checkWalletSelection} from './wallet-check.js';
 import {submitTrackedTransaction} from './transaction-submit.js';
 import {connectTestnet,requireWalletReviewClear} from './wallet-policy.js';
-import * as extensionWallet from '@stellar/freighter-api';
+import * as extensionWallet from './wallet-kit.js';
 import {LOCAL_TESTING} from './local-mode.js';
 const {requestAccess,getNetworkDetails,getAddress,isConnected,signTransaction,signAuthEntry}=import.meta.env.DEV&&LOCAL_TESTING?await import('./local-wallet.js'):extensionWallet;
 import {rpc, Networks, TransactionBuilder, Contract, Address, nativeToScVal, scValToNative, BASE_FEE, StrKey,authorizeEntry} from '@stellar/stellar-sdk';
@@ -30,7 +30,7 @@ export {validateContract,digest,bytes,address,amount} from './values.js';
 import {validateContract,digest,bytes,address,amount,transactionHashHex} from './values.js';
 export async function invoke(contractId, method, args, onStatus=()=>{}, onSubmitted=()=>{}) {
   requireWalletReviewClear();
-  if(!account) throw Error('Connect Varial first.');
+  if(!account) throw Error('Connect your wallet first.');
   const current=await getAddress();
   if(current.error || current.address!==account) throw Error('Your wallet account changed. Reconnect before continuing.');
   const config=await fetch('/network.json').then(r=>r.json());
@@ -63,7 +63,7 @@ export async function signAuthorization(entry,expiry,expected){
 export async function signAndSubmit(prepared,expected,onStatus=()=>{},onSubmitted=()=>{}){
   await assertWallet(expected);
   if(prepared.source!==expected||prepared.networkPassphrase!==NETWORK)throw Error('Unexpected transaction source or network.');
-  onStatus(LOCAL_TESTING?'Review the disposable Testnet signature prompt.':'Review and approve in Varial.');
+  onStatus(LOCAL_TESTING?'Review the disposable Testnet signature prompt.':'Review and approve in your wallet.');
   const signed=await signTransaction(prepared.toXDR(),{networkPassphrase:NETWORK,address:expected});
   if(signed.error || !signed.signedTxXdr) throw Error(signed.error?.message || 'Signature declined.');
   const signedTx=TransactionBuilder.fromXDR(signed.signedTxXdr,NETWORK);

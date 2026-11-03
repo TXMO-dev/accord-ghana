@@ -19,7 +19,7 @@ test('wallet preflight distinguishes a shared-profile account change from wrong 
  assert.doesNotThrow(()=>checkWalletSelection(expected,expected,{address:expected},network,'testnet'));
  assert.throws(()=>checkWalletSelection(expected,expected,{address:selected},network,'testnet'),e=>e.code==='WALLET_SELECTION'&&e.message.includes(expected.slice(0,6))&&e.message.includes(selected.slice(0,6)));
  assert.throws(()=>checkWalletSelection(expected,expected,{address:expected},{networkPassphrase:'mainnet'},'testnet'),/not on Stellar Testnet/);
- assert.throws(()=>checkWalletSelection(expected,expected,{error:{}},network,'testnet'),/Unlock Varial/);
+ assert.throws(()=>checkWalletSelection(expected,expected,{error:{}},network,'testnet'),/Unlock your wallet/);
 });
 
 import {verifiedActivity} from '../server/room-activity.js';
@@ -40,4 +40,26 @@ test('room sign-in proofs are bound to the declared Stellar network',()=>{
  const proof={...input,token:c.token,signature:sign(c.message)};
  assert.throws(()=>verifyChallenge(proof));
  assert.equal(verifyChallenge({...proof,network:'MAINNET'}).wallet,key.publicKey());
+});
+import {checkedWalletSign} from '../src/wallet-signing.js';
+test('multi-wallet signing routes each signature and rejects account/network drift',async()=>{
+ const options={address:'expected',networkPassphrase:'testnet'};
+ const api={getAddress:async()=>({address:'expected'}),getNetworkDetails:async()=>({networkPassphrase:'testnet'})};
+ for(const [method,field] of Object.entries({signTransaction:'signedTxXdr',signAuthEntry:'signedAuthEntry',signMessage:'signedMessage'})){
+  let calls=0;const signer={...api,[method]:async(value,opts)=>{calls++;assert.equal(value,'payload');assert.equal(opts,options);return {[field]:'signature'};}};
+  assert.equal((await checkedWalletSign(signer,method,'payload',options,'testnet'))[field],'signature');assert.equal(calls,1);
+  await assert.rejects(checkedWalletSign(signer,method,'payload',{...options,networkPassphrase:'mainnet'},'testnet'));assert.equal(calls,1);
+  await assert.rejects(checkedWalletSign({...signer,[method]:async()=>({[field]:'signature',signerAddress:'other'})},method,'payload',options,'testnet'),/different signer/);
+  let checks=0;await assert.rejects(checkedWalletSign({...signer,getAddress:async()=>({address:++checks===1?'expected':'other'})},method,'payload',options,'testnet'),/changed/);
+  await assert.rejects(checkedWalletSign({...signer,[method]:async()=>({error:{message:'Rejected'}})},method,'payload',options,'testnet'),/Rejected/);
+ }
+});
+import {cleanAvatar} from '../src/avatar-model.js';
+import {roomSettlement as avatarRequest} from '../server/room-settlement.js';
+test('avatar updates use authenticated room identity and allowlisted appearance only',async()=>{
+ const id=input.id,contract='contract',room=activitySha(contract+':'+id),wallet=key.publicKey();let sent;
+ const fetcher=async(url,options)=>{if(url.includes('accord_room_sessions'))return {ok:true,json:async()=>[{room,wallet,expires_at:new Date(Date.now()+60000).toISOString()}]};if(url.includes('accord_rooms?'))return {ok:true,json:async()=>[{client:wallet,freelancer:other.publicKey()}]};sent=JSON.parse(options.body);return {ok:true};};
+ const result=await avatarRequest({action:'avatar',id,session:'a'.repeat(64),wallet:other.publicKey(),avatar:{skin:'https://evil.invalid/image',hair:'bun',role:'client'}},{config:{contractId:contract},env:{SUPABASE_URL:'https://test.invalid',SUPABASE_SECRET_KEY:'test'},fetcher});
+ assert.equal(result.shared,true);assert.equal(sent.messages[0].payload.wallet,wallet);assert.equal(sent.messages[0].topic,'accord:'+room);assert.equal(sent.messages[0].private,true);assert.deepEqual(sent.messages[0].payload.avatar,cleanAvatar({hair:'bun'}));
+ await assert.rejects(avatarRequest({action:'avatar',id,session:'a'.repeat(64)},{config:{contractId:contract},env:{SUPABASE_URL:'https://test.invalid'},fetcher:async()=>({ok:true,json:async()=>[]})}),/expired/);
 });
