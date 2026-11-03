@@ -2,8 +2,8 @@ import * as THREE from 'three';
 
 // Planting stays beyond the walking boundary, preserving all project routes.
 export function plantGarden(scene){
- const spots=[];for(let x=-18;x<=18;x+=3)spots.push({x,z:20+(Math.abs(x)%2)});
- for(const x of [-15,16])for(let z=-9;z<=17;z+=3.5)spots.push({x,z});
+ const spots=[];for(let x=-18;x<=18;x+=3)spots.push({x,z:-19-(Math.abs(x)%2)});
+ for(const x of [-24,24])for(let z=-12;z<=6;z+=3.5)spots.push({x,z});
  const dummy=new THREE.Object3D();
  const trunks=new THREE.InstancedMesh(new THREE.CylinderGeometry(.12,.22,2.5,7),new THREE.MeshStandardMaterial({color:'#77563b',roughness:1}),spots.length);
  const leaves=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1,1),new THREE.MeshStandardMaterial({color:'#547444',roughness:1}),spots.length*3);

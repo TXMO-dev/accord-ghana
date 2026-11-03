@@ -85,3 +85,13 @@ test('courtyard pavilions block solid objects while keeping every approach reach
  }
  for(const obstacle of courtyardObstacles)assert.equal(blocked(obstacle.x,obstacle.z),true);
 });
+
+import {tourStops,tourHome} from '../src/studio-tour.js';
+test('Kobi completes the expanded studio and courtyard tour and returns home',()=>{
+ let position={x:tourHome.x,z:tourHome.z};
+ for(const stop of tourStops){const path=findStudioPath(position,stop);assert.ok(path.length);let frames=0;
+  while(Math.hypot(position.x-stop.x,position.z-stop.z)>=.08&&frames++<2500){const goal=path[0]||stop,dx=goal.x-position.x,dz=goal.z-position.z,d=Math.hypot(dx,dz);if(d<.08&&path.length)path.shift();if(d>.08){const step=Math.min(d,.05*1.4);position=walkWithCollisions(position,{x:dx/d*step,z:dz/d*step});}assert.equal(blocked(position.x,position.z),false);}
+  assert.ok(frames<2500,'Kobi must reach '+stop.text);
+ }
+ assert.ok(Math.hypot(position.x-tourHome.x,position.z-tourHome.z)<.08);
+});
