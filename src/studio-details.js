@@ -13,7 +13,7 @@ export function dressStudio({scene,renderer,materials,box,cylinder,sphere,desk,d
  for(let i=0;i<3;i++)box(4.5,.12,1.2,0,-.25-i*.09,5.5+i*.8,'plaster');
  function palm(x,z,h){const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.12,.25,h,10),materials.wood);trunk.position.set(x,h/2-.3,z);trunk.castShadow=true;scene.add(trunk);for(let i=0;i<9;i++){const a=i*Math.PI*2/9;const shape=new THREE.Shape();shape.moveTo(0,0);shape.quadraticCurveTo(.55,1.2,0,2.6);shape.quadraticCurveTo(-.55,1.2,0,0);const leaf=new THREE.Mesh(new THREE.ShapeGeometry(shape,8),foliage);leaf.position.set(x,h-.3,z);leaf.rotation.set(-.85,a,0);leaf.rotateZ(a);leaf.castShadow=true;scene.add(leaf);}}
  palm(-8,4,4.8);palm(8,-4,5.8);palm(11,9,4.6);palm(-10,-7,5.4);
- for(const x of [-8,8]){box(.22,3.5,.22,x,1.4,-5,'wood');box(.22,3.5,.22,x,1.4,4,'wood');}for(let z=-5;z<5;z+=.8){box(1.4,.12,.15,-7.3,3.1,z,'wood');box(1.4,.12,.15,7.3,3.1,z,'wood');}
+ for(const x of [-8,8]){for(const z of [-5,4]){box(.22,3.5,.22,x,1.4,z,'wood');const brace=box(Math.hypot(1.35,.77),.1,.1,Math.sign(x)*7.325,2.785,z,'wood');brace.rotation.z=Math.atan2(.77,-Math.sign(x)*1.35);}box(.22,.22,9.4,x,3.1,-.5,'wood');box(.16,.16,9.4,Math.sign(x)*6.65,3.13,-.5,'wood');}for(let z=-5;z<=4;z+=.8){box(1.4,.12,.15,-7.3,3.28,z,'wood');box(1.4,.12,.15,7.3,3.28,z,'wood');}
  // Distant buildings are atmosphere, not a claim of an exact Ghanaian address.
  for(let i=0;i<7;i++){const h=2+(i%3)*1.3,x=-18+i*6;box(4,h,3,x,h/2-.4,-15,i%2?'plaster':clay);box(4.3,.15,3.3,x,h-.35,-15,'wood');for(let j=0;j<3;j++)box(.55,.7,.04,x-1.2+j*1.2,h*.6,-13.47,glass);}
  // Fabric rug, lounge, shelving, desk tools and display details.
