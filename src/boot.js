@@ -1,10 +1,11 @@
 import './backdrop.js';
 import './atlas.js';
+import './studio-shell.js';
 import {LOCAL_TESTING} from './local-mode.js';
 import {openAccount} from './accounts.js';
 import './material-scene.css';
 // Load 3D independently; a failed download leaves the original image intact.
-if(!matchMedia('(prefers-reduced-motion: reduce)').matches){
+if(!document.documentElement.classList.contains('studio-experience')&&!matchMedia('(prefers-reduced-motion: reduce)').matches){
  const startScene=()=>import('./material-scene.js').then(m=>m.mountMaterialScene(document.querySelector('.hero'))).catch(()=>{});
  if('requestIdleCallback' in window)requestIdleCallback(startScene,{timeout:1800});else setTimeout(startScene,300);
 }
@@ -36,3 +37,10 @@ function revealDestination(){
 }
 addEventListener('hashchange',revealDestination);
 revealDestination();
+
+const roomObserver=new IntersectionObserver(async entries=>{
+ if(!entries.some(e=>e.isIntersecting))return;roomObserver.disconnect();
+ try{const room=await import('./studio-room.js');room.mountStudioRoom();}
+ catch{document.getElementById('room-loading').textContent='Continue using the labelled workspace controls below.';}
+},{rootMargin:'300px'});
+roomObserver.observe(document.getElementById('studio-room'));
