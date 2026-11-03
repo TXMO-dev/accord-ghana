@@ -38,3 +38,15 @@ import {createAvatar} from '../src/avatar-character.js';
 test('avatar bow pivots the upper body while feet stay planted, and walking articulates legs',()=>{
  const avatar=createAvatar({hair:'bun'});try{avatar.update(1000);avatar.react('thanks');avatar.update(2600);const upper=avatar.group.getObjectByName('upper-body'),leg=avatar.group.getObjectByName('left-leg');assert.ok(upper.rotation.x>.25);assert.equal(leg.rotation.x,0);assert.equal(avatar.group.position.y,0);avatar.walk(2700,true);assert.ok(Math.abs(leg.rotation.x)>.01);avatar.update(5000);assert.equal(upper.rotation.x,0);avatar.react('release');avatar.update(5100,true);assert.equal(avatar.group.position.y,0);}finally{avatar.dispose();}
 });
+
+test('review handoff displays a document only during the gesture and respects reduced motion',()=>{
+ const avatar=createAvatar({});try{
+  avatar.update(1000);avatar.react('submit');avatar.update(1100);
+  const document=avatar.group.getObjectByName('delivery-document');assert.equal(document.visible,true);
+  avatar.update(1200,true);assert.equal(document.visible,false);
+  avatar.update(5000);assert.equal(document.visible,false);
+  avatar.react('revision');avatar.update(5100);assert.equal(document.visible,true);
+  avatar.react('receive');avatar.update(5200);assert.equal(document.visible,false);
+  avatar.react('review');avatar.update(5300);assert.equal(document.visible,false);
+ }finally{avatar.dispose();}
+});
