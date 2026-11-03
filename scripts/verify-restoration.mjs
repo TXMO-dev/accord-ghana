@@ -32,6 +32,8 @@ async function send(k,op,label,data){
 const wasm=await fs.readFile('work/short-ttl.wasm'),hash=createHash('sha256').update(wasm).digest();
 await send(buyer,Operation.uploadContractWasm({wasm}),'upload short-TTL fixture');
 const asset=Asset.native().contractId(network);
+await send(operator,Operation.createStellarAssetContract({asset:Asset.native()}),'deploy local native asset contract');
+await send(operator,Operation.extendFootprintTtl({extendTo:10000}),'extend native asset instance',new SorobanDataBuilder().setReadOnly([new Contract(asset).getFootprint()]).build());
 const deployment=await send(buyer,Operation.createCustomContract({address:new Address(buyer.publicKey()),wasmHash:hash,salt:randomBytes(32),constructorArgs:[addr(asset)]}),'deploy isolated fixture');
 const contractId=scValToNative(deployment.returnValue),contract=new Contract(contractId);
 const id=randomBytes(32),terms=randomBytes(32),key=val(id,'bytes');
