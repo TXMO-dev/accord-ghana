@@ -20,7 +20,7 @@ const current=()=>records.find(r=>r.id===selected);
 const say=s=>{$('studio-status').textContent=s;if(!refreshing)$('studio-create-status').textContent=s};
 function save(){try{localStorage.setItem(storage,JSON.stringify(records));return true}catch{say('Browser storage unavailable. Export your agreement file before leaving.');return false}}
 function track(r,hash,info,action){r.pending=hash;r.pendingInfo={...info,action};if(!save()){delete r.pending;delete r.pendingInfo;throw Error('Could not save the recovery reference. Nothing was submitted. Enable browser storage before retrying.')}render()}
-function controls(){for(const id of ['studio-new','studio-open','studio-import','studio-refresh'])$(id).disabled=busy||!account;$('studio-connect').disabled=busy;$('studio-create-button').disabled=busy;$('studio-close').disabled=busy;document.querySelectorAll('[data-studio-action]').forEach(b=>b.disabled=busy||refreshing||!!current()?.pending);$('studio-refresh').disabled=busy||refreshing||!account;$('studio-refresh').textContent=refreshing?'Checking ledger…':'Refresh';$('studio-detail').setAttribute('aria-busy',String(busy||refreshing));window.dispatchEvent(new CustomEvent('accord-workspace-lock',{detail:busy||!!current()?.pending}))}
+function controls(){for(const id of ['studio-new','studio-open','studio-import','studio-refresh'])$(id).disabled=busy||!account;$('studio-connect').disabled=busy;document.querySelectorAll('[data-start-path]').forEach(button=>button.disabled=busy);$('studio-create-button').disabled=busy;$('studio-close').disabled=busy;document.querySelectorAll('[data-studio-action]').forEach(b=>b.disabled=busy||refreshing||!!current()?.pending);$('studio-refresh').disabled=busy||refreshing||!account;$('studio-refresh').textContent=refreshing?'Checking ledger…':'Refresh';$('studio-detail').setAttribute('aria-busy',String(busy||refreshing));window.dispatchEvent(new CustomEvent('accord-workspace-lock',{detail:busy||!!current()?.pending}))}
 function list(){
  const visible=searchAgreements(records,$('studio-search').value,$('studio-filter').value);
  $('studio-count').textContent=visible.length+' / '+records.length;
@@ -80,7 +80,7 @@ async function act(method){
   if(await run(r,method,args))await refresh();
  }catch(error){say(error.message)}finally{busy=false;controls()}
 }
-$('studio-connect').onclick=async()=>{if(busy)return;busy=true;controls();try{await connect();$('studio-wallet').textContent=account+' · Testnet';say('Wallet connected. Create or open an agreement.');chain=null;busy=false;render();await refresh()}catch(e){say(e.message)}finally{busy=false;controls()}};
+$('studio-connect').onclick=async()=>{if(busy)return;busy=true;controls();try{await connect();$('studio-wallet').textContent=account?account+' · Testnet':'Connect Varial on Testnet to begin.';say('Wallet connected. Create or open an agreement.');chain=null;busy=false;render();await refresh()}catch(e){say(e.message)}finally{busy=false;controls()}};
 $('studio-new').onclick=()=>{$('studio-create-status').textContent='';loadDraft();$('studio-dialog').showModal()};$('studio-create').addEventListener('input',saveDraft);$('studio-close').onclick=()=>$('studio-dialog').close();$('studio-dialog').addEventListener('cancel',e=>{if(busy)e.preventDefault()});
 $('studio-refresh').onclick=()=>refresh();
 $('studio-create').onsubmit=async e=>{e.preventDefault();if(busy)return;const f=new FormData(e.target);try{
@@ -99,5 +99,5 @@ $('studio-open').onclick=()=>$('studio-import').click();
 $('studio-import').onchange=async e=>{try{const file=e.target.files[0];if(!file)return;if(file.size>50000)throw Error('Agreement file is too large.');const r=validatePackage(JSON.parse(await file.text()),config.contractId);if(!records.some(x=>x.id===r.id))records.push(r);selected=r.id;$('studio-search').value='';$('studio-filter').value='all';chain=null;save();render();await refresh()}catch(error){say(error.message)}finally{e.target.value=''}};
 $('studio-search').oninput=list;$('studio-filter').onchange=list;$('studio-clear').onclick=()=>{$('studio-search').value='';$('studio-filter').value='all';list();$('studio-search').focus()};
 selected=records[0]?.id||'';render();
-window.addEventListener('accord-wallet',()=>{$('studio-wallet').textContent=account+' · Testnet';chain=null;render();refresh()});
+window.addEventListener('accord-wallet',()=>{$('studio-wallet').textContent=account?account+' · Testnet':'Connect Varial on Testnet to begin.';chain=null;render();refresh()});
 setInterval(()=>{if(!document.hidden&&!busy&&account&&current()&&!$('studio-proof')&&!$('studio-verify-text')&&!document.querySelector('.settlement-panel'))refresh(true)},15000);
