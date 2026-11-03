@@ -3,7 +3,7 @@ import {expandStudio} from './studio-expansion.js';
 import * as THREE from 'three';
 import {RoundedBoxGeometry} from 'three/addons/geometries/RoundedBoxGeometry.js';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
-import {walkWithCollisions,studioObstacles,findStudioPath} from './studio-navigation.js';
+import {walkWithCollisions,studioObstacles,findStudioPath,characterStation} from './studio-navigation.js';
 import {createTapTracker} from './studio-gestures.js';
 import {dressStudio} from './studio-details.js';
 
@@ -103,7 +103,7 @@ export function mountStudioRoom(){
  addEventListener('accord-room-new-comment',()=>{showBubble('Your project partner posted an update. Visit the project table to read it.');happyUntil=performance.now()+1800;wake();});
  const expansion=expandStudio({scene,box,register,openRoom:openProjectRoom,openArchive:async()=>{dispatchEvent(new Event('accord-open-workspace'));await import('./workspace.js');const target=document.querySelector('.agreement-activity');if(target)target.scrollIntoView({block:'center',behavior:paused()?'instant':'smooth'});else showBubble('Select an agreement to review its locally saved transaction receipts.');},useStation,speak:text=>{if(text.startsWith('Whew'))happyUntil=performance.now()+4500;showBubble(text);chime();},wake,paused});
  const avatars=mountAvatars({scene,stations,roleLabel,wake,paused});
- const wardrobe=new THREE.Group();wardrobe.position.set(-5.6,0,-1.4);scene.add(wardrobe);box(.6,1.9,.32,0,.95,0,'wood',wardrobe);box(.48,1.65,.04,0,1,.19,'gold',wardrobe);box(.4,1.5,.025,0,1,.22,'screen',wardrobe);roleMaps.push(roleLabel(wardrobe,'YOUR CHARACTER'));register(wardrobe,'Customize your character',()=>dispatchEvent(new Event('accord-customize-avatar')));
+ const wardrobe=new THREE.Group();wardrobe.position.set(characterStation.x,0,characterStation.z);scene.add(wardrobe);box(.6,1.9,.32,0,.95,0,'wood',wardrobe);box(.48,1.65,.04,0,1,.19,'gold',wardrobe);box(.4,1.5,.025,0,1,.22,'screen',wardrobe);roleMaps.push(roleLabel(wardrobe,'YOUR CHARACTER'));register(wardrobe,'Customize your character',()=>dispatchEvent(new Event('accord-customize-avatar')));
  function talkRole(role){const client=role==='client';select(client?0:2);showBubble(client?'The client defines the work, funds the milestone and reviews delivery before release. Your wallet decides which actions you can sign.':'The freelancer checks funding, completes the work and submits a delivery reference. Open the agreement using the freelancer’s own wallet.');notify('Role guide only — these figures are not live users, and choosing one does not change your wallet.');}
  register(clientGuide,'Client guide — funding and review',()=>talkRole('client'));register(freelancerGuide,'Freelancer guide — delivery',()=>talkRole('freelancer'));
  register(mascot,'Kobi — your studio guide',()=>{happyUntil=performance.now()+2200;document.querySelector('.room-tutorial').open=true;showBubble('Hi, I’m Kobi! Follow me through your first milestone. Choose “Take a tour” to start.');notify('Kobi is ready. Start the guided tour or choose a workstation.');wake();});

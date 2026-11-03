@@ -1,4 +1,7 @@
+// Shared by the visible character station and walking collision geometry.
+export const characterStation={x:-4.8,z:-.65,w:.6,d:.5};
 export const studioObstacles=[
+ characterStation,
  {x:-4.4,z:3.7,w:1.5,d:.9},{x:5,z:-.6,w:.8,d:.6},{x:-.9,z:3.6,w:.85,d:.5},
  {x:-6.5,z:0,w:.25,d:10},{x:0,z:-5,w:13,d:.25},
  {x:-3,z:1,w:2.4,d:1.2},{x:-3,z:-2.5,w:1.5,d:1.2},{x:2.5,z:-2.4,w:2.2,d:1.1},
