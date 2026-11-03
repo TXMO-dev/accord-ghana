@@ -41,7 +41,7 @@ https://stellar.gitbook.io/scf-handbook/scf-awards/instawards/official-rules
 https://stellar.gitbook.io/scf-handbook/scf-awards/build-award/submission-criteria
 https://stellar.gitbook.io/ambassador-program
 
-LOCAL UPDATE: see RECOVERY-UPDATE.txt in the evidence bundle for the tested v0.4.1 recovery changes. Public deployment remains v0.4.0.
+LOCAL UPDATE: see RECOVERY-UPDATE.txt in the evidence bundle for the tested v0.4.1 recovery changes. The v0.4.1 recovery update is included in this release.
 
 
 

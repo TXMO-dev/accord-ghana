@@ -31,7 +31,7 @@
     "signerSupport": "Standard single-key freelancer wallets; Varial extension signoff remains outstanding"
   },
   "recovery": {
-    "status": "local build; public deployment remains v0.4.0",
+    "status": "implemented in v0.4.1",
     "checks": 14,
     "behavior": "Persist hash, action, signed maxTime and first ledger before broadcasting. Reconcile success/failure; allow retry of missing transactions only after expiry with complete retained RPC history.",
     "limits": "Legacy hash-only records and records outside RPC retention remain locked; wallet extension signoff remains outstanding."
@@ -40,5 +40,9 @@
     "status": "read-only snapshot verified",
     "report": "ttl-evidence.json",
     "restoration": "not yet rehearsed"
+  },
+  "source": {
+    "repository": "https://github.com/TXMO-dev/accord-ghana",
+    "license": "MIT"
   }
 }

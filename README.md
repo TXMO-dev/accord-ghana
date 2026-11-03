@@ -67,7 +67,7 @@ See [OPERATIONS.txt](OPERATIONS.txt) for read-only storage lifetime monitoring.
 - No mainnet contract, fiat/mobile-money payout, private backend or audit is claimed.
 - Customer interviews, pilot commitments and chapter affiliation are not claimed.
 - Blockaid reported the domain flag was a false positive; don't bypass a remaining wallet warning.
-- Source v0.4.1 includes local recovery/monitoring improvements; consult release.json
+- Source v0.4.1 includes recovery/monitoring improvements; consult release.json
   and deployment evidence before assuming the public site runs this exact revision.
 
 ## Funding status
