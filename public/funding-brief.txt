@@ -24,16 +24,16 @@ CUSTOMER VALIDATION AND DIFFERENTIATION
 The intended distinction is clear acceptance conditions, verifiable delivery and Ghana-focused onboarding for direct client relationships. This is a positioning hypothesis. Compare it against marketplace escrow, invoice/deposit workflows and existing Stellar escrow products. Founder-time research targets: ten discovery interviews, five usability sessions and three non-binding pilot expressions of interest. No results are invented and no cash-funded incentives are assumed.
 
 FOUNDER AND OPEN SOURCE
-Timothy's portfolio describes senior engineering, payment and distributed-systems work. Those products' metrics are not Accord traction. Full source is included in this evidence bundle. A founder-owned public repository, license confirmation and versioned release remain to be finalized. Portfolio: https://timothy-asigbey-portfolio.vercel.app/crypto/
+Timothy's portfolio describes senior engineering, payment and distributed-systems work. Those products' metrics are not Accord traction. Full source is included in this evidence bundle. The source and smart contract are public under the MIT license at https://github.com/TXMO-dev/accord-ghana. A versioned deployment must still be checked independently. Portfolio: https://timothy-asigbey-portfolio.vercel.app/crypto/
 
 SECURITY AND DELIVERY LIMITS
 The founder supplied Blockaid's reply confirming the domain flag was incorrect and corrected, with up to 24 hours propagation. Wallet-side propagation is not independently confirmed. Do not bypass a remaining warning. The contract is unaudited; disputes can still deadlock without agreement. Testnet can reset. RPC availability, storage lifetime, recovery and document privacy remain limitations. Mainnet deployment is deferred and is not promised in this sprint. No real funds or fiat payout are supported.
 
 PROGRAM ROUTE
-Instawards are the suggested stage fit, conditional on chapter routing, active engagement, eligibility and chapter-supported scope. Founder confirms no current engagement or chapter lead. Official rules do not provide a standard open Instaward application. SCF Build needs validated need/traction, self-contained technical evidence and a suitable three-tranche proposal; this document is not that proposal.
+Current next step: initial SCF interest/routing review. Instawards remain a possible stage fit only if staff confirms chapter routing, active engagement, eligibility and chapter-supported scope. Founder confirms no current engagement or chapter lead. Official rules do not provide a standard open Instaward application. SCF Build needs validated need/traction, self-contained technical evidence and a suitable three-tranche proposal; this document is not that proposal.
 
 NEXT FOUNDER ACTIONS
-Use chapter-introduction.txt to ask the official community which chapter serves Ghana. Attend sessions, seek product feedback and document genuine contributions. Verify eligibility and any required identity/KYC steps only through official channels. Record a short demo and conduct the planned interviews. Confirm a scope with the chapter before requesting an award.
+No active Ghana chapter is verified. Use GHANA-ROUTING.txt to ask staff about community routing and SCF interest review; use SCF-INTEREST-ANSWERS.txt for the inspected form fields. Attend sessions, seek product feedback and document genuine contributions. Verify eligibility and any required identity/KYC steps only through official channels. Record a short demo and conduct the planned interviews. Confirm a scope with the chapter before requesting an award.
 
 No application, community message or KYC submission has been sent.
 Sources checked 3 November 2026:
