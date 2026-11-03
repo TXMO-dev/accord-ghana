@@ -7,3 +7,5 @@ target/
 .openai/
 contracts/test_snapshots/
 *.log
+
+.testnet-restoration/
