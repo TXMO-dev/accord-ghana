@@ -16,6 +16,21 @@
   "limitations": [
     "Public receipts have not yet been supplied for independent corroboration.",
     "Mainnet operation has not been verified.",
-    "These checks do not establish simultaneous settlement-signature or restoration coverage."
+    "These checks do not establish simultaneous settlement-signature or restoration coverage.",
+    "Supplied screenshots show an earlier create/fund/dispute flow, not delivery/release receipts. Live notification claims remain user-reported, not independently corroborated."
+  ],
+  "relatedReceipts": [
+    {
+      "action": "create",
+      "hash": "3f6d97d262325deb288d9fa6a1b8298cc8fae735435e9fb9e4b0c4e542b14a55",
+      "ledger": 5538787,
+      "verification": "SUCCESS confirmed through Testnet RPC"
+    },
+    {
+      "action": "dispute",
+      "hash": "4dc41d0ab48e1c1983fd76ee6c0e3bd7253aaf5e2cd01000b628a7384ed2f926",
+      "ledger": 5538808,
+      "verification": "SUCCESS confirmed through Testnet RPC"
+    }
   ]
 }
