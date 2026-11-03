@@ -1,0 +1,86 @@
+{
+  "result": "PASS",
+  "observedAt": "2026-11-03T14:09:47.068Z",
+  "network": "LOCAL_STANDALONE",
+  "contractId": "CDQME76TA2M55F6JH24FONAGSQEU6RSTAYUS4C4AW7FVSE6XAJKJU7AX",
+  "fixtureWasmSha256": "d7348d6efd852ef74579d1caf1f50883d4b2f0f174da6e729b7c27b7ab900d5e",
+  "expiryLedger": 98,
+  "observedExpiredLedger": 99,
+  "beforeBalances": {
+    "buyer": "99989690539",
+    "seller": "100000000000",
+    "escrow": "10000000"
+  },
+  "finalBalances": {
+    "buyer": "99989673564",
+    "seller": "100009991200",
+    "escrow": "0"
+  },
+  "restoredValueUnchanged": true,
+  "restorationBalancesUnchanged": true,
+  "ttlAfterRestore": 164,
+  "ttlAfterExtension": 10103,
+  "receipts": [
+    {
+      "label": "upload short-TTL fixture",
+      "hash": "94556a3ebb3cd5c0265d900ae850015bcff84d60e2d620f93b7a5dc80395c651",
+      "ledger": 25
+    },
+    {
+      "label": "deploy local native asset contract",
+      "hash": "be0d3f7f3345a0fd98d9616109559b00cf86fc9a9b67b0a53d96599d23cac54b",
+      "ledger": 27
+    },
+    {
+      "label": "extend native asset instance",
+      "hash": "12f5b291654a8a42b972ec69e079a77d6db1fd926ae99e61bfa955f2541d091f",
+      "ledger": 29
+    },
+    {
+      "label": "deploy isolated fixture",
+      "hash": "bdec24f36ec41db76f57ae5a365dd0ab40b153f60fb4f3557c6d791ca75c1227",
+      "ledger": 31
+    },
+    {
+      "label": "extend code and instance",
+      "hash": "45b85ea78b47ae267117a425621b37458b41143313d9e6665ebbf6fe5dd4c1ac",
+      "ledger": 33
+    },
+    {
+      "label": "create",
+      "hash": "e021af02084151082669bd8c28f77b77e4615776a6e09ee1be0056ae13cbb3b3",
+      "ledger": 35
+    },
+    {
+      "label": "fund",
+      "hash": "80650dd8c0d51cca83fe021ec89ef20a83dc9a551fa64866277c00e07e41894c",
+      "ledger": 37
+    },
+    {
+      "label": "restore expired agreement",
+      "hash": "ac2d5fb7aead14f2a66c2e860f60f5c22760c6d56aa6710669929d80267fc8b6",
+      "ledger": 101
+    },
+    {
+      "label": "extend restored agreement",
+      "hash": "9ff77447676862f5e560a44e2d07af9e81a2d2875462bd0e06ed9f4700e4b6e4",
+      "ledger": 103
+    },
+    {
+      "label": "submit after restoration",
+      "hash": "01df28a48d1a3da2b0a024e951e927dcfb94c642e5b8c368b4bc04bfc80ce8ed",
+      "ledger": 105
+    },
+    {
+      "label": "release after restoration",
+      "hash": "110bed8e5bcb73a5963ba9e6d506e1f45e4749ce3bcfc0ca47d465f06372ac1e",
+      "ledger": 107
+    }
+  ],
+  "limitations": [
+    "Isolated local network, not public Testnet or Mainnet",
+    "Fixture replaces only TTL constants: threshold 32, extension 96",
+    "Archived agreement footprint after observed expiry is required; no-op restoration cannot pass",
+    "No wallet extension signing or independent audit"
+  ]
+}

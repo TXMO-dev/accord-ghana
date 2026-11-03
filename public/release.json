@@ -11,7 +11,6 @@
     "rustHost": 14
   },
   "limitations": [
-    "Wallet warning propagation and extension end-to-end signoff remain unverified",
     "Wallet extension end-to-end signoff pending",
     "No real-money payout",
     "No independent audit",
@@ -22,7 +21,7 @@
   "domainReview": {
     "outcome": "FALSE_POSITIVE_CORRECTED",
     "source": "Blockaid support reply supplied by founder on 2026-11-03",
-    "propagation": "Provider advises up to 24 hours; wallet UI not yet verified"
+    "propagation": "Varial connection popup observed without malicious-site banner on 3 November 2026; popup showed Main Net, Testnet signing remains pending"
   },
   "settlement": {
     "available": "Disputed Testnet milestones",
@@ -39,7 +38,7 @@
   "monitoring": {
     "status": "read-only snapshot verified",
     "report": "ttl-evidence.json",
-    "restoration": "Isolated-network rehearsal in progress; not yet verified"
+    "restoration": "PASS: isolated local protocol 30 short-TTL fixture, expired agreement restored unchanged, balances preserved, TTL extended and release completed; public Testnet rehearsal pending"
   },
   "source": {
     "repository": "https://github.com/TXMO-dev/accord-ghana",

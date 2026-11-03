@@ -27,7 +27,7 @@ FOUNDER AND OPEN SOURCE
 Timothy's portfolio describes senior engineering, payment and distributed-systems work. Those products' metrics are not Accord traction. Full source is included in this evidence bundle. The source and smart contract are public under the MIT license at https://github.com/TXMO-dev/accord-ghana. A versioned deployment must still be checked independently. Portfolio: https://timothy-asigbey-portfolio.vercel.app/crypto/
 
 SECURITY AND DELIVERY LIMITS
-The founder supplied Blockaid's reply confirming the domain flag was incorrect and corrected, with up to 24 hours propagation. Wallet-side propagation is not independently confirmed. Do not bypass a remaining warning. The contract is unaudited; disputes can still deadlock without agreement. Testnet can reset. RPC availability, storage lifetime, recovery and document privacy remain limitations. Mainnet deployment is deferred and is not promised in this sprint. No real funds or fiat payout are supported.
+The founder supplied Blockaid's reply confirming the domain flag was incorrect and corrected, with up to 24 hours propagation. A Varial connection popup was observed without the malicious-site banner on 3 November 2026; extension signing remains unverified. Do not bypass a remaining warning. The contract is unaudited; disputes can still deadlock without agreement. Testnet can reset. RPC availability, storage lifetime, recovery and document privacy remain limitations. Mainnet deployment is deferred and is not promised in this sprint. No real funds or fiat payout are supported.
 
 PROGRAM ROUTE
 Current next step: initial SCF interest/routing review. Instawards remain a possible stage fit only if staff confirms chapter routing, active engagement, eligibility and chapter-supported scope. Founder confirms no current engagement or chapter lead. Official rules do not provide a standard open Instaward application. SCF Build needs validated need/traction, self-contained technical evidence and a suitable three-tranche proposal; this document is not that proposal.
@@ -46,3 +46,5 @@ LOCAL UPDATE: see RECOVERY-UPDATE.txt in the evidence bundle for the tested v0.4
 
 
 LOCAL ENGINEERING UPDATE: 49 JS tests and 14 Rust host tests pass. Read-only TTL monitoring is implemented and has a live snapshot. These completed tasks are excluded from the future request. See ENGINEERING-UPDATE.txt.
+
+RESTORATION UPDATE: The isolated local-network short-TTL rehearsal passed. Its completed implementation and test work are excluded from the proposed budget. Any restoration request now covers only future public Testnet operational validation, subject to re-estimation and programme guidance. See restoration-evidence.json.
