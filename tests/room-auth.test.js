@@ -63,3 +63,24 @@ test('avatar updates use authenticated room identity and allowlisted appearance 
  assert.equal(result.shared,true);assert.equal(sent.messages[0].payload.wallet,wallet);assert.equal(sent.messages[0].topic,'accord:'+room);assert.equal(sent.messages[0].private,true);assert.deepEqual(sent.messages[0].payload.avatar,cleanAvatar({hair:'bun'}));
  await assert.rejects(avatarRequest({action:'avatar',id,session:'a'.repeat(64)},{config:{contractId:contract},env:{SUPABASE_URL:'https://test.invalid'},fetcher:async()=>({ok:true,json:async()=>[]})}),/expired/);
 });
+import {cleanReview,parseReview,reviewPrefix,conditionsList} from '../src/delivery-review-model.js';
+test('review records bind role and terms, bound input, and retain exact acceptance text',()=>{
+ const hash='a'.repeat(64),note={kind:'delivery',notes:'Version two addresses the agreed scope.',reference:'Private handoff v2',termsHash:hash,total:2,checked:[0,1]};
+ assert.deepEqual(parseReview(reviewPrefix+JSON.stringify(cleanReview(note,'freelancer',hash))),note);
+ assert.throws(()=>cleanReview(note,'client',hash),/other participant/);
+ assert.throws(()=>cleanReview({...note,kind:'revision'},'freelancer',hash),/other participant/);
+ assert.throws(()=>cleanReview(note,'freelancer','b'.repeat(64)),/conditions changed/);
+ assert.throws(()=>cleanReview({...note,checked:[2]},'freelancer',hash),/checklist/);
+ assert.throws(()=>cleanReview({...note,notes:'x'.repeat(601)},'freelancer',hash),/600/);
+ assert.equal(parseReview('Ordinary comment'),null);assert.equal(parseReview(reviewPrefix+'{}'),null);
+ const long=Array.from({length:13},(_,i)=>'Condition '+i).join('\n');assert.deepEqual(conditionsList(long),[long]);
+});
+test('shared review uses authenticated author, active ledger state and existing private room storage',async()=>{
+ const id=input.id,wallet=key.publicKey(),room=activitySha(contract+':'+id),hash='a'.repeat(64);let stored;
+ const fetcher=async(url,options)=>{if(url.includes('accord_room_sessions'))return {ok:true,json:async()=>[{room,wallet,expires_at:new Date(Date.now()+60000).toISOString()}]};if(url.includes('accord_rooms?'))return {ok:true,json:async()=>[{client:other.publicKey(),freelancer:wallet}]};stored=JSON.parse(options.body);return {ok:true,json:async()=>({comments:[],participants:[]})};};
+ const agreement={buyer:other.publicKey(),seller:wallet,state:['Submitted'],terms:Buffer.from(hash,'hex')},env={SUPABASE_URL:'https://test.invalid',SUPABASE_SECRET_KEY:'test'};
+ const body={action:'review',id,session:'a'.repeat(64),messageId:'12345678-1234-4234-8234-123456789012',review:{kind:'delivery',notes:'Ready for review',reference:'v2',termsHash:hash,total:1,checked:[0]}};
+ await avatarRequest(body,{config:{contractId:contract},membership:async()=>agreement,env,fetcher});assert.equal(stored.p_action,'comment');assert.ok(stored.p_text.startsWith(reviewPrefix));assert.equal(parseReview(stored.p_text).kind,'delivery');
+ stored=null;await assert.rejects(avatarRequest(body,{config:{contractId:contract},membership:async()=>({...agreement,state:['Released']}),env,fetcher}),/active/);assert.equal(stored,null);
+ await assert.rejects(avatarRequest({...body,review:{...body.review,kind:'revision'}},{config:{contractId:contract},membership:async()=>agreement,env,fetcher}),/other participant/);
+});

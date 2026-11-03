@@ -1,3 +1,4 @@
+import {cleanReview,reviewPrefix} from '../src/delivery-review-model.js';
 import {cleanAvatar} from '../src/avatar-model.js';
 import {verifiedActivity} from './room-activity.js';
 import {sha,validateRoom} from './room-auth.js';
@@ -17,6 +18,15 @@ export async function roomSettlement(body,{config,membership,stellar,env=process
  const sessions=await rows('/rest/v1/accord_room_sessions?select=wallet,room,expires_at&token=eq.'+sha(body.session)+'&limit=1');
  const parties=(await rows('/rest/v1/accord_rooms?select=client,freelancer&id=eq.'+room+'&limit=1'))[0];
  const wallet=authorizeSettlementSession(sessions[0],room,parties,body.action);validateRoom(wallet,body.id);
+ if(body.action==='review'){
+  if(!/^[a-f0-9-]{36}$/.test(body.messageId||''))throw Error('Invalid review identifier.');
+  const agreement=await membership(wallet,body.id),state=Array.isArray(agreement.state)?agreement.state[0]:agreement.state;
+  if(!['Funded','Submitted'].includes(state))throw Error('Review notes are available only while the milestone is active.');
+  const role=agreement.seller===wallet?'freelancer':agreement.buyer===wallet?'client':'observer';
+  const review=cleanReview(body.review,role,Buffer.from(agreement.terms).toString('hex'));
+  const saved=await call('/rest/v1/rpc/accord_room_request',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({p_token:sha(body.session),p_action:'comment',p_text:reviewPrefix+JSON.stringify(review),p_message:body.messageId,p_station:review.kind==='delivery'?2:3})});
+  if(!saved.ok)throw Error('Review could not be saved. Retry or rejoin the room.');return saved.json();
+ }
  if(body.action==='avatar'){
   const sent=await call('/realtime/v1/api/broadcast',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{topic:'accord:'+room,event:'participant_avatar',payload:{wallet,avatar:cleanAvatar(body.avatar)},private:true}]})});
   if(!sent.ok)throw Error('Character update could not be shared.');return {shared:true};
