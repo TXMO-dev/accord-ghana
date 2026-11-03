@@ -12,3 +12,52 @@ body{font-family:var(--accord-sans);-webkit-font-smoothing:antialiased}button,in
 .accord-app .journey-grid article>span,.accord-app .journey-grid article:after{color:#ddbf96;border-color:#dce3c866}
 .accord-app .particle-backdrop{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:2;transition:opacity .7s ease}
 .accord-app .particle-backdrop[data-scene="3"]{mask-image:linear-gradient(90deg,transparent 55%,#000)}
+/* Dedicated art windows keep the field clear of reading and signing surfaces. */
+.accord-app .chapter-art{position:relative;isolation:isolate;width:100%;max-width:340px;aspect-ratio:1;margin:24px 0 0;overflow:hidden;pointer-events:none;color:inherit}
+.chapter-art img,.chapter-art canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.chapter-art canvas{opacity:0}.chapter-art.art-ready canvas{opacity:1}.chapter-art.art-ready img{opacity:.05}
+.chapter-art figcaption{position:absolute;bottom:0;left:0;font:8px var(--accord-mono);letter-spacing:1px;color:inherit}
+.accord-app .story{grid-template-columns:minmax(240px,1fr) 1.5fr;align-items:center;gap:clamp(40px,8vw,130px)}
+.accord-app .story:before{display:none}.accord-app .journey-head{display:grid;grid-template-columns:1fr 300px;gap:24px 60px;align-items:center;margin-bottom:45px}
+.accord-app .journey-head>.eyebrow{grid-column:1}.accord-app .journey-head h2{grid-column:1;margin:0}.accord-app .journey-head .chapter-art{grid-column:2;grid-row:1/3;margin:0;max-width:280px;justify-self:end}
+.accord-app .toolbar{display:grid;grid-template-columns:1fr 240px auto;align-items:center}.accord-app .toolbar .chapter-art{max-width:230px;margin:0}
+.builder-links{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+#theme-toggle{background:transparent;color:inherit;border:1px solid #ffffff40;border-radius:30px;font:10px var(--accord-mono);padding:12px 14px;white-space:nowrap}
+:root[data-theme=dark]{color-scheme:dark;--paper:#0c231b;--ink:#eef0df;--line:#44604f;--accord-paper:#102a21;--accord-ink:#eef0df}
+[data-theme=dark] body{background:#0c231b;color:#eef0df}
+[data-theme=dark] .story,[data-theme=dark] #workspace,[data-theme=dark] footer{background:#102a21;color:#eef0df}
+[data-theme=dark] .story p,[data-theme=dark] .story h2 em,[data-theme=dark] .muted,[data-theme=dark] .library-note,[data-theme=dark] .form-intro,[data-theme=dark] .field-hint{color:#c0cdbb}
+[data-theme=dark] .section-marker,[data-theme=dark] .chain-section,[data-theme=dark] .notice,[data-theme=dark] .stats{background:#1b392d;color:#e4e8d9}
+[data-theme=dark] .card,[data-theme=dark] .chain-form,[data-theme=dark] .agreement-library,[data-theme=dark] .studio-welcome,[data-theme=dark] .role-paths article,[data-theme=dark] dialog,[data-theme=dark] .review-body{background:#16362a;color:#f0efdf;border-color:#4e6957}
+[data-theme=dark] .card p,[data-theme=dark] .card h2,[data-theme=dark] .role-paths p,[data-theme=dark] .role-paths h3,[data-theme=dark] .studio-welcome h2,[data-theme=dark] .account-content>p,[data-theme=dark] .chain-form label,[data-theme=dark] .review-fields dd,[data-theme=dark] .review-body>p{color:#dce4d3}
+[data-theme=dark] input,[data-theme=dark] textarea,[data-theme=dark] select,[data-theme=dark] #studio-dialog input,[data-theme=dark] #studio-dialog textarea,[data-theme=dark] .chain-form input,[data-theme=dark] .chain-form textarea{background:#0c231b;color:#f2f0df;border-color:#63806b}
+[data-theme=dark] button.secondary,[data-theme=dark] .list button,[data-theme=dark] .role-paths button{color:#edf0dc;border-color:#76937a}
+[data-theme=dark] .list button.active{background:#2b4a37;color:#fff}
+[data-theme=dark] .pill{background:#dbe8b0;color:#173f32}
+[data-theme=dark] #accord-atlas{background:#102a21;color:#eef0df}
+[data-theme=dark] .atlas-links a,[data-theme=dark] .atlas-footer a,[data-theme=dark] .atlas-edition button{color:#eef0df;border-color:#63806b}
+[data-theme=dark] .atlas-description,[data-theme=dark] .atlas-footer,[data-theme=dark] .atlas-links a>span:first-child{color:#bfceb5}
+[data-theme=dark] .atlas-art:before{opacity:.05}[data-theme=dark] .atlas-edition,[data-theme=dark] .atlas-footer{border-color:#63806b}
+@media(max-width:1000px){#theme-toggle{margin-left:auto}.atlas-trigger{margin-left:0}}
+@media(max-width:750px){.accord-app .story{grid-template-columns:1fr;gap:28px}.accord-app .story .chapter-art{max-width:240px;margin:20px auto}.accord-app .journey-head{grid-template-columns:1fr 180px;gap:20px}.accord-app .journey-head .chapter-art{max-width:180px}.accord-app .toolbar{grid-template-columns:1fr 160px}.accord-app .toolbar .chapter-art{max-width:160px}.accord-app .toolbar>#studio-connect{grid-column:1/-1;justify-self:start}}
+@media(max-width:480px){header{gap:8px!important}header .brand{font-size:32px!important}#theme-toggle{padding:10px;font-size:8px}.atlas-trigger{padding:10px;font-size:8px}.nav-account .nav-login{font-size:10px}.accord-app .journey-head{grid-template-columns:1fr}.accord-app .journey-head .chapter-art{grid-column:1;grid-row:auto;justify-self:center;max-width:230px}.accord-app .toolbar{grid-template-columns:1fr}.accord-app .toolbar .chapter-art{max-width:210px;justify-self:center}}
+[data-theme=dark] button,[data-theme=dark] .button{background:#dce8ba;color:#143226;border-color:#8da77b}
+[data-theme=dark] button.secondary,[data-theme=dark] .atlas-trigger,[data-theme=dark] #theme-toggle,[data-theme=dark] .nav-login{background:transparent;color:#edf0df}
+[data-theme=dark] .card#studio-detail,[data-theme=dark] #studio-dialog,[data-theme=dark] #account-dialog,[data-theme=dark] .accord-review{background:#16362a;color:#eef0df}
+[data-theme=dark] .studio-terms,[data-theme=dark] .milestone-progress li.complete,[data-theme=dark] .testnet-setup,[data-theme=dark] .list button{background:#234333;color:#e5eadb}
+[data-theme=dark] .toolbar h2 em,[data-theme=dark] .studio-welcome h2 em,[data-theme=dark] .workspace-safety summary>span:last-child,[data-theme=dark] .library-search,[data-theme=dark] .library-filter,[data-theme=dark] .milestone-progress li{color:#c4d2b9}
+[data-theme=dark] #studio-status{background:#274836;color:#e1e9d7}
+[data-theme=dark] .intro>p,[data-theme=dark] .scene-copy,[data-theme=dark] .parties p,[data-theme=dark] .amount small,[data-theme=dark] .stage-note,[data-theme=dark] .small{color:#c4d2b9}
+[data-theme=dark] .scene,[data-theme=dark] .detail-box{background:#17382b;color:#eef0df}
+[data-theme=dark] .badge{background:#dce8ba;color:#143226}
+[data-theme=dark] .chapters button{background:transparent;color:#eef0df}
+[data-theme=dark] .chapters button[aria-current]{background:#dce8ba;color:#143226}
+[data-theme=dark] .chapters button[aria-current] span{color:#5e492d}
+[data-theme=light] body:not(.accord-app) #theme-toggle{color:#173f32;border-color:#8a9d80}
+[data-theme=dark] body:not(.accord-app) article,[data-theme=dark] .architecture span,[data-theme=dark] .status,[data-theme=dark] .next-step{background:#234333;color:#edf0df}
+[data-theme=dark] #studio-detail textarea{background:#0c231b;color:#f2f0df;border-color:#63806b}
+[data-theme=dark] .milestone-progress li.complete{color:#e5eadb}
+[data-theme=dark] body:not(.accord-app) .outline{background:transparent;color:#edf0df}
+@media(max-width:650px){body:not(.accord-app) header{flex-wrap:wrap}}
+[data-theme=dark] .atlas-edition button{background:transparent;color:#eef0df}
+[data-theme=dark] .role-paths button{background:#dce8ba;color:#143226}

@@ -1,35 +1,51 @@
-// A continuous particle field: agreement -> held value -> completion.
-// Decorative only; all information remains available as HTML.
-const canvas=document.createElement('canvas');canvas.className='particle-backdrop';canvas.setAttribute('aria-hidden','true');document.body.prepend(canvas);
-const ctx=canvas.getContext('2d');const reduced=matchMedia('(prefers-reduced-motion: reduce)');
-let w=0,h=0,dpr=1,frame=0,current=0,target=0,last=0,visible=true;
-const count=matchMedia('(max-width:650px)').matches?350:1100;
-const particles=Array.from({length:count},(_,i)=>({u:i/count,v:((i*137.508)%360)/360,x:0,y:0}));
-function shape(t,u,v){
- const a=u*Math.PI*2;
- if(t===0)return [Math.cos(a)*(0.36+v*.1),Math.sin(a)*(0.27+v*.07)];
- if(t===1){const side=Math.floor(u*4),k=(u*4)%1;return side===0?[-.3+k*.6,-.4+v*.02]:side===1?[.3+v*.02,-.4+k*.8]:side===2?[.3-k*.6,.4+v*.02]:[-.3-v*.02,.4-k*.8]}
- if(t===2){const r=.3+v*.08;return [Math.cos(a)*r,Math.sin(a)*r]}
- const p=u<.38?u/.38:(u-.38)/.62;
- return u<.38?[-.32+p*.23,-.02+p*.23+v*.025]:[-.09+p*.46,.21-p*.52+v*.025];
+// Image-sampled chapter fields, inspired by the portfolio's halftone morphing.
+// Each scene occupies a dedicated art window: particles never cross text or controls.
+const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+const slots=[...document.querySelectorAll('[data-chapter-art]')];
+const count=innerWidth<700?1800:3600;
+const fields=[];
+let frame=0,last=0,dead=false;
+const stopped=()=>reduced.matches||document.documentElement.classList.contains('still');
+function sample(image){
+ const c=document.createElement('canvas');c.width=c.height=180;
+ const ctx=c.getContext('2d',{willReadFrequently:true});ctx.drawImage(image,0,0,180,180);
+ const pixels=ctx.getImageData(0,0,180,180).data,candidates=[];
+ for(let y=0;y<180;y+=2)for(let x=0;x<180;x+=2){const k=(y*180+x)*4;if(pixels[k+3]>100)candidates.push([x/180,y/180,pixels[k],pixels[k+1],pixels[k+2]]);}
+ if(!candidates.length)throw new Error('Empty chapter image');
+ // Stable ordering means every point has a destination when images change.
+ return Array.from({length:count},(_,i)=>candidates[(i*7919)%candidates.length]);
 }
-function size(){w=innerWidth;h=innerHeight;dpr=Math.min(devicePixelRatio,1.5);canvas.width=w*dpr;canvas.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}size();addEventListener('resize',size,{passive:true});
-const scenes=[document.querySelector('.hero'),document.querySelector('#story'),document.querySelector('.journey'),document.querySelector('#workspace')];
-function scroll(){let s=0;for(let i=1;i<scenes.length;i++){const r=scenes[i].getBoundingClientRect();if(r.top<h*.7)s=i}target=s;canvas.dataset.scene=String(s);canvas.style.opacity=s===0?'.4':s===3?'.10':'.48';}
-addEventListener('scroll',scroll,{passive:true});addEventListener('resize',scroll,{passive:true});scroll();
-function draw(time){
- frame=requestAnimationFrame(draw);if(!visible||time-last<33)return;last=time;
- const paused=reduced.matches||document.documentElement.classList.contains('still');
- current=paused?target:current+(target-current)*.045;
- ctx.clearRect(0,0,w,h);
- const lo=Math.floor(current),hi=Math.min(3,lo+1),mix=current-lo;
- const scale=Math.min(w*.55,650),cx=w<650?w*.75:w*.77,cy=h*.52;
- particles.forEach((p,i)=>{
-  const a=shape(lo,p.u,p.v),b=shape(hi,p.u,p.v),drift=paused?0:Math.sin(time*.0004+i)*.003;
-  const x=cx+(a[0]+(b[0]-a[0])*mix+drift)*scale,y=cy+(a[1]+(b[1]-a[1])*mix)*scale;
-  ctx.fillStyle=i%5===0?'#b78f67':target===0||target===2?'#d5d9bb':'#345b45';
-  ctx.beginPath();ctx.arc(x,y,i%9===0?1.8:1,0,Math.PI*2);ctx.fill();
- });
+function drawField(f,time){
+ if(!f.visible)return;
+ const rect=f.el.getBoundingClientRect();
+ const progress=Math.max(0,Math.min(1,(innerHeight*.92-rect.top)/(innerHeight*.45)));
+ const goal=stopped()?1:progress;
+ f.mix=stopped()?1:f.mix+(goal-f.mix)*.12;
+ const t=f.mix*f.mix*(3-2*f.mix),burst=Math.sin(t*Math.PI);
+ const size=f.el.clientWidth,dpr=Math.min(devicePixelRatio,1.5);
+ if(f.canvas.width!==Math.round(size*dpr)){f.canvas.width=f.canvas.height=Math.round(size*dpr);}
+ const ctx=f.ctx;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,size,size);
+ const dark=document.documentElement.dataset.theme==='dark'||f.el.closest('.journey');
+ for(let i=0;i<count;i++){
+  const a=f.from[i],b=f.points[i],angle=i*2.39996;
+  const drift=stopped()?0:Math.sin(time*.0005+i)*.0015;
+  const x=(a[0]+(b[0]-a[0])*t+Math.cos(angle)*burst*.075+drift)*size;
+  const y=(a[1]+(b[1]-a[1])*t+Math.sin(angle)*burst*.075)*size;
+  let r=a[2]+(b[2]-a[2])*t,g=a[3]+(b[3]-a[3])*t,blue=a[4]+(b[4]-a[4])*t;
+  if(dark){r=r*.62+85;g=g*.62+85;blue=blue*.62+75;}
+  ctx.fillStyle=`rgb(${r|0} ${g|0} ${blue|0})`;
+  ctx.beginPath();ctx.arc(x,y,size<250?1.05:1.4,0,Math.PI*2);ctx.fill();
+ }
+ f.el.dataset.morph=f.mix.toFixed(2);
 }
-document.addEventListener('visibilitychange',()=>{visible=!document.hidden});
-requestAnimationFrame(draw);
+function tick(time){frame=0;if(dead||document.hidden)return;if(time-last>32){fields.forEach(f=>drawField(f,time));last=time;}if(!stopped()&&fields.some(f=>f.visible))frame=requestAnimationFrame(tick);}
+function wake(){if(dead)return;if(stopped()){cancelAnimationFrame(frame);frame=0;fields.forEach(f=>drawField(f,0));}else if(!frame&&!document.hidden)frame=requestAnimationFrame(tick);}
+const observer=new IntersectionObserver(entries=>{for(const e of entries){const f=fields.find(f=>f.el===e.target);if(f)f.visible=e.isIntersecting;}wake();},{rootMargin:'80px'});
+async function mount(){
+ const points=await Promise.all(slots.map(async el=>{const img=el.querySelector('img');try{await img.decode();return sample(img);}catch{return null;}}));
+ slots.forEach((el,i)=>{if(!points[i])return;const canvas=el.querySelector('canvas'),ctx=canvas.getContext('2d');if(!ctx)return;fields.push({el,canvas,ctx,points:points[i],from:points[(i+points.length-1)%points.length]||points[i],mix:stopped()?1:0,visible:false});el.classList.add('art-ready');observer.observe(el);});wake();
+}
+const mutation=new MutationObserver(wake);mutation.observe(document.documentElement,{attributes:true,attributeFilter:['class','data-theme']});
+addEventListener('scroll',wake,{passive:true});addEventListener('resize',wake,{passive:true});document.addEventListener('visibilitychange',wake);reduced.addEventListener('change',wake);
+addEventListener('pagehide',()=>{dead=true;cancelAnimationFrame(frame);observer.disconnect();mutation.disconnect();},{once:true});
+mount().catch(()=>{}); // Static SVG illustrations remain available on failure.
