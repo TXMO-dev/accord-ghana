@@ -33,3 +33,8 @@ test('participant greetings approach each workstation without crossing furniture
  const positions=[[-3,0,1],[-3,0,-2.5],[2.5,0,-2.4],[3,0,1.6]];
  for(const start of positions)for(const end of positions){const p=avatarHome(start,true),partner=avatarHome(end,false);assert.equal(blocked(p.x,p.z),false);const path=greetingPath(p,partner);assert.ok(path.length);let n=0;while(advanceAvatar(p,path,.05)&&n++<1000)assert.equal(blocked(p.x,p.z),false);assert.ok(n<1000);assert.ok(Math.hypot(p.x-partner.x,p.z-partner.z)<1);}
 });
+
+import {createAvatar} from '../src/avatar-character.js';
+test('avatar bow pivots the upper body while feet stay planted, and walking articulates legs',()=>{
+ const avatar=createAvatar({hair:'bun'});try{avatar.update(1000);avatar.react('thanks');avatar.update(2600);const upper=avatar.group.getObjectByName('upper-body'),leg=avatar.group.getObjectByName('left-leg');assert.ok(upper.rotation.x>.25);assert.equal(leg.rotation.x,0);assert.equal(avatar.group.position.y,0);avatar.walk(2700,true);assert.ok(Math.abs(leg.rotation.x)>.01);avatar.update(5000);assert.equal(upper.rotation.x,0);avatar.react('release');avatar.update(5100,true);assert.equal(avatar.group.position.y,0);}finally{avatar.dispose();}
+});
