@@ -4,7 +4,9 @@ import {courtyardPlaces} from './courtyard-layout.js';
 export function buildCourtyard({scene,box,register,actions,focus,speak,wake,paused,shortcuts}){
  const textures=[],lamps=[];
  const map=document.createElement('dialog');map.className='room-keyboard-help courtyard-map';map.innerHTML='<h2>Your Accord neighbourhood</h2><p>Choose a destination to move the camera. Select its desk to open your project tools, or use Walk inside to explore on foot.</p><div class="courtyard-map-grid"></div><button type="button" class="secondary courtyard-map-close">Back to the world</button>';document.body.append(map);
- const mapButton=document.createElement('button');mapButton.type='button';mapButton.textContent='World map';mapButton.onclick=()=>{if(!map.open)map.showModal();};document.querySelector('.room-view-controls').append(mapButton);
+ const openMap=()=>{if(!map.open)map.showModal();};
+ const mapButton=document.createElement('button');mapButton.type='button';mapButton.className='studio-world-map';mapButton.textContent='World map';mapButton.setAttribute('aria-haspopup','dialog');mapButton.onclick=openMap;document.querySelector('.room-heading').append(mapButton);
+ addEventListener('accord-open-world-map',openMap);
  map.querySelector('.courtyard-map-close').onclick=()=>map.close();map.addEventListener('close',wake);
  for(const place of [{title:'THE STUDIO',caption:'Agree, fund, deliver and release',x:0,z:0},...courtyardPlaces]){const button=document.createElement('button'),name=document.createElement('strong'),caption=document.createElement('span');button.type='button';name.textContent=place.title;caption.textContent=place.caption;button.append(name,caption);button.onclick=()=>{map.close();focus(place);};map.querySelector('.courtyard-map-grid').append(button);}
  for(const p of courtyardPlaces){
@@ -45,5 +47,5 @@ export function buildCourtyard({scene,box,register,actions,focus,speak,wake,paus
  const notice=()=>{unread=true;wake();},read=()=>{unread=false;wake();};
  addEventListener('accord-review-notice',notice);addEventListener('accord-room-new-comment',notice);
  addEventListener('accord-open-review-table',read);addEventListener('accord-open-project-room',read);addEventListener('accord-wallet',read);
- return {update(t){for(const lamp of lamps)lamp.material.emissiveIntensity=unread&&lamp.id!=='archive'?(paused()?.45:.45+Math.sin(t*.002)*.15):.2;},dispose(){map.remove();mapButton.remove();for(const t of textures)t.dispose();removeEventListener('accord-review-notice',notice);removeEventListener('accord-room-new-comment',notice);removeEventListener('accord-open-review-table',read);removeEventListener('accord-open-project-room',read);removeEventListener('accord-wallet',read);}};
+ return {update(t){for(const lamp of lamps)lamp.material.emissiveIntensity=unread&&lamp.id!=='archive'?(paused()?.45:.45+Math.sin(t*.002)*.15):.2;},dispose(){removeEventListener('accord-open-world-map',openMap);map.remove();mapButton.remove();for(const t of textures)t.dispose();removeEventListener('accord-review-notice',notice);removeEventListener('accord-room-new-comment',notice);removeEventListener('accord-open-review-table',read);removeEventListener('accord-open-project-room',read);removeEventListener('accord-wallet',read);}};
 }
