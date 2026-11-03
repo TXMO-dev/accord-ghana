@@ -32,9 +32,9 @@ export function mountSettlement(container,{config,record,agreement,context,lock,
    });body.append(label,preview,approve);
    if(offers.has(record.id)){const again=document.createElement('button');again.className='secondary';again.textContent='Download last approval';again.onclick=()=>downloadText(record.id+'-settlement.json',JSON.stringify(offers.get(record.id),null,2),'application/json');body.append(again)}
  }else{
-   const explanation=document.createElement('p');explanation.textContent='Ask the freelancer for their settlement approval file. Accord verifies its signature and shows both amounts before you approve.';
+   const explanation=document.createElement('p');explanation.textContent='Ask the freelancer to authorize the agreed split and send you the downloaded file ending in -settlement.json. Choose that file here, not the original agreement export. You do not need to open or edit its contents. Accord verifies the signature and shows both amounts before you approve.';
    const input=document.createElement('input');input.type='file';input.accept='.json,application/json';input.hidden=true;input.id='settlement-file';
-   const open=document.createElement('button');open.dataset.studioAction='settlement-import';open.textContent='Open freelancer approval';open.onclick=()=>input.click();buttons.push(open);body.append(explanation,open,input);
+   const open=document.createElement('button');open.dataset.studioAction='settlement-import';open.textContent='Import signed approval file';open.onclick=()=>input.click();buttons.push(open);body.append(explanation,open,input);
    input.onchange=()=>action(async()=>{
      const file=input.files[0];input.value='';if(!file)return;if(file.size>24000)throw Error('Settlement file is too large.');
      const offer=JSON.parse(await file.text()),a=await fresh();

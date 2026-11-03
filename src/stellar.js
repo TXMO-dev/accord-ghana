@@ -10,9 +10,9 @@ export const server = new rpc.Server('https://soroban-testnet.stellar.org');
 export let account = '';
 export async function connect() {
   account = '';
-  window.dispatchEvent(new Event('accord-wallet'));
+  window.dispatchEvent(new CustomEvent('accord-wallet',{detail:{wallet:account}}));
   account = await connectTestnet({isConnected,getNetworkDetails,requestAccess},NETWORK,LOCAL_TESTING?false:undefined);
-  window.dispatchEvent(new Event('accord-wallet'));
+  window.dispatchEvent(new CustomEvent('accord-wallet',{detail:{wallet:account}}));
   return account;
 }
 export {validateContract,digest,bytes,address,amount} from './values.js';
