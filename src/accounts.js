@@ -1,8 +1,8 @@
 import {LOCAL_TESTING} from './local-mode.js';
-import {requireWalletReviewClear, WALLET_REVIEW_HOLD, REVIEW_MESSAGE, DOMAIN_REVIEW_NOTICE} from './wallet-policy.js';
+import {requireWalletReviewClear, WALLET_REVIEW_HOLD, REVIEW_MESSAGE} from './wallet-policy.js';
 const dialog=document.querySelector('#account-dialog'),note=document.querySelector('#account-status');
 let account='';
-export function openAccount(mode){if(!dialog.open)dialog.showModal();note.textContent=LOCAL_TESTING?'Local disposable Testnet wallet selected. Keys stay in this tab.':WALLET_REVIEW_HOLD?REVIEW_MESSAGE:DOMAIN_REVIEW_NOTICE;document.querySelector('#account-title').textContent=mode==='register'?'Make room for your next chapter.':'Welcome back to your work.'}
+export function openAccount(mode){if(!dialog.open)dialog.showModal();note.textContent=LOCAL_TESTING?'Local disposable Testnet wallet selected. Keys stay in this tab.':WALLET_REVIEW_HOLD?REVIEW_MESSAGE:'Connect your wallet to continue.';document.querySelector('#account-title').textContent=mode==='register'?'Make room for your next chapter.':'Welcome back to your work.'}
 document.querySelector('#close-account').onclick=()=>dialog.close();
 document.querySelector('#account-connect').onclick=async()=>{
  const connectButton=document.querySelector('#account-connect');
