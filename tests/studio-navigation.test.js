@@ -50,3 +50,14 @@ test('review handoff displays a document only during the gesture and respects re
   avatar.react('review');avatar.update(5300);assert.equal(document.visible,false);
  }finally{avatar.dispose();}
 });
+
+import {participantObstacles,returnPath} from '../src/avatar-motion.js';
+test('handoff approach and return keep clear of the other participant',()=>{
+ const partner={x:0,z:6},p={x:-2,z:6},home={x:2,z:6};
+ for(const path of [greetingPath(p,partner),returnPath(p,home,partner)]){
+  assert.ok(path.length);let frames=0;
+  while(advanceAvatar(p,path,.05,partner)&&frames++<2000){assert.equal(blocked(p.x,p.z,participantObstacles(partner)),false);}
+  assert.ok(frames<2000);
+ }
+ assert.ok(Math.hypot(p.x-home.x,p.z-home.z)<.08);
+});
