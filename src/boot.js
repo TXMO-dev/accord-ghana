@@ -1,5 +1,11 @@
 import {LOCAL_TESTING} from './local-mode.js';
 import {openAccount} from './accounts.js';
+import './material-scene.css';
+// Load 3D independently; a failed download leaves the original image intact.
+if(!matchMedia('(prefers-reduced-motion: reduce)').matches){
+ const startScene=()=>import('./material-scene.js').then(m=>m.mountMaterialScene(document.querySelector('.hero'))).catch(()=>{});
+ if('requestIdleCallback' in window)requestIdleCallback(startScene,{timeout:1800});else setTimeout(startScene,300);
+}
 // The account shell is bundled with the page; only signing needs the wallet SDK.
 function showReload(){
  const box=document.querySelector('#toast');box.replaceChildren();

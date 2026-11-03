@@ -1,0 +1,8 @@
+.hero>.material-scene{position:absolute;inset:0;width:100%;height:100%;z-index:-3;pointer-events:none;opacity:0;transition:opacity 1.4s ease;background:#061c15}
+.hero.three-ready>.material-scene{opacity:1}
+.hero.three-ready .hero-image{background-image:linear-gradient(90deg,#041710f5 0%,#041710b0 35%,#04171010 66%,transparent);animation:none;transform:none;filter:none}
+.hero-content,.hero-bottom,.hero .glass-note{position:relative;z-index:1}
+.hero .hero-bottom,.hero .glass-note{position:absolute}
+body:has(.hero.three-ready) .particle-backdrop{visibility:hidden}
+@media(max-width:650px){.hero.three-ready .hero-image{background-image:linear-gradient(90deg,#041710ed,#04171080 70%,#04171040)}}
+@media(prefers-reduced-motion:reduce){.hero>.material-scene{display:none}}

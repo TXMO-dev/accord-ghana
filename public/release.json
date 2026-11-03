@@ -1,5 +1,5 @@
 {
-  "version": "0.4.1",
+  "version": "0.4.2",
   "contractId": "CASWGE2BE6QLPR7L4BDKH5RH6ITAIWKBQ2MSLYE4GNP4HDTXMU2CTCIV",
   "wasmSha256": "255f22766fcfb1c9c3f02478d4a5c25d9e6250217f75fce491a66ee78c10f58e",
   "network": "TESTNET",
@@ -39,10 +39,15 @@
   "monitoring": {
     "status": "read-only snapshot verified",
     "report": "ttl-evidence.json",
-    "restoration": "not yet rehearsed"
+    "restoration": "Isolated-network rehearsal in progress; not yet verified"
   },
   "source": {
     "repository": "https://github.com/TXMO-dev/accord-ghana",
     "license": "MIT"
+  },
+  "design": {
+    "hero": "Interactive Three.js woven ribbons",
+    "controls": "Pointer and scroll response, pause control, reduced-motion and image fallback",
+    "loading": "Lazy-loaded independently of wallet modules"
   }
 }
