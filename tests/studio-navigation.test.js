@@ -61,3 +61,13 @@ test('handoff approach and return keep clear of the other participant',()=>{
  }
  assert.ok(Math.hypot(p.x-home.x,p.z-home.z)<.08);
 });
+
+test('station journeys advance smoothly and end at each reachable workstation',()=>{
+ const stations=[[-3,0,1],[-3,0,-2.5],[2.5,0,-2.4],[3,0,1.6]];
+ for(const role of [false,true])for(const origin of stations)for(const target of stations){
+  const position=avatarHome(origin,role),home=avatarHome(target,role),path=returnPath(position,home);
+  assert.ok(path.length);let frames=0;
+  while(path.length&&frames++<2000){const before={...position};advanceAvatar(position,path,.05);assert.ok(Math.hypot(position.x-before.x,position.z-before.z)<=.063);assert.equal(blocked(position.x,position.z),false);}
+  assert.ok(frames<2000);assert.ok(Math.hypot(position.x-home.x,position.z-home.z)<.08);
+ }
+});
