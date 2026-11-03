@@ -1,3 +1,4 @@
+import {templates} from './agreement-templates.js';
 import {validateAgreementInput} from './agreement-input.js';
 import {pendingMetadata,recoveryOutcome,recoveryEvent} from './recovery-model.js';
 import {receiptEvents,searchAgreements} from './library-model.js';
@@ -20,7 +21,7 @@ const current=()=>records.find(r=>r.id===selected);
 const say=s=>{$('studio-status').textContent=s;if(!refreshing)$('studio-create-status').textContent=s};
 function save(){try{localStorage.setItem(storage,JSON.stringify(records));return true}catch{say('Browser storage unavailable. Export your agreement file before leaving.');return false}}
 function track(r,hash,info,action){r.pending=hash;r.pendingInfo={...info,action};if(!save()){delete r.pending;delete r.pendingInfo;throw Error('Could not save the recovery reference. Nothing was submitted. Enable browser storage before retrying.')}render()}
-function controls(){for(const id of ['studio-new','studio-open','studio-import','studio-refresh'])$(id).disabled=busy||!account;$('studio-connect').disabled=busy;document.querySelectorAll('[data-start-path]').forEach(button=>button.disabled=busy);$('studio-create-button').disabled=busy;$('studio-close').disabled=busy;document.querySelectorAll('[data-studio-action]').forEach(b=>b.disabled=busy||refreshing||!!current()?.pending);$('studio-refresh').disabled=busy||refreshing||!account;$('studio-refresh').textContent=refreshing?'Checking ledger…':'Refresh';$('studio-detail').setAttribute('aria-busy',String(busy||refreshing));window.dispatchEvent(new CustomEvent('accord-workspace-lock',{detail:busy||!!current()?.pending}))}
+function controls(){$('studio-copy-wallet').hidden=!account;$('studio-copy-wallet').disabled=busy;$('studio-template').disabled=busy;for(const id of ['studio-new','studio-open','studio-import','studio-refresh'])$(id).disabled=busy||!account;$('studio-connect').disabled=busy;document.querySelectorAll('[data-start-path]').forEach(button=>button.disabled=busy);$('studio-create-button').disabled=busy;$('studio-close').disabled=busy;document.querySelectorAll('[data-studio-action]').forEach(b=>b.disabled=busy||refreshing||!!current()?.pending);$('studio-refresh').disabled=busy||refreshing||!account;$('studio-refresh').textContent=refreshing?'Checking ledger…':'Refresh';$('studio-detail').setAttribute('aria-busy',String(busy||refreshing));window.dispatchEvent(new CustomEvent('accord-workspace-lock',{detail:busy||!!current()?.pending}))}
 function list(){
  const visible=searchAgreements(records,$('studio-search').value,$('studio-filter').value);
  $('studio-count').textContent=visible.length+' / '+records.length;
@@ -81,6 +82,14 @@ async function act(method){
  }catch(error){say(error.message)}finally{busy=false;controls()}
 }
 $('studio-connect').onclick=async()=>{if(busy)return;busy=true;controls();try{await connect();$('studio-wallet').textContent=account?account+' · Testnet':'Connect Varial on Testnet to begin.';say('Wallet connected. Create or open an agreement.');chain=null;busy=false;render();await refresh()}catch(e){say(e.message)}finally{busy=false;controls()}};
+$('studio-copy-wallet').onclick=async()=>{if(!account)return;try{await navigator.clipboard.writeText(account);say('Public wallet address copied. Share this address, never your secret key.')}catch{say('Select the public wallet address above and copy it manually.')}};
+$('studio-template').onclick=async()=>{
+ if(busy)return;const template=templates[$('agreement-template').value];if(!template)return;
+ busy=true;controls();try{
+ const approved=await reviewAction({title:'A clear starting point.',eyebrow:'DRAFT EXAMPLE / NO TRANSACTION',description:'Adapt this example to the work you and your freelancer agree on.',fields:[['Project',template.title],['Acceptance conditions',template.terms]],warning:'Using this example replaces the project name and acceptance conditions in this draft. The wallet address and amount stay as entered.',confirmLabel:'Use this example'});
+ if(approved){$('studio-create').elements.namedItem('title').value=template.title;$('studio-create').elements.namedItem('terms').value=template.terms;saveDraft();$('studio-create').elements.namedItem('terms').focus();}
+ }finally{busy=false;controls();}
+};
 $('studio-new').onclick=()=>{$('studio-create-status').textContent='';loadDraft();$('studio-dialog').showModal()};$('studio-create').addEventListener('input',saveDraft);$('studio-close').onclick=()=>$('studio-dialog').close();$('studio-dialog').addEventListener('cancel',e=>{if(busy)e.preventDefault()});
 $('studio-refresh').onclick=()=>refresh();
 $('studio-create').onsubmit=async e=>{e.preventDefault();if(busy)return;const f=new FormData(e.target);try{

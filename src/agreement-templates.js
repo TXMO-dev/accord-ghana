@@ -1,0 +1,5 @@
+export const templates={
+ brand:{title:'Brand identity for a new business',terms:'Deliver one approved logo direction as SVG and PNG files. Include colour codes and a one-page usage guide. Include two rounds of revisions. The client checks that all agreed files open correctly and match the approved direction before releasing this milestone.'},
+ website:{title:'A focused landing page',terms:'Deliver one responsive landing page with the agreed sections and supplied content. Check the page on phone and desktop widths, and verify all agreed links and forms. Include one round of revisions. Share the preview and source files privately; the client reviews them against this scope before release.'},
+ content:{title:'A social content package',terms:'Deliver five social posts with captions and editable source files in the agreed formats. Use the client-approved brand assets and copy. Include one round of revisions. The client checks the post count, spelling, formats and agreed changes before releasing this milestone.'}
+};
