@@ -112,3 +112,5 @@ body{font-family:var(--accord-sans);-webkit-font-smoothing:antialiased}button,in
 .studio-experience .studio-command-menu .room-view-controls button:hover,.studio-experience .studio-command-menu .room-view-controls button:focus-visible{background:#d5e898;color:#173d30;transform:translateX(2px);outline:2px solid #d5e898;outline-offset:-2px}
 .studio-command-menu>summary:focus-visible{outline:2px solid #d5e898;outline-offset:3px}
 @media(prefers-reduced-motion:reduce){.studio-command-menu *{transition:none!important;transform:none!important}}
+
+.activity-inbox-list{padding-left:22px;max-height:45dvh;overflow:auto}.activity-inbox-list li{padding:12px 0;border-bottom:1px solid #8a9b8440}.activity-inbox-list p{margin:6px 0}.activity-inbox-list small{opacity:.7}.studio-offline{position:absolute;bottom:16px;left:16px;right:16px;z-index:15;max-width:600px}.studio-offline[hidden]{display:none}

@@ -1,3 +1,4 @@
+import {discoverRememberedWallet} from './session-restore.js';
 import {checkWalletSelection} from './wallet-check.js';
 import {submitTrackedTransaction} from './transaction-submit.js';
 import {connectTestnet,requireWalletReviewClear} from './wallet-policy.js';
@@ -8,11 +9,21 @@ import {rpc, Networks, TransactionBuilder, Contract, Address, nativeToScVal, scV
 export const NETWORK = Networks.TESTNET;
 export const server = new rpc.Server('https://soroban-testnet.stellar.org');
 export let account = '';
+let connectionVersion=0;
+const rememberedWalletKey='accord-remembered-testnet-wallet';
+export async function restoreWallet(){
+ if(LOCAL_TESTING||account)return account;
+ const version=connectionVersion;
+ try{requireWalletReviewClear();const expected=localStorage.getItem(rememberedWalletKey);const restored=await discoverRememberedWallet(extensionWallet,expected,NETWORK);if(version!==connectionVersion||account)return account;if(restored){account=restored;window.dispatchEvent(new CustomEvent('accord-wallet',{detail:{wallet:account,restored:true}}));}return account;}catch{return '';}
+}
+
 export async function connect() {
+  connectionVersion++;
   account = '';
   window.dispatchEvent(new CustomEvent('accord-wallet',{detail:{wallet:account}}));
   account = await connectTestnet({isConnected,getNetworkDetails,requestAccess},NETWORK,LOCAL_TESTING?false:undefined);
   window.dispatchEvent(new CustomEvent('accord-wallet',{detail:{wallet:account}}));
+  if(!LOCAL_TESTING)try{localStorage.setItem(rememberedWalletKey,account);}catch{}
   return account;
 }
 export {validateContract,digest,bytes,address,amount} from './values.js';

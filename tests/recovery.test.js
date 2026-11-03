@@ -81,3 +81,14 @@ test('unbounded transactions and invalid recovery ledger never broadcast',async(
  const f=fixture();f.transaction.timeBounds.maxTime='0';await assert.rejects(f.run(),/Nothing was submitted/);assert.deepEqual(f.calls,[]);
  const bad=fixture({getLatestLedger:async()=>({sequence:0})});await assert.rejects(bad.run(),/Nothing was submitted/);assert.deepEqual(bad.calls,[]);
 });
+import {discoverRememberedWallet} from '../src/session-restore.js';
+test('refresh restores only a previously authorized matching wallet on the expected network',async()=>{
+ const api={isConnected:async()=>({isConnected:true}),isAllowed:async()=>({isAllowed:true}),getAddress:async()=>({address:'saved-wallet'}),getNetworkDetails:async()=>({networkPassphrase:'TESTNET'}),requestAccess:()=>{throw Error('Must not prompt during refresh');}};
+ assert.equal(await discoverRememberedWallet(api,'saved-wallet','TESTNET'),'saved-wallet');
+ assert.equal(await discoverRememberedWallet(api,'another-wallet','TESTNET'),'');
+ assert.equal(await discoverRememberedWallet(api,'saved-wallet','MAINNET'),'');
+ assert.equal(await discoverRememberedWallet({...api,isAllowed:async()=>({isAllowed:false})},'saved-wallet','TESTNET'),'');
+ assert.equal(await discoverRememberedWallet({...api,isConnected:async()=>({isConnected:false})},'saved-wallet','TESTNET'),'');
+ assert.equal(await discoverRememberedWallet({...api,getAddress:async()=>({error:'locked'})},'saved-wallet','TESTNET'),'');
+ assert.equal(await discoverRememberedWallet({},'','TESTNET'),'');
+});

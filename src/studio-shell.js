@@ -4,13 +4,13 @@ const workspace=document.getElementById('workspace');
 const panel=document.createElement('section');panel.hidden=true;panel.tabIndex=-1;panel.id='studio-workspace-panel';panel.setAttribute('aria-label','Your agreements and wallet');
 const bar=document.createElement('div');bar.className='workspace-panel-bar';
 const heading=document.createElement('h2');heading.textContent='Your work, in accord.';
-const close=document.createElement('button');close.type='button';close.textContent='Back to studio ×';close.onclick=()=>{if(locked)return;document.getElementById('studio-dialog').close();panel.hidden=true;room.classList.remove('workspace-active');document.querySelector('.room-agreements').focus();};bar.append(heading,document.getElementById("studio-connect"),close);
+const close=document.createElement('button');close.type='button';close.textContent='Back to studio ×';close.onclick=()=>{if(locked)return;document.getElementById('studio-dialog').close();panel.hidden=true;try{sessionStorage.removeItem('accord-workspace-open');}catch{}room.classList.remove('workspace-active');document.querySelector('.room-agreements').focus();};bar.append(heading,document.getElementById("studio-connect"),close);
 document.body.append(room);panel.append(bar,workspace,document.getElementById("studio-dialog"));room.querySelector(".room-layout").append(panel);
 document.documentElement.classList.add('studio-experience');
 let locked=false;
 addEventListener('accord-workspace-lock',event=>{locked=!!event.detail;close.disabled=locked;});
 panel.addEventListener('cancel',event=>{if(locked)event.preventDefault();});
-export function openWorkspace(event){room.querySelector('.studio-entrance')?.remove();panel.hidden=false;room.classList.add('workspace-active');heading.textContent=typeof event?.detail?.title==='string'?event.detail.title:'Your work, in accord.';panel.focus({preventScroll:true});}
+export function openWorkspace(event){try{sessionStorage.setItem('accord-workspace-open','1');}catch{}room.querySelector('.studio-entrance')?.remove();panel.hidden=false;room.classList.add('workspace-active');heading.textContent=typeof event?.detail?.title==='string'?event.detail.title:'Your work, in accord.';panel.focus({preventScroll:true});}
 addEventListener('accord-open-workspace',openWorkspace);
 const nav=document.querySelector('header nav');
 if(nav){nav.querySelectorAll('a').forEach(link=>{if(link.getAttribute('href')==='#workspace'){link.textContent='My agreements';link.onclick=e=>{e.preventDefault();openWorkspace();};}if(link.getAttribute('href')==='#story'){link.textContent='Kobi’s guide';link.href='#studio-room';link.onclick=e=>{e.preventDefault();document.querySelector('.room-tutorial').open=true;document.querySelector('.room-tutorial summary').focus();};}});}
@@ -61,3 +61,5 @@ commandList.setAttribute('aria-label','Studio actions');
 commandList.addEventListener('click',event=>{if(!event.target.closest('button'))return;commandMenu.open=false;if(commandList.contains(document.activeElement))commandSummary.focus({preventScroll:true});});
 document.addEventListener('pointerdown',event=>{if(commandMenu.open&&!commandMenu.contains(event.target))commandMenu.open=false;});
 commandMenu.addEventListener('keydown',event=>{if(event.key==='Escape'){event.preventDefault();commandMenu.open=false;commandSummary.focus();}});
+
+try{if(sessionStorage.getItem('accord-workspace-open')==='1')openWorkspace();}catch{}
