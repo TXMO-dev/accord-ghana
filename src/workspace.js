@@ -115,3 +115,27 @@ window.addEventListener('accord-wallet',()=>{$('studio-wallet').textContent=acco
 setInterval(()=>{if(!document.hidden&&!busy&&account&&current()&&!$('studio-proof')&&!$('studio-verify-text')&&!document.querySelector('.settlement-panel'))refresh(true)},15000);
 
 addEventListener('accord-room-refresh',()=>{if(!document.hidden&&!busy&&!document.activeElement?.matches('input,textarea,select')&&!document.querySelector('.settlement-panel')&&!document.querySelector('dialog[open]'))refresh(true);});
+
+// Observe the ledger without replacing active forms or trusting room broadcasts as payment proof.
+const chainNotice=document.createElement('div');chainNotice.className='notice';chainNotice.hidden=true;
+const chainNoticeText=document.createElement('span'),chainNoticeButton=document.createElement('button');
+chainNoticeText.setAttribute('role','status');chainNoticeButton.type='button';chainNoticeButton.textContent='Refresh verified agreement';
+chainNotice.append(chainNoticeText,chainNoticeButton);$('studio-detail').before(chainNotice);
+chainNoticeButton.onclick=()=>{if(busy)return;chainNotice.hidden=true;refresh();};
+let observingChain=false;
+async function observeChain(){
+ if(observingChain||refreshing||busy||document.hidden||!account||!chain||!current())return;
+ const record=current(),wallet=account,previous=stateName(chain);observingChain=true;
+ try{const latest=await readAgreement(config.contractId,record.id);
+  if(current()!==record||account!==wallet||busy||refreshing)return;
+  if(!equal(await digest(record.terms),latest.terms))return;
+  if(current()!==record||account!==wallet||busy||refreshing)return;
+  if(stateName(latest)!==previous){chainNotice.hidden=false;chainNoticeText.textContent='Stellar has a newer agreement state: '+(stateName(latest)==='Cancelled'?'Settled':stateName(latest))+'. Your current form has been kept. ';}
+ }catch{/* Keep current input and existing verification status during connection loss. */}
+ finally{observingChain=false;}
+}
+addEventListener('accord-agreement-state',()=>{chainNotice.hidden=true;});
+addEventListener('accord-room-refresh',observeChain);
+const chainWatch=setInterval(observeChain,15000);
+addEventListener('visibilitychange',()=>{if(!document.hidden)observeChain();});
+addEventListener('pagehide',()=>clearInterval(chainWatch),{once:true});
