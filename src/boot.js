@@ -26,3 +26,11 @@ const workspaceObserver=new IntersectionObserver(async entries=>{
 workspaceObserver.observe(document.querySelector('#workspace'));
 
 if(import.meta.env.DEV&&LOCAL_TESTING)import('./local-test-ui.js').catch(error=>{console.error(error);document.querySelector('#studio-status').textContent='Local test setup failed. Reload to retry.'});
+
+function revealDestination(){
+ const destination=document.getElementById(location.hash.slice(1));
+ if(!destination)return;
+ for(let node=destination;node;node=node.parentElement)if(node.tagName==='DETAILS')node.open=true;
+}
+addEventListener('hashchange',revealDestination);
+revealDestination();

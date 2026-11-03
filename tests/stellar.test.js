@@ -80,3 +80,13 @@ test('handoff summary preserves exact amounts and excludes untrusted receipt URL
 test('unverified summary does not invent a state or balance',()=>{const text=agreementSummary({record:{id:'AC-test',title:'Draft',terms:'Terms',events:[]},agreement:null,contract:'contract'});assert.match(text,/not verified/);assert.ok(!text.includes('Amount:'));assert.ok(!text.includes('State:'))});
 
 test('accepted appeal does not imply wallet propagation was verified',async()=>{const policy=await import('../src/wallet-policy.js');assert.equal(policy.WALLET_REVIEW_HOLD,false);assert.equal(policy.DOMAIN_REVIEW_PENDING,false);assert.equal(policy.WALLET_PROPAGATION_VERIFIED,false);assert.doesNotThrow(()=>policy.requireWalletReviewClear());});
+
+import {validateAgreementInput} from '../src/agreement-input.js';
+test('agreement creation rejects missing, malformed and same-party wallets before encoding',()=>{
+ const buyer=Keypair.random().publicKey(),seller=Keypair.random().publicKey();
+ const valid={buyer,seller,asset:Asset.native().contractId(NETWORK),amount:'1',terms:'Deliver one logo concept'};
+ assert.deepEqual(validateAgreementInput(valid),valid);
+ for(const [change,field,message] of [[{buyer:''},'buyer',/Connect/],[{seller:''},'seller',/Enter the freelancer/],[{seller:'invalid'},'seller',/valid freelancer/],[{seller:buyer},'seller',/different wallets/],[{asset:'bad'},'asset',/test asset/],[{amount:'0'},'amount',/Amount/],[{terms:' '},'terms',/Describe/]]){
+  assert.throws(()=>validateAgreementInput({...valid,...change}),e=>e.field===field&&message.test(e.message));
+ }
+});

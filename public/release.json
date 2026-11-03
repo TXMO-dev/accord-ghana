@@ -1,11 +1,11 @@
 {
-  "version": "0.4.3",
+  "version": "0.4.4",
   "contractId": "CASWGE2BE6QLPR7L4BDKH5RH6ITAIWKBQ2MSLYE4GNP4HDTXMU2CTCIV",
   "wasmSha256": "255f22766fcfb1c9c3f02478d4a5c25d9e6250217f75fce491a66ee78c10f58e",
   "network": "TESTNET",
   "checks": {
     "onchain": 14,
-    "local": 49,
+    "local": 50,
     "workspaceLifecycle": "PASS: create, fund, submit, release using disposable SDK-signed wallets",
     "settlement": "PASS: three Testnet splits, exact balances, missing-authorization and altered-amount rejection, replay rejection",
     "rustHost": 14
@@ -47,7 +47,8 @@
   "design": {
     "hero": "Interactive Three.js woven ribbons",
     "controls": "Pointer and scroll response, pause control, reduced-motion and image fallback",
-    "loading": "Lazy-loaded independently of wallet modules"
+    "loading": "Lazy-loaded independently of wallet modules",
+    "journey": "Customer-first workspace with optional advanced tools and reviewer evidence"
   },
-  "connection": "Request Varial address access first; establish session only after Testnet verification. Signing still checks account and network."
+  "connection": "Founder confirmed Varial connection on Testnet; extension transaction signing remains pending. Signing checks account and network."
 }

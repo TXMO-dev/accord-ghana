@@ -1,4 +1,5 @@
-import {connect,invoke,readAgreement,digest,bytes,address,amount} from './stellar.js';
+import {validateAgreementInput} from './agreement-input.js';
+import {connect,account,invoke,readAgreement,digest,bytes,address,amount} from './stellar.js';
 const $=id=>document.getElementById(id);
 let busy=false;
 const status=text=>$('chain-status').textContent=text;
@@ -19,14 +20,13 @@ $('chain-action').onsubmit=async e=>{
    if(action==='read'){const a=await readAgreement(contract,id);$('chain-result').textContent=JSON.stringify(a,(_,v)=>typeof v==='bigint'?v.toString():v,2);status('Read from Stellar Testnet.');return}
    let args=[key];
    if(action==='create'){
-     const terms=String(f.get('terms')).trim();if(!terms)throw Error('Write the acceptance conditions first.');
-     const wallet=$('wallet-address').textContent;
-     args=[key,address(wallet),address(String(f.get('seller')).trim()),address(String(f.get('asset')).trim()),amount(String(f.get('amount'))),bytes(await digest(terms))];
+     const input=validateAgreementInput({buyer:account,seller:f.get('seller'),asset:f.get('asset'),amount:f.get('amount'),terms:f.get('terms')});
+     args=[key,address(input.buyer),address(input.seller),address(input.asset),amount(input.amount),bytes(await digest(input.terms))];
    }
    if(action==='submit'){const proof=String(f.get('evidence')).trim();if(!proof)throw Error('Enter a delivery reference to hash.');args.push(bytes(await digest(proof)))}
    if(action==='dispute')args.push(address($('wallet-address').textContent));
    const result=await invoke(contract,action,args,status);
    const a=document.createElement('a');a.href='https://stellar.expert/explorer/testnet/tx/'+result.hash;a.target='_blank';a.rel='noopener';a.textContent='Confirmed on testnet ↗';
    $('chain-result').replaceChildren(a);status('Confirmed. Refresh the agreement to inspect its current state.');
- }catch(e){status(e.message)}finally{busy=false;buttons.forEach(b=>b.disabled=false)}
+ }catch(error){status(error.message);if(error.field){const field=e.target.elements.namedItem(error.field);if(field){const details=field.closest('details');if(details)details.open=true;field.focus();}}}finally{busy=false;buttons.forEach(b=>b.disabled=false)}
 };
