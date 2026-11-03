@@ -10,9 +10,9 @@ export function mountStudioRoom(){
  const host=document.getElementById('room-view'),root=document.getElementById('studio-room');
  const stations=[
   {title:'The agreement desk',copy:'Agree on what done means. The client creates a milestone with a freelancer, clear delivery conditions and an amount.',action:'Create an agreement',target:'studio-new',pos:[-3,0,1]},
-  {title:'The milestone vault',copy:'The client funds the selected agreement before work starts. Funding is confirmed in your agreement record, never by this illustration.',action:'View funding & agreements',target:'studio-detail',pos:[-3,0,-2.5]},
-  {title:'The delivery studio',copy:'The freelancer shares a delivery reference. Switch to the freelancer’s wallet to submit work on their agreement.',action:'Open your agreements',target:'studio-detail',pos:[2.5,0,-2.4]},
-  {title:'The review gallery',copy:'The client reviews the delivered work and approves release. If there is a dispute, both parties must agree on a settlement.',action:'Review your agreements',target:'studio-detail',pos:[3,0,1.6]}
+  {title:'The milestone vault',copy:'The client funds the selected agreement before work starts. Funding is confirmed in your agreement record, never by this illustration.',action:'Review funding',target:'studio-detail',pos:[-3,0,-2.5]},
+  {title:'The delivery studio',copy:'The freelancer shares a delivery reference. Switch to the freelancer’s wallet to submit work on their agreement.',action:'Submit delivery',target:'studio-detail',pos:[2.5,0,-2.4]},
+  {title:'The review gallery',copy:'The client reviews the delivered work and approves release. If there is a dispute, both parties must agree on a settlement.',action:'Review delivery',target:'studio-detail',pos:[3,0,1.6]}
  ];
  let selected=0,sound=true,audio,renderer,frame=0,visible=true,dead=false,rendering=false,sceneFocus=null;
  const visited=new Set(); let questLabel; function select(i){dispatchEvent(new CustomEvent('accord-station-selected',{detail:i}));say(i);chime();sceneFocus?.(i);visited.add(i);if(questLabel)questLabel.textContent=visited.size===4?"Studio explorer · 4/4 complete":"Explore with Kobi · "+visited.size+"/4 stations";if(visited.size===4){happyUntil=performance.now()+3500;showBubble("You explored all four stations! Now choose the agreement desk to start your own project. This badge celebrates learning, not a payment.");}}
@@ -22,7 +22,9 @@ export function mountStudioRoom(){
  document.getElementById('room-sound').textContent='Sound on';document.getElementById('room-sound').setAttribute('aria-pressed','true');
  root.addEventListener('pointerdown',()=>{if(sound){try{audio??=new AudioContext();audio.resume();}catch{}}},{passive:true});
  document.getElementById('room-sound').onclick=e=>{sound=!sound;e.currentTarget.textContent=sound?'Sound on':'Sound off';e.currentTarget.setAttribute('aria-pressed',String(sound));if(sound)chime();};
- document.getElementById('room-action').onclick=async e=>{e.preventDefault();window.dispatchEvent(new CustomEvent('accord-open-workspace',{detail:{title:stations[selected].title}}));const s=stations[selected];if(s.target==='studio-new'){try{await import('./workspace.js');const b=document.getElementById('studio-new');if(b.disabled){document.getElementById('studio-connect').scrollIntoView({block:'center',behavior:paused()?'instant':'smooth'});document.getElementById('studio-status').textContent='Connect your Testnet wallet, then choose Create an agreement.';document.getElementById('studio-connect').focus({preventScroll:true});}else b.click();}catch{document.getElementById('room-copy').textContent='The workspace could not load. Reload the page to try again.';}}else{const target=document.getElementById(s.target);target.scrollIntoView({block:'start',behavior:paused()?'instant':'smooth'});target.setAttribute('tabindex','-1');target.focus({preventScroll:true});}};
+ async function useStation(i){dispatchEvent(new CustomEvent('accord-open-workspace',{detail:{title:stations[i].title}}));try{await import('./workspace.js');dispatchEvent(new CustomEvent('accord-use-workstation',{detail:i}));}catch{showBubble('The workspace could not load. Reload to try again.');}}
+ document.getElementById('room-action').onclick=e=>{e.preventDefault();useStation(selected);};
+ addEventListener('accord-workstation-guidance',e=>showBubble(e.detail));
  root.querySelectorAll('[data-room]').forEach(b=>b.onclick=()=>select(+b.dataset.room));
  say(0);
  try{renderer=new THREE.WebGLRenderer({antialias:true,alpha:false,powerPreference:'low-power'});}catch{document.getElementById('room-loading').textContent='Your studio is ready in the four labelled workstations. 3D is unavailable on this device.';return;}
@@ -78,7 +80,7 @@ export function mountStudioRoom(){
  const notify=text=>feedback.textContent=text;
  const liveRecord=document.createElement('div');liveRecord.className='room-live-record';liveRecord.hidden=true;liveRecord.setAttribute('role','status');host.append(liveRecord);addEventListener('accord-agreement-state',e=>{liveRecord.hidden=!e.detail.title;liveRecord.textContent=e.detail.title+' · '+e.detail.state+(e.detail.next?' — '+e.detail.next:'');});
  function register(object,label,action){object.userData.interaction={label,action};interactables.push(object);}
- groups.forEach((g,i)=>register(g,stations[i].title,()=>select(i)));
+ groups.forEach((g,i)=>register(g,stations[i].title,()=>{select(i);useStation(i);}));
   const terminal=new THREE.Group();terminal.position.set(-.9,0,3.6);scene.add(terminal);box(.65,.9,.5,0,.45,0,'green',terminal);box(.85,.56,.12,0,1.15,0,'gold',terminal);box(.72,.42,.04,0,1.15,.08,'screen',terminal);
  function connectAtTerminal(){happyUntil=performance.now()+2400;showBubble('This is your wallet terminal. Connect your own Testnet wallet to identify your role. Your wallet will ask before signing any transaction.');dispatchEvent(new CustomEvent('accord-open-workspace',{detail:{title:'Your wallet terminal'}}));document.getElementById('studio-connect').click();}
  register(terminal,'Wallet terminal — connect your Testnet wallet',connectAtTerminal);
@@ -87,6 +89,9 @@ export function mountStudioRoom(){
  function roleLabel(person,text){const c=document.createElement('canvas');c.width=256;c.height=64;const ctx=c.getContext('2d');ctx.fillStyle='#102e25';ctx.fillRect(0,0,256,64);ctx.fillStyle='#f4f1df';ctx.font='500 26px Arial';ctx.textAlign='center';ctx.fillText(text,128,42);const map=new THREE.CanvasTexture(c);map.colorSpace=THREE.SRGBColorSpace;const label=new THREE.Sprite(new THREE.SpriteMaterial({map,depthTest:true}));label.position.set(0,2,0);label.scale.set(1.6,.4,1);person.add(label);return map;}
  addEventListener('accord-milestone-confirmed',e=>{happyUntil=performance.now()+3500;showBubble(e.detail.state==='Released'?'Milestone complete! Stellar has confirmed the release. Keep the receipt for your records.':'Your next milestone is confirmed on Stellar. Great progress!');wake();});
  const roleMaps=[roleLabel(clientGuide,'CLIENT GUIDE'),roleLabel(freelancerGuide,'FREELANCER GUIDE')];
+ const progressLights=groups.map(g=>{const material=new THREE.MeshStandardMaterial({color:'#52685b',emissive:'#52685b',emissiveIntensity:.1,roughness:.35});const lamp=new THREE.Mesh(new THREE.TorusGeometry(.16,.035,8,28),material);lamp.position.set(0,2.35,0);g.add(lamp);return lamp;});
+ addEventListener('accord-agreement-state',e=>{const d=e.detail;const complete=d.verified&&!d.pending?({Draft:1,Funded:2,Submitted:3,Released:4,Disputed:2,Settled:2}[d.state]||0):0;progressLights.forEach((lamp,i)=>{const colour=i<complete?'#badd80':'#52685b';lamp.material.color.set(colour);lamp.material.emissive.set(colour);lamp.material.emissiveIntensity=i<complete?.6:.1;});wake();});
+
  const collaboration=new THREE.Group();collaboration.position.set(-4.4,0,3.7);scene.add(collaboration);box(1.5,.12,.9,0,.85,0,'wood',collaboration);box(.3,.8,.4,0,.4,0,'green',collaboration);box(.65,.025,.45,0,.93,0,'paper',collaboration);roleMaps.push(roleLabel(collaboration,'PROJECT ROOM'));
  function openProjectRoom(){dispatchEvent(new Event('accord-open-workspace'));dispatchEvent(new Event('accord-open-project-room'));showBubble('Share updates and review settlement approvals in your project room. Payments still require your wallet signature.');}
  register(collaboration,'Project room: comments and settlement',openProjectRoom);

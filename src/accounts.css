@@ -6,3 +6,7 @@
 .motion-control{left:auto;right:20px;bottom:20px}
 
 #account-status{margin:12px 0;padding:12px 14px;background:#e5e9df;border-left:3px solid #ad825c;color:#173d31;min-height:0;overflow-wrap:anywhere}.wallet-help{margin:0 0 20px;font-size:12px;line-height:1.6}.wallet-help summary{cursor:pointer;text-decoration:underline;text-underline-offset:3px}.wallet-help p{margin:10px 0}#account-connect:disabled{cursor:progress;opacity:.7}
+
+.account-art{position:relative;isolation:isolate;overflow:hidden}.account-art.has-three-art{background:#071f18}.account-three-art{position:absolute;inset:0;z-index:-1}.account-three-art canvas{display:block;width:100%;height:100%}.account-art.has-three-art:after{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(0deg,#071f18dd,transparent 60%,#071f1877);pointer-events:none}.account-art.has-three-art>p{text-shadow:0 2px 20px #071f18}.three-loading{width:76px;height:76px;pointer-events:none}.three-loading[hidden]{display:none}.three-loading canvas{display:block;width:100%;height:100%}
+
+.workspace-panel-bar .three-loading{width:48px;height:48px;flex-shrink:0}

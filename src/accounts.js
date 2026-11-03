@@ -22,12 +22,12 @@ window.addEventListener('accord-wallet',async event=>{
   document.querySelector('#account-register').disabled=!!profile;
  }catch{/* The wallet remains connected even if its profile cannot be read. */}
 });
-export function openAccount(mode){if(!dialog.open)dialog.showModal();note.textContent=LOCAL_TESTING?'Local disposable Testnet wallet selected. Keys stay in this tab.':WALLET_REVIEW_HOLD?REVIEW_MESSAGE:'Connect your wallet to continue.';document.querySelector('#account-title').textContent=account?'Your wallet. Your profile.':mode==='register'?'Make room for your next chapter.':'Welcome back to your work.'}
+export function openAccount(mode){import('./three-feedback.js').then(m=>m.mountAccountVisuals()).catch(()=>{});if(!dialog.open)dialog.showModal();note.textContent=LOCAL_TESTING?'Local disposable Testnet wallet selected. Keys stay in this tab.':WALLET_REVIEW_HOLD?REVIEW_MESSAGE:'Connect your wallet to continue.';document.querySelector('#account-title').textContent=account?'Your wallet. Your profile.':mode==='register'?'Make room for your next chapter.':'Welcome back to your work.'}
 document.querySelector('#close-account').onclick=()=>dialog.close();
 document.querySelector('#account-connect').onclick=async()=>{
  const connectButton=document.querySelector('#account-connect');
  if(connectButton.disabled)return;
- connectButton.disabled=true;connectButton.textContent='Connecting…';account='';
+ dialog.setAttribute('aria-busy','true');connectButton.disabled=true;connectButton.textContent='Connecting…';account='';
  document.querySelector('#account-register').disabled=true;
  note.textContent='Opening Varial… If access was already approved, the wallet may reconnect without a popup.';
  try{
@@ -40,10 +40,10 @@ document.querySelector('#account-connect').onclick=async()=>{
   if(p){document.querySelector('#account-session').textContent=p.name+' · Testnet';note.textContent='Profile found. Your wallet must approve every agreement action.';document.querySelector('#account-register').disabled=true}
   else{note.textContent='Wallet connected. Register a public display name below.';document.querySelector('#account-register').disabled=false}
  }catch(e){note.textContent=e.message||'Wallet connection failed. Open Varial, unlock it and try again.'}
- finally{connectButton.disabled=false;connectButton.textContent='Connect Varial ↗'}
+ finally{dialog.setAttribute('aria-busy','false');connectButton.disabled=false;connectButton.textContent='Connect Varial ↗'}
 };
 document.querySelector('#account-form').onsubmit=async e=>{
- e.preventDefault();const button=document.querySelector('#account-register');button.disabled=true;
+ e.preventDefault();dialog.setAttribute('aria-busy','true');const button=document.querySelector('#account-register');button.disabled=true;
  try{
   requireWalletReviewClear();
   if(!account)throw Error('Connect your wallet first.');
@@ -55,5 +55,5 @@ document.querySelector('#account-form').onsubmit=async e=>{
   await invoke(config.contractId,'register',[address(account),nativeToScVal(name,{type:'string'})],s=>note.textContent=s);
   document.querySelector('#account-session').textContent=name+' · Testnet';
   note.textContent='Registration confirmed on Stellar Testnet. Your signing keys remain in Varial.';
- }catch(e){note.textContent=e.message;button.disabled=false}
+ }catch(e){note.textContent=e.message;button.disabled=false}finally{dialog.setAttribute('aria-busy','false')}
 };

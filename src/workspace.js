@@ -1,3 +1,4 @@
+import {workstationIntent} from './workstation-flow.js';
 import {mountSharedRoom} from './shared-room.js';
 import {mountLiveProgress} from './live-progress.js';
 import {templates} from './agreement-templates.js';
@@ -139,3 +140,15 @@ addEventListener('accord-room-refresh',observeChain);
 const chainWatch=setInterval(observeChain,15000);
 addEventListener('visibilitychange',()=>{if(!document.hidden)observeChain();});
 addEventListener('pagehide',()=>clearInterval(chainWatch),{once:true});
+
+addEventListener('accord-use-workstation',e=>{
+ if(busy||refreshing||document.querySelector('dialog[open]')){say('Finish the current review or ledger check before opening another workstation.');return;}
+ const role=chain?(chain.buyer===account?'client':chain.seller===account?'freelancer':'observer'):'';
+ const intent=workstationIntent(e.detail,{wallet:account,state:chain?stateName(chain):'',role,pending:!!current()?.pending,verified:!!chain});
+ say(intent.message);dispatchEvent(new CustomEvent('accord-workstation-guidance',{detail:intent.message}));
+ if(intent.action){const button=$('studio-detail').querySelector('[data-studio-action="'+intent.action+'"]');if(button&&!button.disabled)button.click();return;}
+ const target=$(intent.target);if(!target)return;
+ if(intent.target==='studio-new'&&!target.disabled){target.click();return;}
+ if(target.closest('details'))target.closest('details').open=true;
+ target.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});if(!target.matches('button,input,textarea,select,a[href],[tabindex]'))target.setAttribute('tabindex','-1');target.focus({preventScroll:true});
+});

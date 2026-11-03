@@ -15,3 +15,16 @@ test('Kobi reaches every stop and returns without crossing furniture',()=>{
  }
 });
 test('Kobi refuses a destination inside furniture',()=>assert.deepEqual(findStudioPath({x:0,z:3},{x:-3,z:1}),[]));
+
+import {workstationIntent} from '../src/workstation-flow.js';
+test('workstations route by verified role and state, and never bypass pending transactions',()=>{
+ const client={wallet:'client',role:'client',state:'Draft',verified:true};
+ assert.equal(workstationIntent(1,client).action,'fund');
+ assert.equal(workstationIntent(1,{...client,role:'freelancer'}).action,undefined);
+ assert.equal(workstationIntent(1,{...client,pending:true}).action,undefined);
+ assert.equal(workstationIntent(2,{...client,role:'freelancer',state:'Funded'}).target,'studio-proof');
+ assert.equal(workstationIntent(3,{...client,state:'Submitted'}).target,'studio-verify-text');
+ assert.equal(workstationIntent(3,{...client,state:'Disputed'}).target,'settlement-panel');
+ assert.equal(workstationIntent(0,{}).target,'studio-connect');
+ assert.equal(workstationIntent(1,{...client,verified:false}).target,'studio-refresh');
+});
