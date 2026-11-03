@@ -49,3 +49,5 @@ Verification update — 2026-11-03
 - User-reported message test: client and freelancer messages arrived in both directions without refresh; both sessions showed live connection.
 - Room-switch draft clearing checked with a DOM harness.
 - Still outstanding: manual network-loss/reconnect, session-expiry and cross-device layout checks. This is not a security audit or Mainnet signoff.
+
+Signoff clarification: User subsequently confirmed both sessions used tabs in the same Edge profile. Varial account switching caused a wallet mismatch. Independent two-wallet signoff must be repeated in separate profiles/devices; earlier user-reported messaging results do not establish independent wallet isolation.

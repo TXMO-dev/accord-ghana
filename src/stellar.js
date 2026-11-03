@@ -1,3 +1,4 @@
+import {checkWalletSelection} from './wallet-check.js';
 import {submitTrackedTransaction} from './transaction-submit.js';
 import {connectTestnet,requireWalletReviewClear} from './wallet-policy.js';
 import * as extensionWallet from '@stellar/freighter-api';
@@ -34,9 +35,8 @@ export async function invoke(contractId, method, args, onStatus=()=>{}, onSubmit
 }
 export async function assertWallet(expected){
   requireWalletReviewClear();
-  if(!expected||account!==expected)throw Error('Wallet changed. Reconnect and review again.');
   const current=await getAddress(),network=await getNetworkDetails();
-  if(current.error||current.address!==expected||network.error||network.networkPassphrase!==NETWORK)throw Error('Select the expected wallet on Stellar Testnet, reconnect and review again.');
+  checkWalletSelection(expected,account,current,network,NETWORK);
 }
 export async function signAuthorization(entry,expiry,expected){
   await assertWallet(expected);
