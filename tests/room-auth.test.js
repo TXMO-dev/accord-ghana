@@ -21,3 +21,15 @@ test('wallet preflight distinguishes a shared-profile account change from wrong 
  assert.throws(()=>checkWalletSelection(expected,expected,{address:expected},{networkPassphrase:'mainnet'},'testnet'),/not on Stellar Testnet/);
  assert.throws(()=>checkWalletSelection(expected,expected,{error:{}},network,'testnet'),/Unlock Varial/);
 });
+
+import {verifiedActivity} from '../server/room-activity.js';
+import {Account as ActivityAccount,Contract as ActivityContract,TransactionBuilder as ActivityBuilder,Networks as ActivityNetworks,Address as ActivityAddress,nativeToScVal as activityVal} from '@stellar/stellar-sdk';
+import {sha as activitySha} from '../server/room-auth.js';
+test('participant notifications require a successful exact transaction and agreement',()=>{
+ const contract=ActivityAddress.contract(Buffer.alloc(32,7)).toString(),id=input.id,wallet=key.publicKey();
+ const tx=new ActivityBuilder(new ActivityAccount(wallet,'1'),{fee:'100',networkPassphrase:ActivityNetworks.TESTNET}).addOperation(new ActivityContract(contract).call('fund',activityVal(Buffer.from(activitySha(id),'hex'),{type:'bytes'}))).setTimeout(60).build();
+ const receipt={status:'SUCCESS',envelopeXdr:tx.toEnvelope()},context={hash:tx.hash().toString('hex'),wallet,contract,id};
+ assert.equal(verifiedActivity(receipt,context).action,'fund');
+ for(const change of [{wallet:other.publicKey()},{hash:'0'.repeat(64)},{id:id+'different'},{contract:ActivityAddress.contract(Buffer.alloc(32,8)).toString()}])assert.throws(()=>verifiedActivity(receipt,{...context,...change}));
+ assert.throws(()=>verifiedActivity({...receipt,status:'FAILED'},context));
+});

@@ -1,3 +1,4 @@
+import {verifiedActivity} from './room-activity.js';
 import {sha,validateRoom} from './room-auth.js';
 import {validateSettlement} from '../src/settlement-model.js';
 const bucket='accord-settlement-approvals';
@@ -15,7 +16,15 @@ export async function roomSettlement(body,{config,membership,stellar,env=process
  const sessions=await rows('/rest/v1/accord_room_sessions?select=wallet,room,expires_at&token=eq.'+sha(body.session)+'&limit=1');
  const parties=(await rows('/rest/v1/accord_rooms?select=client,freelancer&id=eq.'+room+'&limit=1'))[0];
  const wallet=authorizeSettlementSession(sessions[0],room,parties,body.action);validateRoom(wallet,body.id);
- const path='/storage/v1/object/'+bucket+'/'+room+'.json';
+ if(body.action==='activity'){
+  if(!/^[a-f0-9]{64}$/.test(body.hash||''))throw Error('Invalid transaction receipt.');
+  await membership(wallet,body.id);
+  const activity=verifiedActivity(await stellar.getTransaction(body.hash),{hash:body.hash,wallet,contract:config.contractId,id:body.id});
+  const sent=await call('/realtime/v1/api/broadcast',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{topic:'accord:'+room,event:'participant_action',payload:activity,private:true}]})});
+  if(!sent.ok)throw Error('Activity notification could not be sent. The transaction remains confirmed.');
+  return {notified:true};
+ }
+ const path='/storage/v1/object/' +bucket+'/'+room+'.json';
  if(body.action==='settlement-share'){
   const agreement=await membership(wallet,body.id);
   if(agreement.seller!==wallet)throw Error('The connected wallet is not the freelancer.');

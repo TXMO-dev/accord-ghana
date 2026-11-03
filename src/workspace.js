@@ -49,7 +49,7 @@ function render(){list();const r=current();window.dispatchEvent(new CustomEvent(
  if($('studio-verify'))$('studio-verify').onclick=async()=>{$('studio-verify-result').textContent=equal(await digest($('studio-verify-text').value.trim()),chain.evidence)?'Match: this is the submitted reference.':'Does not match the submitted reference.'};
  if($('studio-proof')){$('studio-proof').value=proofDrafts.get(r.id)||'';$('studio-proof').oninput=e=>proofDrafts.set(r.id,e.target.value)}
  if($('studio-verify-text')){$('studio-verify-text').value=verificationDrafts.get(r.id)||'';$('studio-verify-text').oninput=e=>verificationDrafts.set(r.id,e.target.value)}
- if(chain)mountSettlement($('studio-detail'),{config,record:r,agreement:chain,context:()=>({record:current(),busy}),lock:value=>{busy=value;list();controls()},status:say,pending:(hash,info)=>track(r,hash,info,'settle'),confirmed:hash=>{r.events.push({action:'settle',hash,confirmedAt:new Date().toISOString()});delete r.pending;delete r.pendingInfo;save()},refresh:()=>refresh(true)});
+ if(chain)mountSettlement($('studio-detail'),{config,record:r,agreement:chain,context:()=>({record:current(),busy}),lock:value=>{busy=value;list();controls()},status:say,pending:(hash,info)=>track(r,hash,info,'settle'),confirmed:hash=>{dispatchEvent(new CustomEvent('accord-transaction-confirmed',{detail:{id:r.id,hash}}));r.events.push({action:'settle',hash,confirmedAt:new Date().toISOString()});delete r.pending;delete r.pendingInfo;save()},refresh:()=>refresh(true)});
  controls();
 }
 const equal=(a,b)=>a.length===b.length&&a.every((v,i)=>v===b[i]);
@@ -62,7 +62,7 @@ async function refresh(quiet=false){if(refreshing){refreshAgain=true;return}if(b
  }catch(e){if(current()===r&&walletAtStart===account&&!busy){chain=null;render();say('Could not verify agreement: '+e.message+' Use Refresh to retry.')}}finally{refreshing=false;controls();if(refreshAgain){refreshAgain=false;queueMicrotask(()=>refresh(quiet))}}}
 async function run(r,method,args){busy=true;say('Preparing '+method+' transaction…');render();try{
  const result=await invoke(config.contractId,method,args,say,(hash,info)=>track(r,hash,info,method));
- r.events.push({action:method,hash:result.hash,confirmedAt:new Date().toISOString()});delete r.pending;delete r.pendingInfo;save();say('Confirmed on Stellar Testnet.');return true;
+ r.events.push({action:method,hash:result.hash,confirmedAt:new Date().toISOString()});delete r.pending;delete r.pendingInfo;save();dispatchEvent(new CustomEvent('accord-transaction-confirmed',{detail:{id:r.id,hash:result.hash}}));say('Confirmed on Stellar Testnet.');return true;
  }catch(e){say(e.message+(r.pending?' Refresh to check the submitted transaction before retrying.':' You can retry when ready.'));return false}finally{busy=false;render()}}
 async function act(method){
  if(busy||refreshing||!chain||current()?.pending||!availableActions(chain,account).includes(method))return;
