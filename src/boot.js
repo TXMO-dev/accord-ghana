@@ -40,7 +40,7 @@ revealDestination();
 
 const roomObserver=new IntersectionObserver(async entries=>{
  if(!entries.some(e=>e.isIntersecting))return;roomObserver.disconnect();
- try{const room=await import('./studio-room.js');room.mountStudioRoom();}
- catch{document.getElementById('room-loading').textContent='Continue using the labelled workspace controls below.';}
+ try{const room=await import('./studio-room.js');room.mountStudioRoom();window.dispatchEvent(new Event('accord-studio-ready'));}
+ catch{document.getElementById('room-loading').textContent='Continue using the labelled workspace controls below.';window.dispatchEvent(new Event('accord-studio-ready'));}
 },{rootMargin:'300px'});
 roomObserver.observe(document.getElementById('studio-room'));

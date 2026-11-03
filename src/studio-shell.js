@@ -27,3 +27,16 @@ if(header)new ResizeObserver(()=>document.documentElement.style.setProperty('--s
 
 const approach=document.querySelector('.atlas-links a[href="#story"]');
 if(approach){approach.href='#studio-room';approach.querySelector('strong').textContent='The studio';}
+
+const entrance=document.createElement('section');entrance.className='studio-entrance';entrance.setAttribute('aria-label','Welcome to Accord');
+entrance.innerHTML='<div class="entrance-copy"><span class="eyebrow">DESIGNED IN GHANA · BUILT FOR SHARED WORK</span><h1>Great work.<br>A clear beginning.</h1><p>A shared studio for clients and freelancers. Agree on the work, fund a milestone, deliver and review.</p><p class="entrance-status" role="status">Preparing your studio…</p><div class="entrance-actions"><button type="button" id="enter-studio" disabled>Enter the studio ↗</button><button type="button" class="secondary" id="entrance-work">Go to my agreements</button></div><span class="entrance-footnote">Stellar Testnet · Test assets only · Sound on, mute anytime</span></div>';
+room.append(entrance);
+function dismissEntrance(){entrance.classList.add('entrance-leaving');setTimeout(()=>entrance.remove(),matchMedia('(prefers-reduced-motion: reduce)').matches?0:650);try{sessionStorage.setItem('accord-entered','1');}catch{}}
+let returning=false;try{returning=sessionStorage.getItem('accord-entered')==='1';}catch{}
+if(returning||location.hash==='#workspace')entrance.remove();
+addEventListener('accord-studio-ready',()=>{const button=document.getElementById('enter-studio');if(button){button.disabled=false;entrance.querySelector('.entrance-status').textContent='Your studio is ready.';}});
+entrance.querySelector('#enter-studio').onclick=()=>{dismissEntrance();dispatchEvent(new Event('accord-enter-studio'));};
+entrance.querySelector('#entrance-work').onclick=()=>{dismissEntrance();openWorkspace();};
+const motionOff=()=>matchMedia('(prefers-reduced-motion: reduce)').matches||document.documentElement.classList.contains('still');
+const status=document.getElementById('studio-status');
+if(status)new MutationObserver(()=>{if(!motionOff()&&status.textContent.trim())status.animate([{opacity:.4,transform:'translateY(5px)'},{opacity:1,transform:'translateY(0)'}],{duration:240,easing:'ease-out'});}).observe(status,{childList:true,characterData:true,subtree:true});
