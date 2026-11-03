@@ -26,8 +26,18 @@ export function nextStep(a, wallet) {
  }
 }
 export function milestoneProgress(a) {
- const state=stateName(a), index=['Draft','Funded','Submitted','Released'].indexOf(state);
+ const state=stateName(a);
+ if(['Disputed','Cancelled'].includes(state))return [
+  {label:'Agreed',complete:true,current:false},
+  {label:'Funded',complete:true,current:false},
+  {label:a.evidence?'Delivery recorded':'Delivery not recorded',complete:!!a.evidence,current:false},
+  {label:state==='Cancelled'?'Settled':'In dispute',complete:state==='Cancelled',current:true},
+ ];
+ const index=['Draft','Funded','Submitted','Released'].indexOf(state);
  return ['Agreed','Funded','Delivered','Released'].map((label,i)=>({label,complete:index>=i,current:index===i}));
+}
+export function actionWarning(method) {
+ return {fund:'Funding locks the agreed test XLM in this milestone. It does not pay the freelancer yet.',submit:'Only the hash is recorded. Share the original delivery reference privately with your client.',release:'Release cannot be undone. Verify the delivered work before signing.',dispute:'This freezes the funds. It does not request delivery or issue a refund. Both parties must authorize settlement to close the dispute.'}[method]||'';
 }
 export function cleanDraft(value) {
  if(!value||typeof value!=='object')return {};

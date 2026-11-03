@@ -60,12 +60,12 @@ test('disposable wallets are distinct, replaceable and refuse mainnet or wrong-a
 
 import {transactionHashHex} from '../src/values.js';
 test('browser Uint8Array transaction hashes use hexadecimal, not comma-separated decimals',()=>{assert.equal(transactionHashHex(new Uint8Array([0,15,16,255])),'000f10ff');assert.match(transactionHashHex(new Uint8Array(32)),/^[a-f0-9]{64}$/)});
-import {nextStep,milestoneProgress,cleanDraft} from '../src/workspace-model.js';
+import {nextStep,milestoneProgress,cleanDraft,actionWarning} from '../src/workspace-model.js';
 test('next steps distinguish signing parties, waiting parties, and observers',()=>{
  const a={buyer:'buyer',seller:'seller',state:['Draft']};assert.match(nextStep(a,'buyer'),/fund/);assert.match(nextStep(a,'seller'),/Waiting/);
  a.state=['Submitted'];assert.match(nextStep(a,'buyer'),/verify/);assert.match(nextStep(a,'seller'),/Waiting/);
  for(const state of ['Draft','Funded','Submitted','Released','Disputed','Cancelled']){a.state=[state];assert.match(nextStep(a,'other'),/not a party/)}
- a.state=['Disputed'];assert.match(nextStep(a,'buyer'),/frozen/);assert.equal(milestoneProgress(a).some(x=>x.complete),false);
+ a.state=['Disputed'];assert.match(nextStep(a,'buyer'),/frozen/);assert.equal(milestoneProgress(a).filter(x=>x.complete).length,2);
  a.state=['Released'];assert.equal(milestoneProgress(a).filter(x=>x.complete).length,4);assert.equal(milestoneProgress(a).filter(x=>x.current).length,1);
 });
 test('draft restoration only accepts bounded text fields',()=>{
@@ -89,4 +89,15 @@ test('agreement creation rejects missing, malformed and same-party wallets befor
  for(const [change,field,message] of [[{buyer:''},'buyer',/Connect/],[{seller:''},'seller',/Enter the freelancer/],[{seller:'invalid'},'seller',/valid freelancer/],[{seller:buyer},'seller',/different wallets/],[{asset:'bad'},'asset',/test asset/],[{amount:'0'},'amount',/Amount/],[{terms:' '},'terms',/Describe/]]){
   assert.throws(()=>validateAgreementInput({...valid,...change}),e=>e.field===field&&message.test(e.message));
  }
+});
+
+test('disputes retain confirmed progress without claiming unsubmitted delivery or release',()=>{
+ for(const state of ['Disputed','Cancelled']){
+  const steps=milestoneProgress({state:[state],evidence:null});assert.ok(steps[0].complete&&steps[1].complete);assert.equal(steps[2].complete,false);assert.equal(steps[3].label,state==='Disputed'?'In dispute':'Settled');assert.equal(steps[3].complete,state==='Cancelled');assert.ok(!steps.some(x=>x.label==='Released'));
+  assert.equal(milestoneProgress({state:[state],evidence:new Uint8Array(32)})[2].complete,true);
+ }
+});
+test('fund and dispute reviews explain their distinct consequences',()=>{
+ assert.match(actionWarning('fund'),/locks/);assert.ok(!actionWarning('fund').includes('dispute'));
+ assert.match(actionWarning('dispute'),/does not request delivery or issue a refund/);
 });

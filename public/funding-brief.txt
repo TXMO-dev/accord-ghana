@@ -1,50 +1,61 @@
-ACCORD / CHAPTER DISCUSSION DRAFT — 3 NOVEMBER 2026
-Founder: Timothy Asigbey. Solo senior software engineer, Ghana.
-Stage: working Testnet MVP. No customer validation, paying users, revenue, pilot commitments or grant award claimed.
-Readiness: ready for a technical demo and chapter-fit discussion. Not yet a submission-ready Instaward request: founder confirms no current chapter engagement. Not yet ready for SCF Build or real-money launch.
+ACCORD / SCF INTEREST & READINESS BRIEF
+Updated 3 November 2026. Founder: Timothy Asigbey, Ghana. Solo software engineer.
 
-PRODUCT AND PROBLEM
-Accord is a milestone escrow workspace for Ghanaian software/design freelancers and small agencies working with international clients. They agree acceptance conditions, fund a milestone, submit a delivery reference and release payment after approval. Delayed payments and unclear acceptance criteria are hypotheses to validate, not measured findings.
+STATUS
+Working Stellar Testnet MVP, ready for technical demonstration and an SCF interest/routing discussion. Not yet a complete Build submission: customer validation, differentiation, eligibility/invitation and a future-only costed proposal remain open. No revenue, paying users, pilot commitments, audit, award or Mainnet readiness claimed.
 
-STELLAR ARCHITECTURE
-The browser uses the Stellar SDK and Varial signing API. A Rust/Soroban contract enforces client/freelancer roles and holds native test XLM. Acceptance terms and delivery references are hashed; plaintext stays in browser-local records and privately shared files. No private backend, hosted key custody or mobile-money payout exists. Testnet contract: CASWGE2BE6QLPR7L4BDKH5RH6ITAIWKBQ2MSLYE4GNP4HDTXMU2CTCIV. Recorded WASM SHA256: 255f22766fcfb1c9c3f02478d4a5c25d9e6250217f75fce491a66ee78c10f58e. Contract SDK: 23.5.3.
+PRODUCT
+Accord helps Ghanaian freelancers and international clients record acceptance conditions, fund a milestone, submit a delivery reference and approve release. The core hypothesis is that clear terms and funded milestones reduce uncertainty in direct client relationships. This has not yet been validated through interviews or real customer usage.
 
-COMPLETED ENGINEERING
-Create, fund, submit, delivery-hash verification, release, dispute freeze, agreement-file exchange, summaries, search and transaction reviews are implemented. The new disputed-milestone settlement flow has the freelancer sign an exact split authorization, export it privately, and the client validate, review, sign and submit. Approval binds the contract, agreement ID, amount, Testnet network and ledger expiry. The client pays transaction fees. No private keys are exchanged. Approvals last 120 ledgers; deletion is not revocation. Supported freelancer signing uses a standard single-key G-address wallet; multisig/custom accounts are not claimed.
+ARCHITECTURE
+Browser workspace -> Varial signature -> Stellar RPC -> Rust/Soroban escrow contract.
+The client creates and funds; the freelancer submits; the client releases. Either party may dispute funded/submitted work. Disputes freeze the milestone; both parties must authorize an exact settlement split. No arbitrator or unilateral timeout refund exists. The contract cannot judge work quality.
+Terms and delivery references stay in browser-local storage or privately exported files. Hashes are onchain; addresses, amounts and state are public. There is no hosted document backup, key custody, fiat payout or mobile-money integration.
+Testnet contract: CASWGE2BE6QLPR7L4BDKH5RH6ITAIWKBQ2MSLYE4GNP4HDTXMU2CTCIV
+WASM SHA256: 255f22766fcfb1c9c3f02478d4a5c25d9e6250217f75fce491a66ee78c10f58e
+Source: https://github.com/TXMO-dev/accord-ghana (MIT)
 
-EVIDENCE
-The prior lifecycle and 14 integration checks remain documented; expected rejections are distinguished from successful transactions. New settlement-evidence.json records partial, zero and full freelancer payouts, exact seller/escrow balance changes and fee-adjusted client refunds, closed states and replay rejection. Missing authorization and changed amounts are rejected by enforcement simulation. Automated local tests cover split bounds, altered metadata, wrong networks/signers/methods, nested calls and expiry. These are synthetic engineering tests, not customer research or an independent audit. Varial extension end-to-end compatibility remains a separate manual gate; SDK/local-wallet evidence is not relabeled as extension evidence.
+VERIFICATION
+52 JavaScript tests pass. Prior Rust host evidence records 14 passing tests. SDK-signed disposable accounts completed create/fund/submit/release and settlement cases with balance, authorization and replay checks.
+Actual Varial-session receipts independently confirmed on Testnet:
+register: 92dfee126ab64c0dd6cbec6b531c86311e3365ba71041828a16e1afcf9259ebd
+create: 3f6d97d262325deb288d9fa6a1b8298cc8fae735435e9fb9e4b0c4e542b14a55
+fund: a26596f61b5806d05f209bb2c55f53a7953ce995a4489515a6fe421d32fb954d
+dispute: 4dc41d0ab48e1c1983fd76ee6c0e3bd7253aaf5e2cd01000b628a7384ed2f926
+Founder reports settlement works; final settlement receipt has not been verified. Normal Varial submit/release and interrupted-broadcast signoff remain pending. Do not relabel SDK results as extension signoff.
+Controlled local restoration passed. A separate public Testnet TTL-only fixture is funded with one test XLM and waits for expiry ledger 5659715. Public restoration is NOT yet passed. This minimum network lifetime cannot be shortened by the app.
 
-FUTURE SPRINT REQUEST — $1,200 EQUIVALENT IN XLM, SUBJECT TO CHAPTER GUIDANCE
-1. Days 1-7: $600 / 12 hours. Varial authorization/transaction compatibility matrix and resulting accessibility/mobile fixes, with reproducible signoff evidence.
-2. Days 8-30: $600 / 12 hours. Controlled Testnet TTL extension/restoration rehearsal, with before/after state, balances and receipts.
-Basis: 24 future engineering hours at $50/hour. This is a proposal, not an approved rate or award. Completed settlement implementation, SDK balance checks and local recovery code/tests are excluded. Remaining recovery field validation is founder-funded. No marketing, giveaways, retrospective work or independent-audit fee is included. Chapter guidance may change the scope or tier.
+DIFFERENTIATION AND REUSE DECISION
+Trustless Work already provides milestone escrow infrastructure on Stellar. Accord does not claim to invent escrow. Proposed differentiation: Ghana-focused onboarding, explicit acceptance terms, private document exchange and a comprehensible two-party workspace. This is not yet demonstrated customer advantage.
+Before expanding the contract, compare existing escrow infrastructure against Accord's two-party consent, privacy, operational cost and recovery requirements. Record a build-versus-integrate decision and discuss track fit with SCF. No integration partnership is claimed.
 
-CUSTOMER VALIDATION AND DIFFERENTIATION
-The intended distinction is clear acceptance conditions, verifiable delivery and Ghana-focused onboarding for direct client relationships. This is a positioning hypothesis. Compare it against marketplace escrow, invoice/deposit workflows and existing Stellar escrow products. Founder-time research targets: ten discovery interviews, five usability sessions and three non-binding pilot expressions of interest. No results are invented and no cash-funded incentives are assumed.
+CUSTOMER VALIDATION PLAN (FOUNDER-FUNDED; NO RESULTS YET)
+Interview 10 freelancers/clients about their last actual cross-border project: how terms were agreed, payment delays, dispute outcomes, existing tools and the cost of switching. Avoid leading questions.
+Run 5 observed Testnet usability sessions. Measure unassisted task completion, incorrect dispute actions, signing errors, time to find the next step and confidence in the split review. Obtain consent for quotations and anonymize notes.
+Seek 3 non-binding pilot expressions of interest only if participants identify a real need. These are research targets, not traction or programme-mandated thresholds.
 
-FOUNDER AND OPEN SOURCE
-Timothy's portfolio describes senior engineering, payment and distributed-systems work. Those products' metrics are not Accord traction. Full source is included in this evidence bundle. The source and smart contract are public under the MIT license at https://github.com/TXMO-dev/accord-ghana. A versioned deployment must still be checked independently. Portfolio: https://timothy-asigbey-portfolio.vercel.app/crypto/
+FUTURE DEVELOPMENT OUTLINE — NOT A SUBMITTED BUDGET
+The earlier $1,200 wallet/restoration discussion is stale as implementation progresses. Do not request reimbursement for completed work. Re-estimate remaining work after customer interviews and the reuse decision.
+Tranche 1 candidate: implement validated workflow improvements and a selected escrow integration/architecture, with acceptance tests and a reproducible demo. Planning/research must be completed before this tranche.
+Tranche 2 candidate: pilot-ready Testnet deployment, monitoring tied to the threat model, operational recovery and wallet compatibility evidence. Define exact measurable completion criteria and price only future work.
+Tranche 3 candidate: reviewed Mainnet deployment and a verifiable limited launch after asset, operating, security and jurisdiction requirements are resolved. No live launch is promised before those gates. If restrictions require another structure, obtain SCF guidance.
+Each final deliverable needs an engineering-hour estimate, rate, cost, owner, completion date and evidence. The founder must confirm capacity and costs. Marketing, past work, legal/entity fees and independent audit fees must not be included as ordinary Build development expenses.
 
-SECURITY AND DELIVERY LIMITS
-The founder supplied Blockaid's reply confirming the domain flag was incorrect and corrected, with up to 24 hours propagation. A Varial connection popup was observed without the malicious-site banner on 3 November 2026; extension signing remains unverified. Do not bypass a remaining warning. The contract is unaudited; disputes can still deadlock without agreement. Testnet can reset. RPC availability, storage lifetime, recovery and document privacy remain limitations. Mainnet deployment is deferred and is not promised in this sprint. No real funds or fiat payout are supported.
+SCF ROUTE
+Use the official interest form to request track assessment. Open Track is a possible discussion route only if experience and meaningful differentiation can be substantiated. Integration Track requires an actual qualifying integration and its criteria; it is not claimed here. Instawards remain contingent on chapter engagement and programme guidance; no active Ghana chapter assignment is verified.
+The official awards page currently lists SCF #46 submission deadline November 9, 2026 and says eligible interested teams will be invited. Verify the deadline/timezone with SCF. The restoration fixture is expected to expire after that date at typical ledger cadence; disclose its pending state rather than rushing a false pass.
+A full Build application must be self-contained: include essential architecture, validation, evidence, budget and disclosure in the form itself. External links are supporting evidence, not substitutes for required application content.
 
-PROGRAM ROUTE
-Current next step: initial SCF interest/routing review. Instawards remain a possible stage fit only if staff confirms chapter routing, active engagement, eligibility and chapter-supported scope. Founder confirms no current engagement or chapter lead. Official rules do not provide a standard open Instaward application. SCF Build needs validated need/traction, self-contained technical evidence and a suitable three-tranche proposal; this document is not that proposal.
+AI DISCLOSURE
+Codex/AI assisted code, tests, design, research synthesis and application drafting. Timothy is the solo founder and is responsible for reviewing and maintaining submitted artifacts. AI-generated test/code output is not an independent security audit.
 
-NEXT FOUNDER ACTIONS
-No active Ghana chapter is verified. Use GHANA-ROUTING.txt to ask staff about community routing and SCF interest review; use SCF-INTEREST-ANSWERS.txt for the inspected form fields. Attend sessions, seek product feedback and document genuine contributions. Verify eligibility and any required identity/KYC steps only through official channels. Record a short demo and conduct the planned interviews. Confirm a scope with the chapter before requesting an award.
+STILL NEEDED FROM FOUNDER
+Actual customer feedback and permission to use quotes; competitor/reuse decision; confirmed programme route and eligibility; a short narrated demo; confirmed future scope, capacity and budget. Do not invent usage or partnerships to fill these gaps.
+No SCF application, community message, identity/KYC form or grant request has been submitted by the assistant.
 
-No application, community message or KYC submission has been sent.
-Sources checked 3 November 2026:
-https://stellar.gitbook.io/scf-handbook/scf-awards/instawards/official-rules
+OFFICIAL SOURCES CHECKED 3 NOVEMBER 2026
+https://communityfund.stellar.org/awards
 https://stellar.gitbook.io/scf-handbook/scf-awards/build-award/submission-criteria
-https://stellar.gitbook.io/ambassador-program
-
-LOCAL UPDATE: see RECOVERY-UPDATE.txt in the evidence bundle for the tested v0.4.1 recovery changes. The v0.4.1 recovery update is included in this release.
-
-
-
-LOCAL ENGINEERING UPDATE: 49 JS tests and 14 Rust host tests pass. Read-only TTL monitoring is implemented and has a live snapshot. These completed tasks are excluded from the future request. See ENGINEERING-UPDATE.txt.
-
-RESTORATION UPDATE: The isolated local-network short-TTL rehearsal passed. Its completed implementation and test work are excluded from the proposed budget. Any restoration request now covers only future public Testnet operational validation, subject to re-estimation and programme guidance. See restoration-evidence.json.
+https://stellar.gitbook.io/scf-handbook/scf-awards/build-award/open-track
+https://stellar.gitbook.io/scf-handbook/scf-awards/build-award/budget-and-deliverable-guidelines
+Comparison source: https://www.trustlesswork.com/how-it-works

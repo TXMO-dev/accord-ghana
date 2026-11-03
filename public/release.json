@@ -1,11 +1,11 @@
 {
-  "version": "0.4.4",
+  "version": "0.4.5",
   "contractId": "CASWGE2BE6QLPR7L4BDKH5RH6ITAIWKBQ2MSLYE4GNP4HDTXMU2CTCIV",
   "wasmSha256": "255f22766fcfb1c9c3f02478d4a5c25d9e6250217f75fce491a66ee78c10f58e",
   "network": "TESTNET",
   "checks": {
     "onchain": 14,
-    "local": 50,
+    "local": 52,
     "workspaceLifecycle": "PASS: create, fund, submit, release using disposable SDK-signed wallets",
     "settlement": "PASS: three Testnet splits, exact balances, missing-authorization and altered-amount rejection, replay rejection",
     "rustHost": 14
@@ -38,7 +38,8 @@
   "monitoring": {
     "status": "read-only snapshot verified",
     "report": "ttl-evidence.json",
-    "restoration": "PASS: isolated local protocol 30 short-TTL fixture, expired agreement restored unchanged, balances preserved, TTL extended and release completed; public Testnet rehearsal pending"
+    "restoration": "PASS: isolated local protocol 30 short-TTL fixture, expired agreement restored unchanged, balances preserved, TTL extended and release completed; public Testnet rehearsal pending",
+    "publicRestoration": "Fixture funded; waiting for expiry ledger 5659715. Not yet PASS."
   },
   "source": {
     "repository": "https://github.com/TXMO-dev/accord-ghana",
@@ -50,5 +51,6 @@
     "loading": "Lazy-loaded independently of wallet modules",
     "journey": "Customer-first workspace with optional advanced tools and reviewer evidence"
   },
-  "connection": "Founder confirmed Varial connection on Testnet; extension transaction signing remains pending. Signing checks account and network."
+  "connection": "Founder confirmed Varial connection on Testnet; extension transaction signing remains pending. Signing checks account and network.",
+  "walletSignoff": "Registration/create/fund/dispute receipts verified. Founder reports settlement works; final receipt, normal submit/release and recovery signoff pending."
 }

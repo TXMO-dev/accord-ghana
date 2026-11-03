@@ -1,0 +1,52 @@
+{
+  "result": "WAITING_FOR_EXPIRY",
+  "network": "TESTNET",
+  "contractId": "CDJLZ6K5TYEMKICUPXCMOIUATBA34RMSCFKXTUBL5PLR5A4NRLOVGZ5Y",
+  "fixtureWasmSha256": "d7348d6efd852ef74579d1caf1f50883d4b2f0f174da6e729b7c27b7ab900d5e",
+  "expiryLedger": 5659715,
+  "observedLedger": 5538759,
+  "minimumPersistentTtl": 120960,
+  "buyer": "GB6EA665OSTVGEIMNNBPNYF2LDRPHN4RCPBVZJGER2HTSEQBYV2QSUYR",
+  "seller": "GA3VDQPZTN4EW7CAGDWXIZBGMJBC35LAATBDLIGMNYLRJB2JWCDBMLZ5",
+  "receipts": [
+    {
+      "label": "upload short-TTL fixture",
+      "hash": "549513dcd2fbdc172197fb8ec9a2c89c464a09eb0deeef51035661a77ff64415",
+      "ledger": 5538748
+    },
+    {
+      "label": "extend native asset instance",
+      "hash": "dd4d261dbb3ea3e861645c371b067dd4369c2dc3f0145dd7ebc3681ea5e4f2fd",
+      "ledger": 5538750
+    },
+    {
+      "label": "deploy isolated fixture",
+      "hash": "d02966c6188155c81594d79c30fff014298ded67a7df48a019ba5c99f0a42c78",
+      "ledger": 5538752
+    },
+    {
+      "label": "extend code and instance",
+      "hash": "4674535896825eed75986ac39b31225dab2188e4f37edf351149668a4fa822ed",
+      "ledger": 5538754
+    },
+    {
+      "label": "create",
+      "hash": "42186e8ff2e1b1eb00b7df98b38c4b09ff19acd70d4696f89706c76829d300db",
+      "ledger": 5538756
+    },
+    {
+      "label": "fund",
+      "hash": "82c91181c6f3216df15daa336e898767e17435d3747f9e8eb5a26e4ea559b7c7",
+      "ledger": 5538758
+    }
+  ],
+  "limitations": [
+    "Isolated TTL-only fixture; not the production demo contract",
+    "Not a restoration pass until expiry and restoration are verified",
+    "Disposable Testnet assets only"
+  ],
+  "fixtureSourceCommit": "d47d0a2bc18cde4e2c5b39a8c65b9079daf2f9ec",
+  "fixtureArtifactCommit": "14d5713100e153cdae5903ac7b21b921cc85f17b",
+  "observedAt": "2026-11-03",
+  "resumeCommand": "node scripts/verify-public-restoration.mjs resume"
+}

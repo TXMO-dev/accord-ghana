@@ -9,7 +9,7 @@ const offers=new Map();
 const drafts=new Map();
 export function mountSettlement(container,{config,record,agreement,context,lock,status,pending,confirmed,refresh}){
  if(stateName(agreement)!=='Disputed'||![agreement.buyer,agreement.seller].includes(account))return;
- const seller=account===agreement.seller,section=document.createElement('section');section.className='settlement-panel';
+ const seller=account===agreement.seller,section=document.createElement('section');section.className='settlement-panel';section.id='settlement-panel';section.tabIndex=-1;
  section.innerHTML='<span class="eyebrow">A SHARED WAY FORWARD / TESTNET</span><h3>Find your middle ground.</h3><p>One exact split. Two independent approvals. The freelancer authorizes first; the client signs and submits.</p><ol class="settlement-steps"><li>Agree on the split</li><li>Freelancer exports approval</li><li>Client reviews & settles</li></ol><p class="muted">Approvals expire after 120 ledgers (roughly ten minutes, network-dependent). Export only when both parties are ready. Deleting a file does not revoke its signature.</p>';
  const body=document.createElement('div');body.className='settlement-body';section.append(body);container.append(section);
  const walletAtMount=account;
