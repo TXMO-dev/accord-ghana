@@ -1,0 +1,23 @@
+name: Verify Accord
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - run: node scripts/check-production-isolation.mjs
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup toolchain install stable --profile minimal
+      - run: cargo +stable test --lib --locked --manifest-path contracts/Cargo.toml

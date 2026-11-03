@@ -1,0 +1,48 @@
+ACCORD / CHAPTER DISCUSSION DRAFT — 3 NOVEMBER 2026
+Founder: Timothy Asigbey. Solo senior software engineer, Ghana.
+Stage: working Testnet MVP. No customer validation, paying users, revenue, pilot commitments or grant award claimed.
+Readiness: ready for a technical demo and chapter-fit discussion. Not yet a submission-ready Instaward request: founder confirms no current chapter engagement. Not yet ready for SCF Build or real-money launch.
+
+PRODUCT AND PROBLEM
+Accord is a milestone escrow workspace for Ghanaian software/design freelancers and small agencies working with international clients. They agree acceptance conditions, fund a milestone, submit a delivery reference and release payment after approval. Delayed payments and unclear acceptance criteria are hypotheses to validate, not measured findings.
+
+STELLAR ARCHITECTURE
+The browser uses the Stellar SDK and Varial signing API. A Rust/Soroban contract enforces client/freelancer roles and holds native test XLM. Acceptance terms and delivery references are hashed; plaintext stays in browser-local records and privately shared files. No private backend, hosted key custody or mobile-money payout exists. Testnet contract: CASWGE2BE6QLPR7L4BDKH5RH6ITAIWKBQ2MSLYE4GNP4HDTXMU2CTCIV. Recorded WASM SHA256: 255f22766fcfb1c9c3f02478d4a5c25d9e6250217f75fce491a66ee78c10f58e. Contract SDK: 23.5.3.
+
+COMPLETED ENGINEERING
+Create, fund, submit, delivery-hash verification, release, dispute freeze, agreement-file exchange, summaries, search and transaction reviews are implemented. The new disputed-milestone settlement flow has the freelancer sign an exact split authorization, export it privately, and the client validate, review, sign and submit. Approval binds the contract, agreement ID, amount, Testnet network and ledger expiry. The client pays transaction fees. No private keys are exchanged. Approvals last 120 ledgers; deletion is not revocation. Supported freelancer signing uses a standard single-key G-address wallet; multisig/custom accounts are not claimed.
+
+EVIDENCE
+The prior lifecycle and 14 integration checks remain documented; expected rejections are distinguished from successful transactions. New settlement-evidence.json records partial, zero and full freelancer payouts, exact seller/escrow balance changes and fee-adjusted client refunds, closed states and replay rejection. Missing authorization and changed amounts are rejected by enforcement simulation. Automated local tests cover split bounds, altered metadata, wrong networks/signers/methods, nested calls and expiry. These are synthetic engineering tests, not customer research or an independent audit. Varial extension end-to-end compatibility remains a separate manual gate; SDK/local-wallet evidence is not relabeled as extension evidence.
+
+FUTURE SPRINT REQUEST — $1,200 EQUIVALENT IN XLM, SUBJECT TO CHAPTER GUIDANCE
+1. Days 1-7: $600 / 12 hours. Varial authorization/transaction compatibility matrix and resulting accessibility/mobile fixes, with reproducible signoff evidence.
+2. Days 8-30: $600 / 12 hours. Controlled Testnet TTL extension/restoration rehearsal, with before/after state, balances and receipts.
+Basis: 24 future engineering hours at $50/hour. This is a proposal, not an approved rate or award. Completed settlement implementation, SDK balance checks and local recovery code/tests are excluded. Remaining recovery field validation is founder-funded. No marketing, giveaways, retrospective work or independent-audit fee is included. Chapter guidance may change the scope or tier.
+
+CUSTOMER VALIDATION AND DIFFERENTIATION
+The intended distinction is clear acceptance conditions, verifiable delivery and Ghana-focused onboarding for direct client relationships. This is a positioning hypothesis. Compare it against marketplace escrow, invoice/deposit workflows and existing Stellar escrow products. Founder-time research targets: ten discovery interviews, five usability sessions and three non-binding pilot expressions of interest. No results are invented and no cash-funded incentives are assumed.
+
+FOUNDER AND OPEN SOURCE
+Timothy's portfolio describes senior engineering, payment and distributed-systems work. Those products' metrics are not Accord traction. Full source is included in this evidence bundle. A founder-owned public repository, license confirmation and versioned release remain to be finalized. Portfolio: https://timothy-asigbey-portfolio.vercel.app/crypto/
+
+SECURITY AND DELIVERY LIMITS
+The founder supplied Blockaid's reply confirming the domain flag was incorrect and corrected, with up to 24 hours propagation. Wallet-side propagation is not independently confirmed. Do not bypass a remaining warning. The contract is unaudited; disputes can still deadlock without agreement. Testnet can reset. RPC availability, storage lifetime, recovery and document privacy remain limitations. Mainnet deployment is deferred and is not promised in this sprint. No real funds or fiat payout are supported.
+
+PROGRAM ROUTE
+Instawards are the suggested stage fit, conditional on chapter routing, active engagement, eligibility and chapter-supported scope. Founder confirms no current engagement or chapter lead. Official rules do not provide a standard open Instaward application. SCF Build needs validated need/traction, self-contained technical evidence and a suitable three-tranche proposal; this document is not that proposal.
+
+NEXT FOUNDER ACTIONS
+Use chapter-introduction.txt to ask the official community which chapter serves Ghana. Attend sessions, seek product feedback and document genuine contributions. Verify eligibility and any required identity/KYC steps only through official channels. Record a short demo and conduct the planned interviews. Confirm a scope with the chapter before requesting an award.
+
+No application, community message or KYC submission has been sent.
+Sources checked 3 November 2026:
+https://stellar.gitbook.io/scf-handbook/scf-awards/instawards/official-rules
+https://stellar.gitbook.io/scf-handbook/scf-awards/build-award/submission-criteria
+https://stellar.gitbook.io/ambassador-program
+
+LOCAL UPDATE: see RECOVERY-UPDATE.txt in the evidence bundle for the tested v0.4.1 recovery changes. Public deployment remains v0.4.0.
+
+
+
+LOCAL ENGINEERING UPDATE: 49 JS tests and 14 Rust host tests pass. Read-only TTL monitoring is implemented and has a live snapshot. These completed tasks are excluded from the future request. See ENGINEERING-UPDATE.txt.

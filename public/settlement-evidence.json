@@ -1,0 +1,79 @@
+{
+  "runAt": "2026-11-03T12:07:46.771Z",
+  "network": "TESTNET",
+  "contractId": "CASWGE2BE6QLPR7L4BDKH5RH6ITAIWKBQ2MSLYE4GNP4HDTXMU2CTCIV",
+  "result": "PASS",
+  "checks": [
+    "Missing freelancer approval rejected by enforcement simulation",
+    "Changed amount rejected by enforcement simulation",
+    "PASS seller 4000000 / refund 6000001: exact balances, fee-adjusted refund, closed state, replay rejection",
+    "PASS seller 0 / refund 10000001: exact balances, fee-adjusted refund, closed state, replay rejection",
+    "PASS seller 10000001 / refund 0: exact balances, fee-adjusted refund, closed state, replay rejection"
+  ],
+  "receipts": [
+    {
+      "action": "create",
+      "agreementId": "AC-355c5274-9700-4663-9160-785d8d54f9dd",
+      "hash": "9c895867caa6b6c257f735fe57d58dbf333ffab086717d49f9c34d79ba2631b2"
+    },
+    {
+      "action": "fund",
+      "agreementId": "AC-355c5274-9700-4663-9160-785d8d54f9dd",
+      "hash": "4f15275b3c029b224e8faa37393293dd05e54d41c58d7e04238672e14a070f66"
+    },
+    {
+      "action": "dispute",
+      "agreementId": "AC-355c5274-9700-4663-9160-785d8d54f9dd",
+      "hash": "f2a6c00d4332432aaebef01835c27fe9a7b55c6b59ab1990478ee5987b0141e0"
+    },
+    {
+      "action": "settle",
+      "agreementId": "AC-355c5274-9700-4663-9160-785d8d54f9dd",
+      "hash": "6438af43532546f18334e75c4a3d44f3e088455c0ef238ec484e43d55e0c777d"
+    },
+    {
+      "action": "create",
+      "agreementId": "AC-cbbe4bf2-ce36-4180-98d5-7fca54d6d7fd",
+      "hash": "e92caf512d18e244c676b75e89b4281bd65bf167ab30fa892f79e6edccf4bb12"
+    },
+    {
+      "action": "fund",
+      "agreementId": "AC-cbbe4bf2-ce36-4180-98d5-7fca54d6d7fd",
+      "hash": "ff679478cadf2c7ea95319b2e22228db2f13dccbb2fda3dd88c561eaec7eaf51"
+    },
+    {
+      "action": "dispute",
+      "agreementId": "AC-cbbe4bf2-ce36-4180-98d5-7fca54d6d7fd",
+      "hash": "3cb3dbc3e881b826f2a5c845074fd1cbae018e875cb7d90c31e5b375772a41d2"
+    },
+    {
+      "action": "settle",
+      "agreementId": "AC-cbbe4bf2-ce36-4180-98d5-7fca54d6d7fd",
+      "hash": "fcf495c5c28ee823d390dc0e659a627404e3f1be4837fa16267162691b74db07"
+    },
+    {
+      "action": "create",
+      "agreementId": "AC-1f80b62c-5679-4db4-a0d8-a32a38ffcee0",
+      "hash": "d63e2bb62f90e509a8d095c7c333b1036d7ec2b3de3c2154820d22b2d1882b7c"
+    },
+    {
+      "action": "fund",
+      "agreementId": "AC-1f80b62c-5679-4db4-a0d8-a32a38ffcee0",
+      "hash": "e1376453f99b522bd9d9f5c512676ac95c64b54bfe80675bbb893349fc60cb3d"
+    },
+    {
+      "action": "dispute",
+      "agreementId": "AC-1f80b62c-5679-4db4-a0d8-a32a38ffcee0",
+      "hash": "8d9a5c464663db42a84986bed745ef9dfa9ef2f4c11e6d4c74a6e73adcb018c2"
+    },
+    {
+      "action": "settle",
+      "agreementId": "AC-1f80b62c-5679-4db4-a0d8-a32a38ffcee0",
+      "hash": "b075ac1b4092786d2ae144b7f1ae9f378916f76a76c0f50813dbf918537d5c3b"
+    }
+  ],
+  "limitations": [
+    "Disposable SDK signers; Varial extension signing remains a separate manual check",
+    "No real funds; contract unchanged and unaudited"
+  ]
+}

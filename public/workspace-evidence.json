@@ -1,0 +1,39 @@
+{
+  "runAt": "2026-11-03T10:17:41.152Z",
+  "contractId": "CASWGE2BE6QLPR7L4BDKH5RH6ITAIWKBQ2MSLYE4GNP4HDTXMU2CTCIV",
+  "network": "TESTNET",
+  "agreementId": "AC-cf57b7f9-5fa4-4286-85ca-4adac65137c0",
+  "result": "PASS",
+  "checks": [
+    "create",
+    "export/import terms verification",
+    "fund",
+    "seller submission",
+    "delivery hash verification",
+    "client release",
+    "role-based workspace actions",
+    "exact amount"
+  ],
+  "receipts": [
+    {
+      "action": "create",
+      "hash": "65c37c14de90637ba708939e8031a4b7b7cc6dfc74f85837cba0fdb8e18c503b"
+    },
+    {
+      "action": "fund",
+      "hash": "3982db79ff065b5df14836dafc55597a767fb47ba8e9253d241c67fd724a8db3"
+    },
+    {
+      "action": "submit",
+      "hash": "dbd2a08ab2d0d796a6421462a2234d39ba12e056f2b8a691d0ec7f022c1cfc14"
+    },
+    {
+      "action": "release",
+      "hash": "3d8ec87bc355fb56bcd90e4447397b3dde30cf1d514f0fecf942ae573affe677"
+    }
+  ],
+  "limitations": [
+    "SDK-signed disposable accounts; Freighter browser signing not exercised",
+    "No real funds"
+  ]
+}

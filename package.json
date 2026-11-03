@@ -1,0 +1,23 @@
+{
+  "name": "accord-ghana",
+  "version": "0.4.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "test": "node --test tests/stellar.test.js tests/settlement.test.js tests/recovery.test.js tests/ttl.test.js",
+    "monitor:ttl": "node scripts/monitor-ttl.mjs",
+    "test:contract": "cargo test --lib --locked --manifest-path contracts/Cargo.toml",
+    "test:settlement": "node scripts/verify-settlement.mjs",
+    "dev:testnet": "vite --host 127.0.0.1 --port 5173 --strictPort --mode local-test"
+  },
+  "dependencies": {
+    "@stellar/freighter-api": "6.0.1",
+    "@stellar/stellar-sdk": "17.4.0"
+  },
+  "devDependencies": {
+    "sharp": "^0.35.5",
+    "vite": "^7.2.2"
+  }
+}

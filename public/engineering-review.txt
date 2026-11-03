@@ -1,0 +1,72 @@
+ACCORD v0.4.0 / 3 NOVEMBER 2026
+Two-party settlement is implemented for disputed Testnet milestones. The freelancer authorizes an exact split and exports a file; the client validates it against the current contract record, reviews both amounts, and signs the settlement transaction. No private keys are shared. Approvals expire after 120 ledgers; deletion does not revoke them.
+30 automated local tests pass. Three SDK-signed Testnet settlement cases passed: partial payment, full client refund, full freelancer payment. Seller and escrow balances match exactly; client refund accounts for the charged fee. Missing authorization, changed split and replay are rejected by enforcement simulation. These expected rejections are not successful ledger transactions. See settlement-evidence.json.
+The existing contract and WASM are unchanged. No Mainnet deployment, funds, audit or customer validation is claimed. Varial extension end-to-end signoff remains separate from disposable-wallet browser checks.
+The founder supplied Blockaid's false-positive correction reply; wallet-side propagation is not independently verified. Do not bypass a remaining warning.
+Funding draft revised to $3,000 for 60 future hours; completed settlement code and SDK checks are excluded. Founder confirms no Ambassador Chapter engagement yet. Ready for technical demo and chapter introduction, not a formal Instaward request or SCF Build submission. No application or community message sent.
+
+HISTORICAL RELEASE NOTES BELOW
+
+Current release update — 3 November 2026
+Blockaid support confirmed in a reply supplied by the founder that the domain flag was incorrect and had been modified. Propagation may take up to 24 hours. Public Testnet wallet access is enabled in v0.3.1; wallet-side propagation and extension end-to-end signing remain unverified. Do not bypass a remaining warning. Mainnet deployment is deferred; no funds are required for the Testnet demo. Historical notes below describe previous states, not the current release.
+
+ACCORD — ENGINEERING REVIEW / 3 NOVEMBER 2026
+
+Official skills consulted:
+https://skills.stellar.org/skills/smart-contracts/SKILL.md
+https://skills.stellar.org/skills/dapp/SKILL.md
+https://github.com/stellar/stellar-dev-skill
+Reviewed repository revision: 9c604c2be6ae69f962fbb578bce6b681d462fea5
+Companion security and testing guidance was read.
+
+Changes following review:
+- Constructor binds the escrow to a single test asset (native test XLM SAC).
+- Typed agreement storage keys and persistent profile records.
+- Explicit authorization from the buyer/seller stored in each agreement.
+- Instance and persistent record TTL extension on writes.
+- State-change events.
+- Positive amount and split bounds.
+- Atomic state updates before token transfer; a failed invocation rolls back.
+- Browser checks the network and active account before signing.
+- Browser writes restricted to the configured Accord deployment.
+- Same signed transaction retried on TRY_AGAIN_LATER; bounded confirmation polling.
+- Submitted transaction hash visible immediately.
+- Separate demo data and on-chain state.
+- Seven local input/network/hash checks and separate testnet integration evidence.
+
+Compatibility:
+The contract is pinned through Cargo.lock to soroban-sdk 23.5.3, and was compiled
+and exercised on the current testnet. The official skills now document SDK 29
+and recommend stellar contract build for SDK 28+. This project does not claim
+to have migrated to that SDK/toolchain. Perform an explicit, tested migration
+before mainnet rather than assuming latest examples match this deployed binary.
+The legacy event publication API produces a deprecation warning, not a build error.
+
+Remaining gates:
+- Independent review/audit, property/fuzz and native contract tests.
+- Multi-party settlement user interface and an agreed deadlock resolution policy.
+- Contract-code/instance/record TTL monitoring and restoration playbook.
+- Public repository and reproducible release attestation (SEP-55 guidance).
+- End-to-end Freighter extension testing in the founder's browser.
+- Private off-chain document storage, if introduced, needs real session auth,
+  authorization, retention policy and abuse controls. Connecting a wallet does
+  not authenticate access to a private server, and no such service is claimed.
+- Payout integration, compliance and customer research.
+
+Raven MCP:
+Official endpoint documented by Stellar: https://raven.stellar.buzz/mcp
+No connected Raven plugin was returned by this chat's plugin directory.
+Raven has NOT been installed or authenticated in this session. Skills were
+read directly instead. Future connection requires the supported MCP setup and
+the owner's OAuth sign-in.
+`nObserved RPC protocol on 3 November 2026: 29; RPC server version 30.0.0. Older contract compatibility was verified by actual transactions, not assumed.
+
+
+v0.3 workspace update, 3 November 2026:
+Main workspace now uses wallet-authorized testnet actions. Shared JSON agreement files include plaintext acceptance terms; recipients verify their hash against the contract. Local records are not a private backend. Pending transaction hashes are persisted before sending, and ambiguous results block further actions until refresh reconciles success/failure. Long-lived NOT_FOUND results require manual investigation; do not infer failure or resend blindly. Four new successful lifecycle transactions are recorded in workspace-evidence.json; these use SDK signing, not the Freighter browser extension. 10 local tests pass.
+
+
+Security review hold, 3 November 2026:
+Varial displays a Blockaid malicious-domain warning. The reported reason is generic; no specific detection rationale or false-positive determination is available. Wallet connection and signing are paused in the application. Network preflight now precedes requestAccess, with a second network check after approval. 14 local tests pass. All 24 files in the preceding live deployment matched local dist bytes; npm audit returned zero known vulnerabilities. These limited checks do not constitute an audit or clearance. The founder reports that the Blockaid review has been submitted. No clearance or specific detection rationale has been received.
+
+Local development update: 23 automated tests pass; review dialogs, shareable summaries, search and a local receipt timeline are implemented. A full browser Testnet lifecycle completed with disposable accounts. Public signing remains paused.

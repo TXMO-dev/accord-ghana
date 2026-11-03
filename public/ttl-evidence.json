@@ -1,0 +1,52 @@
+{
+  "observedAt": "2026-11-03T13:11:49.437Z",
+  "network": "TESTNET",
+  "rpc": "https://soroban-testnet.stellar.org",
+  "contractId": "CASWGE2BE6QLPR7L4BDKH5RH6ITAIWKBQ2MSLYE4GNP4HDTXMU2CTCIV",
+  "wasmSha256": "255f22766fcfb1c9c3f02478d4a5c25d9e6250217f75fce491a66ee78c10f58e",
+  "wasmMatches": true,
+  "latestLedger": 5537573,
+  "warningLedgers": 100000,
+  "status": "OK",
+  "entries": [
+    {
+      "label": "Contract instance",
+      "kind": "instance",
+      "status": "OK",
+      "liveUntilLedger": 5656231,
+      "remainingLedgers": 118658,
+      "ledgerKey": "AAAABgAAAAElYxNBJ6C3x+vgRqP2J/ImBFlBhpkl4JwzX8OOd2U0KQAAABQAAAAB"
+    },
+    {
+      "label": "Contract WASM",
+      "kind": "code",
+      "status": "OK",
+      "liveUntilLedger": 5656228,
+      "remainingLedgers": 118655,
+      "ledgerKey": "AAAAByVfInZvz7HJw/AkeNSlwl2eYlAhf3X85JGmbueMEPWO"
+    },
+    {
+      "label": "AC-355c5274-9700-4663-9160-785d8d54f9dd",
+      "kind": "agreement",
+      "status": "OK",
+      "liveUntilLedger": 5657731,
+      "remainingLedgers": 120158,
+      "ledgerKey": "AAAABgAAAAElYxNBJ6C3x+vgRqP2J/ImBFlBhpkl4JwzX8OOd2U0KQAAABAAAAABAAAAAgAAAA8AAAAJQWdyZWVtZW50AAAAAAAADQAAACCaH05TG8AP9VD/Mzdxu3OLrtL+WupKTZLoTGG/rvScBQAAAAE="
+    },
+    {
+      "label": "AC-cf57b7f9-5fa4-4286-85ca-4adac65137c0",
+      "kind": "agreement",
+      "status": "OK",
+      "liveUntilLedger": 5656428,
+      "remainingLedgers": 118855,
+      "ledgerKey": "AAAABgAAAAElYxNBJ6C3x+vgRqP2J/ImBFlBhpkl4JwzX8OOd2U0KQAAABAAAAABAAAAAgAAAA8AAAAJQWdyZWVtZW50AAAAAAAADQAAACDTLcc1xhE92CXa/4fSmfXmo/gQpeGbubApzY3kFmc0hAAAAAE="
+    }
+  ],
+  "limitations": [
+    "Read-only snapshot; not a scheduled alert service.",
+    "Only explicitly supplied agreements are monitored; this does not discover all contract records.",
+    "MISSING does not distinguish archived, never-created or reset-network state.",
+    "No restoration or TTL extension transaction was submitted.",
+    "Remaining ledgers are exact at the observed ledger; wall-clock expiry varies with network cadence."
+  ]
+}

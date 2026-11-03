@@ -1,0 +1,44 @@
+{
+  "version": "0.4.1",
+  "contractId": "CASWGE2BE6QLPR7L4BDKH5RH6ITAIWKBQ2MSLYE4GNP4HDTXMU2CTCIV",
+  "wasmSha256": "255f22766fcfb1c9c3f02478d4a5c25d9e6250217f75fce491a66ee78c10f58e",
+  "network": "TESTNET",
+  "checks": {
+    "onchain": 14,
+    "local": 49,
+    "workspaceLifecycle": "PASS: create, fund, submit, release using disposable SDK-signed wallets",
+    "settlement": "PASS: three Testnet splits, exact balances, missing-authorization and altered-amount rejection, replay rejection",
+    "rustHost": 14
+  },
+  "limitations": [
+    "Wallet warning propagation and extension end-to-end signoff remain unverified",
+    "Wallet extension end-to-end signoff pending",
+    "No real-money payout",
+    "No independent audit",
+    "No customer validation",
+    "No grant submission"
+  ],
+  "walletAccess": "ENABLED_TESTNET_ONLY",
+  "domainReview": {
+    "outcome": "FALSE_POSITIVE_CORRECTED",
+    "source": "Blockaid support reply supplied by founder on 2026-11-03",
+    "propagation": "Provider advises up to 24 hours; wallet UI not yet verified"
+  },
+  "settlement": {
+    "available": "Disputed Testnet milestones",
+    "flow": "Freelancer signed approval file, client review and transaction signature",
+    "expiryLedgers": 120,
+    "signerSupport": "Standard single-key freelancer wallets; Varial extension signoff remains outstanding"
+  },
+  "recovery": {
+    "status": "local build; public deployment remains v0.4.0",
+    "checks": 14,
+    "behavior": "Persist hash, action, signed maxTime and first ledger before broadcasting. Reconcile success/failure; allow retry of missing transactions only after expiry with complete retained RPC history.",
+    "limits": "Legacy hash-only records and records outside RPC retention remain locked; wallet extension signoff remains outstanding."
+  },
+  "monitoring": {
+    "status": "read-only snapshot verified",
+    "report": "ttl-evidence.json",
+    "restoration": "not yet rehearsed"
+  }
+}

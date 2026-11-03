@@ -1,0 +1,83 @@
+{
+  "network": "TESTNET",
+  "contractId": "CASWGE2BE6QLPR7L4BDKH5RH6ITAIWKBQ2MSLYE4GNP4HDTXMU2CTCIV",
+  "runAt": "2026-11-03T10:02:28.062Z",
+  "tests": [
+    {
+      "name": "Wallet registration",
+      "result": "PASS",
+      "transaction": "a4e50af9f467ebafe5e2b0e8d8fc8f17110cff3d542a2107e25b6acbc5bd716a"
+    },
+    {
+      "name": "Create milestone",
+      "result": "PASS",
+      "transaction": "2cc79444c862f83d6e65adb4e88ea4d86b46f3479910dc568c01a2348dde94cf"
+    },
+    {
+      "name": "Outsider cannot fund",
+      "result": "PASS (rejected as expected)",
+      "detail": "Transaction failed a1c058bf889f426d7c76e5061c8238f24d74d32ae70682c9bed329b0c5872152"
+    },
+    {
+      "name": "Buyer funds milestone",
+      "result": "PASS",
+      "transaction": "56acc0ceae9af1ae496285e35c0e95a5a5906ff2abc94b4f746d3e1ae52dc289"
+    },
+    {
+      "name": "Cannot fund twice",
+      "result": "PASS (rejected as expected)",
+      "detail": "HostError: Error(WasmVm, InvalidAction)\n\nEvent log (newest first):\n   0: [Diagnostic Event] contract:CASWGE2BE6QLPR7L4BDKH5RH6ITAIWKBQ2MSLYE4GNP4HDTXMU2CTCIV, topics:[error, Error(WasmVm, InvalidAction)], data:[\"VM call trapped: UnreachableCodeReached\", fund]\n   1: [Diagnostic Event] topics:[fn_call, CASWGE2BE6QLPR7L4BDKH5RH6ITAIWKBQ2MSLYE4GNP4HDTXMU2CTCIV, fund], data:Bytes(0d9f9994bf76087ad9c478879e30f7df84ff5d2285c99faba37efea85c26c2c7)\n"
+    },
+    {
+      "name": "Cannot release before submission",
+      "result": "PASS (rejected as expected)",
+      "detail": "HostError: Error(WasmVm, InvalidAction)\n\nEvent log (newest first):\n   0: [Diagnostic Event] contract:CASWGE2BE6QLPR7L4BDKH5RH6ITAIWKBQ2MSLYE4GNP4HDTXMU2CTCIV, topics:[error, Error(WasmVm, InvalidAction)], data:[\"VM call trapped: UnreachableCodeReached\", release]\n   1: [Diagnostic Event] topics:[fn_call, CASWGE2BE6QLPR7L4BDKH5RH6ITAIWKBQ2MSLYE4GNP4HDTXMU2CTCIV, release], data:Bytes(0d9f9994bf76087ad9c478879e30f7df84ff5d2285c99faba37efea85c26c2c7)\n"
+    },
+    {
+      "name": "Seller submits work",
+      "result": "PASS",
+      "transaction": "1b922e658a5fa7f33fe850049f96b33ad4f93d12d37a37ffb80aad968283a9eb"
+    },
+    {
+      "name": "Seller cannot approve own payment",
+      "result": "PASS (rejected as expected)",
+      "detail": "Transaction failed 2ce3779bceab7e4d87ff03b80c97ada1aea4f7a42f54e2a5a31e746b5178469b"
+    },
+    {
+      "name": "Buyer releases payment",
+      "result": "PASS",
+      "transaction": "5a86c5ed86b28525ef2575f15a2799d792613988ddbc2fd261d4a300bc3566e9"
+    },
+    {
+      "name": "Cannot release twice",
+      "result": "PASS (rejected as expected)",
+      "detail": "HostError: Error(WasmVm, InvalidAction)\n\nEvent log (newest first):\n   0: [Diagnostic Event] contract:CASWGE2BE6QLPR7L4BDKH5RH6ITAIWKBQ2MSLYE4GNP4HDTXMU2CTCIV, topics:[error, Error(WasmVm, InvalidAction)], data:[\"VM call trapped: UnreachableCodeReached\", release]\n   1: [Diagnostic Event] topics:[fn_call, CASWGE2BE6QLPR7L4BDKH5RH6ITAIWKBQ2MSLYE4GNP4HDTXMU2CTCIV, release], data:Bytes(0d9f9994bf76087ad9c478879e30f7df84ff5d2285c99faba37efea85c26c2c7)\n"
+    },
+    {
+      "name": "Create disputed example",
+      "result": "PASS",
+      "transaction": "e5301f928f7e1ae9e433da3037a1c8ecb7feb81b4d637a2f13a0ab885091a398"
+    },
+    {
+      "name": "Fund disputed example",
+      "result": "PASS",
+      "transaction": "b1525487af29f1c28745680d1bb556a16f14ed62b4e3cbb75fd8ebda5793d4ce"
+    },
+    {
+      "name": "Seller raises dispute",
+      "result": "PASS",
+      "transaction": "ed79e72a8e39635f095b6fbf1c533c9036cc46387e6eeeecceda2dd723d6f8b1"
+    },
+    {
+      "name": "Dispute prevents unilateral release",
+      "result": "PASS (rejected as expected)",
+      "detail": "HostError: Error(WasmVm, InvalidAction)\n\nEvent log (newest first):\n   0: [Diagnostic Event] contract:CASWGE2BE6QLPR7L4BDKH5RH6ITAIWKBQ2MSLYE4GNP4HDTXMU2CTCIV, topics:[error, Error(WasmVm, InvalidAction)], data:[\"VM call trapped: UnreachableCodeReached\", release]\n   1: [Diagnostic Event] topics:[fn_call, CASWGE2BE6QLPR7L4BDKH5RH6ITAIWKBQ2MSLYE4GNP4HDTXMU2CTCIV, release], data:Bytes(f4192c89c304b829b7d598c56553d028afd66b0ac82e82ac7d030e9b3f9bf842)\n"
+    }
+  ],
+  "limitations": [
+    "Independent security audit not performed",
+    "Mutual settlement requires multi-party authorization tooling",
+    "No mainnet funds",
+    "Disposable keys intentionally discarded; test balances have no value"
+  ]
+}

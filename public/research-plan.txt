@@ -1,0 +1,18 @@
+ACCORD — CUSTOMER DISCOVERY GUIDE
+Recruit 10 Ghana-based independent software/design professionals with recent overseas client work and, separately, 3-5 paying clients. Ask permission to take anonymized notes. Do not collect client payment details or confidential contracts.
+
+1. Describe your most recent overseas project from agreement to final payment.
+2. Which payment method did you use and why?
+3. What was the quoted price, total cost and actual time to receive payment? Use ranges if preferred.
+4. Tell me about the last delayed or disputed payment. What happened and how was it resolved?
+5. How do you agree on acceptance conditions?
+6. Have you used funded milestones or escrow? Why did you keep or stop using it?
+7. What would make your client refuse this workflow?
+8. How important is cedi/mobile-money payout compared with keeping digital assets?
+9. Try the demo without coaching. Where do you hesitate?
+10. What would need to be true for you to use it on one real project?
+
+Record: participant pseudonym, segment, date, concrete example, existing alternative, costs, objection, observed task failures, consent for follow-up. Distinguish quotes from interpretation.
+Do not lead with blockchain or ask only whether people 'like the idea'.
+
+Go/no-go proposal: proceed to a funded pilot only if users describe a recurring problem, clients accept the workflow, at least three parties commit to a defined pilot, payout feasibility is confirmed, and security/compliance gates are satisfied. These thresholds are planning assumptions.

@@ -1,0 +1,36 @@
+ACCORD / LOCAL VERIFICATION AND STORAGE MONITORING
+
+From the project directory:
+  npm ci
+  npm test
+  npm run build
+  npm run test:contract
+The contract command requires Rust/Cargo and a native linker. Use the committed
+Cargo.lock with --locked. SDK remains 23.5.3. The lockfile pins ed25519-dalek
+2.2.0 because the SDK 23 host's open version range also admits incompatible 3.0.0.
+Native host tests are not an audit or a verification of the deployed WASM binary.
+
+Read-only Testnet monitor:
+  npm run monitor:ttl -- --agreement AC-your-agreement-id --out ttl-report.json
+Repeat --agreement for each known agreement (maximum 198). Omit to inspect only
+the contract instance and code. The monitor uses public/network.json and the
+official Testnet RPC. No wallet, private key or transaction signing is involved.
+
+Exit 0: all requested entries above warning threshold and WASM identity matches.
+Exit 2: inspect the report; missing/unknown/expiring entries or identity mismatch.
+Exit 1: monitor failed; do not interpret failure as healthy storage.
+Default warning threshold: 100000 ledgers. Change with --warning-ledgers.
+Reports are snapshots. An operator must run this regularly; no scheduler or
+notification channel has been installed. Track all active agreement IDs privately.
+Profile records and token-contract storage are not covered by this monitor.
+
+If WARNING: arrange a reviewed TTL extension for code, instance and affected
+records before expiry. Merely opening the app does not extend storage lifetime.
+If MISSING: distinguish an archived record from never-created data or a Testnet
+reset using ledger history and RPC diagnostics. Do not recreate funded agreements
+or assume funds were refunded. If IDENTITY_MISMATCH: stop signing and investigate.
+
+Outstanding: build and rehearse extension/restoration transactions using a separate
+disposable Testnet fixture, verify balances and states before and after restoration,
+and retain receipts. No restoration or extension was submitted by this monitor.
+Mainnet operation and unattended restoration are not supported by this runbook.
