@@ -19,7 +19,7 @@ export async function roomSettlement(body,{config,membership,stellar,env=process
  if(body.action==='activity'){
   if(!/^[a-f0-9]{64}$/.test(body.hash||''))throw Error('Invalid transaction receipt.');
   await membership(wallet,body.id);
-  const activity=verifiedActivity(await stellar.getTransaction(body.hash),{hash:body.hash,wallet,contract:config.contractId,id:body.id});
+  const activity=verifiedActivity(await stellar.getTransaction(body.hash),{hash:body.hash,wallet,contract:config.contractId,id:body.id,network:config.network});
   const sent=await call('/realtime/v1/api/broadcast',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{topic:'accord:'+room,event:'participant_action',payload:activity,private:true}]})});
   if(!sent.ok)throw Error('Activity notification could not be sent. The transaction remains confirmed.');
   return {notified:true};

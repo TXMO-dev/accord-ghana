@@ -1,0 +1,21 @@
+{
+  "recordedOn": "2026-11-03",
+  "network": "TESTNET",
+  "verification": "User-reported live test in two independent participant sessions",
+  "checks": [
+    {
+      "name": "Freelancer submits delivery; client receives live notification without refresh",
+      "result": "USER_CONFIRMED"
+    },
+    {
+      "name": "Client releases payment; freelancer receives live notification without refresh",
+      "result": "USER_CONFIRMED"
+    }
+  ],
+  "transactionHashes": [],
+  "limitations": [
+    "Public receipts have not yet been supplied for independent corroboration.",
+    "Mainnet operation has not been verified.",
+    "These checks do not establish simultaneous settlement-signature or restoration coverage."
+  ]
+}

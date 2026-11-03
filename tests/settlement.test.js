@@ -66,3 +66,12 @@ test('room switching discards a delayed shared approval response',async()=>{
  const request=roomRequest('a','buyer','settlement-get');setRoomBridge(null);finish({offer:{}});await assert.rejects(request,/changed/);
  await assert.rejects(roomRequest('a','buyer','settlement-get'),/Join/);
 });
+
+test('Mainnet settlement verifies on Mainnet and rejects a relabelled Testnet proof',async()=>{
+ const main={...ctx,config:{...config,network:'MAINNET'}};
+ const proof={...await fixture({network:Networks.PUBLIC}),network:'mainnet'};
+ assert.equal((await validateSettlement(proof,main)).seller,4000000n);
+ await assert.rejects(validateSettlement(proof,ctx));
+ await assert.rejects(validateSettlement({...await fixture(),network:'mainnet'},main));
+ await assert.rejects(validateSettlement(proof,{...main,config:{...main.config,network:'UNKNOWN'}}));
+});

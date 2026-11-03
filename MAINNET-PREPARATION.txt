@@ -33,3 +33,14 @@ ACTIVATION WORK STILL REQUIRED
 
 Do not replace public/network.json with a Mainnet C-address alone: existing runtime
 paths still target Testnet. This helper is deployment preparation, not activation.
+
+FOLLOW-UP PREPARATION
+Settlement transaction construction and signature validation now select the passphrase
+from an explicit network configuration. Tests accept correctly signed Mainnet fixtures
+and reject relabelled Testnet signatures. Room sign-in challenges explicitly bind network.
+This is cryptographic preparation; it does not activate the Testnet-only application UI.
+
+After deployment, verify its code, XLM asset and receipt without spending funds:
+ node scripts/verify-mainnet.mjs C_CONTRACT REVIEWED_WASM_SHA256 DEPLOYMENT_TX_HASH
+The command reads MAINNET_RPC_URL, checks the network, and saves
+work/mainnet/verified-deployment.json. It does not activate the public application.

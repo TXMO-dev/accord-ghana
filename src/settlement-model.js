@@ -1,3 +1,4 @@
+import {settlementNetwork} from './network-spec.js';
 import {Address, Keypair, Networks, StrKey, buildAuthorizationEntryPreimage, hash, nativeToScVal, scValToNative, xdr} from '@stellar/stellar-sdk';
 import {digest, bytes, transactionHashHex} from './values.js';
 import {stateName} from './workspace-model.js';
@@ -33,16 +34,16 @@ export function sellerCredentials(entry,seller) {
   if(Address.fromScAddress(c.address).toString()!==seller)fail('Authorization belongs to another freelancer.');
   return c;
 }
-export function verifySellerSignature(entry,seller) {
+export function verifySellerSignature(entry,seller,passphrase=Networks.TESTNET) {
   const c=sellerCredentials(entry,seller), signatures=scValToNative(c.signature);
   if(!Array.isArray(signatures)||signatures.length!==1)fail('Exactly one freelancer signature is required.');
   const sig=signatures[0];
   if(!(sig.public_key instanceof Uint8Array)||transactionHashHex(sig.public_key)!==transactionHashHex(StrKey.decodeEd25519PublicKey(seller))||!(sig.signature instanceof Uint8Array))fail('Unsupported signing key. Use a standard single-key test wallet.');
-  const payload=hash(buildAuthorizationEntryPreimage(entry,c.signatureExpirationLedger,Networks.TESTNET).toXdr());
-  if(!Keypair.fromPublicKey(seller).verify(payload,sig.signature))fail('Freelancer signature is invalid for this Testnet settlement.');
+  const payload=hash(buildAuthorizationEntryPreimage(entry,c.signatureExpirationLedger,passphrase).toXdr());
+  if(!Keypair.fromPublicKey(seller).verify(payload,sig.signature))fail('Freelancer signature is invalid for this network and settlement.');
 }
 export async function validateSettlement(p,{config,id,agreement,ledger}) {
-  if(!p||p.version!==1||p.kind!=='accord-settlement'||p.network!=='testnet'||p.contract!==config.contractId||p.id!==id)fail('Wrong agreement, network or contract in settlement file.');
+  if(!p||p.version!==1||p.kind!=='accord-settlement'||p.network!==settlementNetwork(config).name.toLowerCase()||p.contract!==config.contractId||p.id!==id)fail('Wrong agreement, network or contract in settlement file.');
   assertDisputed(agreement,config.assetId);
   const snapshot=settlementSnapshot(agreement);
   if(!p.snapshot||Object.keys(snapshot).some(k=>p.snapshot[k]!==snapshot[k]))fail('Settlement is stale. The agreement changed; request a new proposal.');
@@ -54,6 +55,6 @@ export async function validateSettlement(p,{config,id,agreement,ledger}) {
   validateInvocation(entry,config.contractId,args);
   const credentials=sellerCredentials(entry,agreement.seller);
   if(credentials.signatureExpirationLedger!==p.expiresLedger)fail('Expiry does not match the signed authorization.');
-  verifySellerSignature(entry,agreement.seller);
+  verifySellerSignature(entry,agreement.seller,settlementNetwork(config).passphrase);
   return {entry,args,seller:BigInt(p.sellerUnits),buyer:BigInt(agreement.amount)-BigInt(p.sellerUnits)};
 }

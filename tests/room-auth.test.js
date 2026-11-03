@@ -33,3 +33,11 @@ test('participant notifications require a successful exact transaction and agree
  for(const change of [{wallet:other.publicKey()},{hash:'0'.repeat(64)},{id:id+'different'},{contract:ActivityAddress.contract(Buffer.alloc(32,8)).toString()}])assert.throws(()=>verifiedActivity(receipt,{...context,...change}));
  assert.throws(()=>verifiedActivity({...receipt,status:'FAILED'},context));
 });
+
+test('room sign-in proofs are bound to the declared Stellar network',()=>{
+ const c=makeChallenge({...input,network:'MAINNET'});
+ assert.match(c.message,/Stellar Mainnet/);
+ const proof={...input,token:c.token,signature:sign(c.message)};
+ assert.throws(()=>verifyChallenge(proof));
+ assert.equal(verifyChallenge({...proof,network:'MAINNET'}).wallet,key.publicKey());
+});

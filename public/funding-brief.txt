@@ -16,7 +16,7 @@ WASM SHA256: 255f22766fcfb1c9c3f02478d4a5c25d9e6250217f75fce491a66ee78c10f58e
 Source: https://github.com/TXMO-dev/accord-ghana (MIT)
 
 VERIFICATION
-52 JavaScript tests pass. Prior Rust host evidence records 14 passing tests. SDK-signed disposable accounts completed create/fund/submit/release and settlement cases with balance, authorization and replay checks.
+75 JavaScript tests pass. Prior Rust host evidence records 14 passing tests. SDK-signed disposable accounts completed create/fund/submit/release and settlement cases with balance, authorization and replay checks.
 Actual Varial-session receipts independently confirmed on Testnet:
 register: 92dfee126ab64c0dd6cbec6b531c86311e3365ba71041828a16e1afcf9259ebd
 create: 3f6d97d262325deb288d9fa6a1b8298cc8fae735435e9fb9e4b0c4e542b14a55
