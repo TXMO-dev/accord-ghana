@@ -71,3 +71,17 @@ test('station journeys advance smoothly and end at each reachable workstation',(
   assert.ok(frames<2000);assert.ok(Math.hypot(position.x-home.x,position.z-home.z)<.08);
  }
 });
+
+import {courtyardPlaces,courtyardObstacles} from '../src/courtyard-layout.js';
+test('courtyard pavilions block solid objects while keeping every approach reachable',()=>{
+ for(const place of courtyardPlaces){
+  assert.equal(blocked(place.x,place.z),true);
+  for(const side of [-1,1]){
+   const goal={x:place.x,z:place.z+side*1.5},position={x:0,z:5.5},path=findStudioPath(position,goal);
+   assert.ok(path.length,place.title+' must be reachable from both sides');let frames=0;
+   while(advanceAvatar(position,path,.05)&&frames++<2000)assert.equal(blocked(position.x,position.z),false);
+   assert.ok(frames<2000);assert.ok(Math.hypot(position.x-goal.x,position.z-goal.z)<.08);
+  }
+ }
+ for(const obstacle of courtyardObstacles)assert.equal(blocked(obstacle.x,obstacle.z),true);
+});

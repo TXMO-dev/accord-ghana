@@ -1,6 +1,7 @@
+import {buildCourtyard} from './studio-courtyard.js';
 import * as THREE from 'three';
 // Physical controls mirror verified state; they never authorize transactions.
-export function expandStudio({scene,box,register,openRoom,openArchive,useStation,speak,wake,paused}){
+export function expandStudio({scene,box,register,openRoom,openArchive,openReview,focusCourtyard,useStation,speak,wake,paused}){
  const canvas=document.createElement('canvas');canvas.width=768;canvas.height=384;const ctx=canvas.getContext('2d');
  const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;
  const frame=box(3.6,1.8,.12,-3.6,2.8,-4.5,'gold');
@@ -18,10 +19,11 @@ export function expandStudio({scene,box,register,openRoom,openArchive,useStation
  register(archive,'Receipt archive — review confirmed history',openArchive);
  const shortcuts=document.createElement('div');shortcuts.className='room-world-shortcuts';
  for(const [label,action] of [['Project board',visit],['Project inbox',readUpdates],['Receipt archive',openArchive]]){const b=document.createElement('button');b.type='button';b.textContent=label;b.onclick=action;shortcuts.append(b);}document.querySelector('.room-panel').append(shortcuts);
+ const courtyard=buildCourtyard({scene,box,register,actions:{room:openRoom,review:openReview,archive:openArchive},focus:focusCourtyard,speak,wake,paused,shortcuts});
  function changed(e){state=e.detail;const same=lastId===state.id;if(!same)unread=0;if(state.verified&&!state.pending){if(state.state==='Disputed'&&(!same||lastState!=='Disputed'))speak('The milestone is disputed. Funds are frozen, not lost. Agree on a split in your project room. The freelancer authorizes first; the client reviews and signs.');if(same&&lastState==='Disputed'&&['Settled','Cancelled'].includes(state.state)){reliefUntil=performance.now()+4500;speak('Whew — both parties agreed. Stellar confirmed the settlement and this agreement is now closed. Keep your receipt.');}lastId=state.id;lastState=state.state;}draw();}
  function comment(){unread++;draw();}
  function read(){unread=0;draw();}
  addEventListener('accord-inbox-read',read);
  addEventListener('accord-agreement-state',changed);addEventListener('accord-room-new-comment',comment);addEventListener('accord-participant-notice',comment);draw();
- return {update(t){const disputed=state.verified&&state.state==='Disputed',relief=t<reliefUntil;const color=disputed?'#e7a34a':relief?'#badd80':unread?'#93d9e0':'#52685b';beaconMaterial.color.set(color);beaconMaterial.emissive.set(color);beaconMaterial.emissiveIntensity=paused()?.25:(disputed||unread||relief)?.45+Math.sin(t*.002)*.2:.15;beacon.position.y=1.22+(!paused()&&relief?Math.abs(Math.sin(t*.004))*.16:0);},dispose(){removeEventListener('accord-agreement-state',changed);removeEventListener('accord-room-new-comment',comment);removeEventListener('accord-participant-notice',comment);removeEventListener('accord-inbox-read',read);texture.dispose();shortcuts.remove();}};
+ return {update(t){courtyard.update(t);const disputed=state.verified&&state.state==='Disputed',relief=t<reliefUntil;const color=disputed?'#e7a34a':relief?'#badd80':unread?'#93d9e0':'#52685b';beaconMaterial.color.set(color);beaconMaterial.emissive.set(color);beaconMaterial.emissiveIntensity=paused()?.25:(disputed||unread||relief)?.45+Math.sin(t*.002)*.2:.15;beacon.position.y=1.22+(!paused()&&relief?Math.abs(Math.sin(t*.004))*.16:0);},dispose(){courtyard.dispose();removeEventListener('accord-agreement-state',changed);removeEventListener('accord-room-new-comment',comment);removeEventListener('accord-participant-notice',comment);removeEventListener('accord-inbox-read',read);texture.dispose();shortcuts.remove();}};
 }

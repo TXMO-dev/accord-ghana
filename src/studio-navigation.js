@@ -1,7 +1,8 @@
+import {courtyardObstacles} from './courtyard-layout.js';
 // Shared by the visible character station and walking collision geometry.
 export const characterStation={x:-4.8,z:-.65,w:.6,d:.5};
 export const studioObstacles=[
- characterStation,
+ characterStation,...courtyardObstacles,
  {x:-4.4,z:3.7,w:1.5,d:.9},{x:5,z:-.6,w:.8,d:.6},{x:-.9,z:3.6,w:.85,d:.5},
  {x:-6.5,z:0,w:.25,d:10},{x:0,z:-5,w:13,d:.25},
  {x:-3,z:1,w:2.4,d:1.2},{x:-3,z:-2.5,w:1.5,d:1.2},{x:2.5,z:-2.4,w:2.2,d:1.1},
@@ -11,7 +12,7 @@ export const studioObstacles=[
 ];
 export function blocked(x,z,obstacles=studioObstacles,radius=.27){
  if(x < -12||x>13||z < -9||z>12)return true;
- return obstacles.some(o=>{const cx=Math.max(o.x-o.w/2,Math.min(x,o.x+o.w/2)),cz=Math.max(o.z-o.d/2,Math.min(z,o.z+o.d/2));return (x-cx)**2+(z-cz)**2<radius**2;});
+ return obstacles.some(o=>{const cx=Math.max(o.x-o.w/2,Math.min(x,o.x+o.w/2)),cz=Math.max(o.z-o.d/2,Math.min(z,o.z+o.d/2));return (x-cx)**2+(z-cz)**2<radius**2-1e-10;});
 }
 export function walkWithCollisions(position,delta,obstacles=studioObstacles){
  let {x,z}=position;const steps=Math.max(1,Math.ceil(Math.hypot(delta.x,delta.z)/.09));
