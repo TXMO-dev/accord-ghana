@@ -30,7 +30,8 @@ export function mountSharedRoom(){
  function show(data){moveSettlement();reviewBoard.update(!!session);reviewBoard.show(data.comments);
   const incoming=data.comments.filter(c=>seenComments&&!seenComments.has(c.id)&&c.wallet!==context?.wallet);
   seenComments=new Set(data.comments.map(c=>c.id));
-  if(incoming.length)dispatchEvent(new CustomEvent('accord-room-new-comment',{detail:{count:incoming.length,wallets:[...new Set(incoming.map(c=>c.wallet))]}}));
+  const reviews=incoming.filter(c=>parseReview(c.body)).sort((a,b)=>Date.parse(a.created_at)-Date.parse(b.created_at));if(reviews.length)dispatchEvent(new CustomEvent('accord-review-notice',{detail:{kind:parseReview(reviews.at(-1).body).kind,own:false}}));
+  if(incoming.some(c=>!parseReview(c.body)))dispatchEvent(new CustomEvent('accord-room-new-comment',{detail:{count:incoming.length,wallets:[...new Set(incoming.map(c=>c.wallet))]}}));
   const nearBottom=messages.scrollHeight-messages.scrollTop-messages.clientHeight<48;const oldScroll=messages.scrollTop;messages.replaceChildren();if(!data.comments.length){const empty=document.createElement('li');empty.textContent='No comments yet. Share a project update to start the conversation.';messages.append(empty);}for(const comment of data.comments){if(parseReview(comment.body))continue;const item=document.createElement('li'),who=document.createElement('strong'),body=document.createElement('p');who.textContent=(comment.wallet===context?.wallet?'You · ':'')+comment.wallet.slice(0,6)+'…'+comment.wallet.slice(-4)+' · '+new Date(comment.created_at).toLocaleTimeString();body.textContent=comment.body;item.append(who,body);messages.append(item);}messages.scrollTop=nearBottom?messages.scrollHeight:oldScroll;
   presence.textContent=data.participants.length+' participant(s) recently active · '+(socketReady?'live connection':'12-second refresh');
   dispatchEvent(new CustomEvent('accord-room-presence',{detail:data.participants}));

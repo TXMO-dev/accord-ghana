@@ -1,4 +1,12 @@
 export const reviewPrefix='ACCORD_REVIEW_V1:';
+export function reviewGuidance(state,role,latest){
+ if(state==='Disputed')return 'This milestone is disputed. Use the settlement panel to agree a split with your partner.';
+ if(['Released','Cancelled'].includes(state))return 'This milestone is closed. Your shared review history remains available in this room.';
+ if(!['Funded','Submitted'].includes(state))return 'Fund the milestone before sharing delivery and review notes.';
+ if(latest==='revision')return role==='freelancer'?'Your client requested revisions. Read their notes, then share an updated reference and explain what changed.':'Waiting for the freelancer to respond to your revision request.';
+ if(role==='freelancer')return state==='Funded'?'Share your work here, then submit its delivery reference in the agreement for wallet approval.':'You can share follow-up notes here. The delivery reference already recorded on Stellar remains unchanged.';
+ return state==='Submitted'?'Review the work and verify its delivery reference. Request revisions here or go to payment review when satisfied.':'You can discuss the work here. Payment release becomes available after the freelancer submits delivery on Stellar.';
+}
 export function conditionsList(terms){const lines=String(terms||'').split(/\r?\n/).map(s=>s.trim()).filter(Boolean);return lines.length<=12?lines:[String(terms)];}
 export function cleanReview(value,role,termsHash){
  if(!value||!['delivery','revision','reviewed'].includes(value.kind))throw Error('Choose a review action.');
