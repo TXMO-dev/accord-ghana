@@ -1,0 +1,22 @@
+import {readFile,writeFile,mkdir} from 'node:fs/promises';
+import {createHash,randomBytes} from 'node:crypto';
+import {rpc,Networks,TransactionBuilder,Operation,Address,Asset,StrKey} from '@stellar/stellar-sdk';
+// Generates unsigned envelopes only. Never imports a private key or submits funds.
+const [stage,source]=process.argv.slice(2);
+if(!['upload','deploy'].includes(stage)||!StrKey.isValidEd25519PublicKey(source||''))throw Error('Usage: node scripts/prepare-mainnet.mjs upload|deploy G_PUBLIC_DEPLOYER_ADDRESS');
+const endpoint=process.env.MAINNET_RPC_URL;
+if(!endpoint||new URL(endpoint).protocol!=='https:')throw Error('Set MAINNET_RPC_URL to your HTTPS Mainnet Stellar RPC endpoint.');
+const server=new rpc.Server(endpoint);
+const network=await server.getNetwork();
+if(network.passphrase!==Networks.PUBLIC)throw Error('RPC is not Stellar Mainnet. Nothing prepared.');
+const wasm=await readFile('contracts/target/wasm32v1-none/release/accord_escrow.wasm');
+const wasmHash=createHash('sha256').update(wasm).digest();
+const assetId=Asset.native().contractId(Networks.PUBLIC);
+const operation=stage==='upload'?Operation.uploadContractWasm({wasm}):Operation.createCustomContract({address:new Address(source),wasmHash,salt:randomBytes(32),constructorArgs:[new Address(assetId).toScVal()]});
+const account=await server.getAccount(source);
+const raw=new TransactionBuilder(account,{fee:'10000',networkPassphrase:Networks.PUBLIC}).addOperation(operation).setTimeout(300).build();
+const prepared=await server.prepareTransaction(raw);
+await mkdir('work/mainnet',{recursive:true});
+await writeFile('work/mainnet/'+stage+'.xdr',prepared.toXDR());
+await writeFile('work/mainnet/'+stage+'.json',JSON.stringify({stage,network:'MAINNET',source,asset:'XLM',assetId,wasmSha256:wasmHash.toString('hex'),transactionHash:prepared.hash().toString('hex'),feeStroops:prepared.fee,timeBounds:prepared.timeBounds,preparedAt:new Date().toISOString(),submitted:false},null,2));
+console.log('Unsigned '+stage+' envelope prepared in work/mainnet. Fee: '+prepared.fee+' stroops. Review and sign in your wallet before expiry. No transaction submitted.');

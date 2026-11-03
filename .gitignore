@@ -9,3 +9,4 @@ contracts/test_snapshots/
 *.log
 
 .testnet-restoration/
+work/mainnet/

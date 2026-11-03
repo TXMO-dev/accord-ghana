@@ -25,7 +25,7 @@ async function membership(wallet,id){
 export default async function handler(req,res){
  res.setHeader('Cache-Control','no-store');
  res.setHeader('Vary','Origin');
- const enabled=!!(process.env.SUPABASE_URL&&process.env.SUPABASE_SECRET_KEY&&process.env.ROOM_AUTH_SECRET?.length>=32);
+ const enabled=config.network==='TESTNET'&&!!(process.env.SUPABASE_URL&&process.env.SUPABASE_SECRET_KEY&&process.env.ROOM_AUTH_SECRET?.length>=32);
  if(req.method==='GET')return res.status(200).json({enabled,transport:process.env.SUPABASE_JWT_SECRET&&process.env.SUPABASE_PUBLISHABLE_KEY?'websocket':'polling',intervalSeconds:12});
  if(req.method!=='POST')return res.status(405).json({error:'Method not allowed.'});
  if(req.headers.origin!==origin)return res.status(403).json({error:'Open the room from Accord.'});

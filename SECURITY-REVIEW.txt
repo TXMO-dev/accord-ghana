@@ -1,0 +1,37 @@
+SECURITY REVIEW — 2026-11-03
+Scope: contract source, wallet transaction signing, settlement proofs, private-room
+API/session/storage boundaries, production npm dependencies. Internal source review;
+not an independent audit or a guarantee of Mainnet safety.
+
+Verified in this run:
+- 72 JavaScript tests pass, covering authorization, tampered settlement proofs,
+  transaction recovery, private room/session isolation, and collision navigation.
+- npm audit --omit=dev reports zero known advisories. This does not rule out unknown flaws.
+- Production build succeeds; large bundle warnings remain.
+- Wallet-returned transaction hash is compared to prepared transaction hash.
+- Contract requires the correct party for state transitions and both parties for settlement.
+- Private room storage checks hashed session token, expiry, room and participant identity.
+- Signed settlement proofs are validated against agreement state, asset, exact split,
+  expiry and signature before sharing and again before transaction submission.
+
+Patch in this release:
+- Reject an accidental Mainnet network.json change in the current Testnet transaction
+  path; disable the room API if configured for an unsupported network. This prevents a
+  mixed-network deployment from silently using Testnet RPC with a Mainnet contract ID.
+
+Outstanding before public real-money use:
+- Rerun Rust contract tests and build reviewed WASM. Cargo unavailable in this execution
+  environment; Docker access denied. Prior evidence is not a fresh rerun.
+- Complete coordinated Mainnet runtime configuration; see MAINNET-PREPARATION.txt.
+- Independent contract/security review and a small real-value end-to-end verification.
+- Confirm live settlement receipt from two independent participant wallet sessions.
+- Review API abuse protection and bounded retention/cleanup for room records and storage.
+- Realtime JWTs remain valid until their expiry after leaving a room. Broadcasts contain
+  only invalidation signals; private payload access requires the live server session.
+- Contract has no administrator recovery or unilateral dispute timeout. If parties do
+  not cooperate, escrow can remain locked. This is a product limitation, not arbitration.
+- TTL monitoring/restoration and maintenance funding are needed in Mainnet operation.
+- Previously disclosed credentials have not been rotated, per owner instruction. Their
+  exposure remains a production risk; do not describe credential security as audited.
+
+Mainnet preparation generates unsigned envelopes only; no real funds moved in this run.

@@ -1,0 +1,35 @@
+MAINNET RELEASE PREPARATION — 2026-11-03
+
+Current public deployment remains Testnet. Funding the wallet does not switch networks.
+This release helper prepares unsigned Mainnet XLM deployment envelopes. It never reads
+private keys, signs or broadcasts. XLM is the initial deployment asset; the contract
+constructor binds that asset permanently. A USDC release requires a separate reviewed
+asset choice and deployment.
+
+1. Run npm test and npm run test:contract. Build the reviewed contract:
+   cargo build --locked --release --target wasm32v1-none --manifest-path contracts/Cargo.toml
+2. Set MAINNET_RPC_URL in your terminal to your chosen HTTPS Mainnet RPC provider.
+3. Once the deployment account has real XLM, run:
+   node scripts/prepare-mainnet.mjs upload YOUR_PUBLIC_G_ADDRESS
+4. Review work/mainnet/upload.json and the unsigned upload.xdr in a compatible Stellar
+   transaction signing tool. Confirm network, account and fee. Sign and submit yourself.
+   Keep the receipt. The envelope expires after five minutes; prepare again if expired.
+5. After the upload confirms, run:
+   node scripts/prepare-mainnet.mjs deploy YOUR_PUBLIC_G_ADDRESS
+6. Review/sign/submit deploy.xdr, keep its receipt and returned C-address. Simulation
+   fails if the code upload is absent. Do not submit multiple deployment envelopes.
+7. Verify on-chain WASM hash against the recorded SHA256 and verify the asset. Record
+   contract address, asset address, deployment receipt and exact source commit.
+
+ACTIVATION WORK STILL REQUIRED
+- Replace Testnet-specific runtime assumptions together: wallet policy, RPC/Horizon,
+  signature passphrase, settlement proof validation, room challenge text and room keys,
+  imports/exports, receipt URLs, TTL monitor, local storage namespaces and visible labels.
+- Keep disposable wallet tooling Testnet-only. Keep old Testnet data accessible separately.
+- Independently review contract/account authorization and the service boundary.
+- Complete a small real-value create/fund/submit/release and two-party settlement run;
+  verify balances and receipts, reload/recovery, private-room isolation and TTL restoration.
+- Confirm monitoring, maintenance funding and an incident response contact.
+
+Do not replace public/network.json with a Mainnet C-address alone: existing runtime
+paths still target Testnet. This helper is deployment preparation, not activation.

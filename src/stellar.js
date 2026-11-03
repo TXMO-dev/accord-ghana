@@ -23,7 +23,7 @@ export async function invoke(contractId, method, args, onStatus=()=>{}, onSubmit
   const current=await getAddress();
   if(current.error || current.address!==account) throw Error('Your wallet account changed. Reconnect before continuing.');
   const config=await fetch('/network.json').then(r=>r.json());
-  if(contractId!==config.contractId) throw Error('Only the verified Accord testnet deployment is supported.');
+  if(config.network!=='TESTNET'||contractId!==config.contractId) throw Error('Only the verified Accord testnet deployment is supported.');
   const network=await getNetworkDetails();
   if(network.networkPassphrase!==NETWORK) throw Error('Stellar Testnet required.');
   const source=await server.getAccount(account);

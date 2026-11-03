@@ -1,4 +1,5 @@
 export const studioObstacles=[
+ {x:-4.4,z:3.7,w:1.5,d:.9},{x:5,z:-.6,w:.8,d:.6},{x:-.9,z:3.6,w:.85,d:.5},
  {x:-6.5,z:0,w:.25,d:10},{x:0,z:-5,w:13,d:.25},
  {x:-3,z:1,w:2.4,d:1.2},{x:-3,z:-2.5,w:1.5,d:1.2},{x:2.5,z:-2.4,w:2.2,d:1.1},
  {x:3,z:1.6,w:2.4,d:.3},{x:3,z:2.4,w:2.7,d:.65},{x:3.6,z:3.8,w:2,d:.85},
@@ -13,4 +14,21 @@ export function walkWithCollisions(position,delta,obstacles=studioObstacles){
  let {x,z}=position;const steps=Math.max(1,Math.ceil(Math.hypot(delta.x,delta.z)/.09));
  for(let i=0;i<steps;i++){const nx=x+delta.x/steps;if(!blocked(nx,z,obstacles))x=nx;const nz=z+delta.z/steps;if(!blocked(x,nz,obstacles))z=nz;}
  return {x,z};
+}
+
+// Grid routes keep the guide out of furniture; every segment is collision checked.
+export function findStudioPath(start,goal,obstacles=studioObstacles){
+ const step=.25,key=p=>`${p.x},${p.z}`;
+ const clear=(a,b)=>{const n=Math.ceil(Math.hypot(b.x-a.x,b.z-a.z)/.05);for(let i=0;i<=n;i++){const t=n?i/n:0;if(blocked(a.x+(b.x-a.x)*t,a.z+(b.z-a.z)*t,obstacles))return false;}return true;};
+ if(!clear(start,start)||!clear(goal,goal))return [];
+ const origin={x:Math.round(start.x/step)*step,z:Math.round(start.z/step)*step};
+ if(!clear(start,origin))return [];
+ const queue=[origin],parents=new Map([[key(origin),null]]);let end;
+ for(let i=0;i<queue.length&&i<9000;i++){
+  const p=queue[i];if(Math.hypot(p.x-goal.x,p.z-goal.z)<.4&&clear(p,goal)){end=p;break;}
+  for(const [dx,dz] of [[step,0],[-step,0],[0,step],[0,-step]]){const q={x:p.x+dx,z:p.z+dz};if(!parents.has(key(q))&&clear(p,q)){parents.set(key(q),p);queue.push(q);}}
+ }
+ if(!end)return [];
+ const path=[goal];for(let p=end;p;p=parents.get(key(p)))path.unshift(p);
+ return path;
 }
