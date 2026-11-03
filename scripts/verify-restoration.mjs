@@ -3,9 +3,13 @@ import assert from 'node:assert/strict';
 import {createHash,randomBytes} from 'node:crypto';
 import {rpc,Networks,Keypair,TransactionBuilder,Operation,Contract,Address,Asset,nativeToScVal,scValToNative,SorobanDataBuilder,xdr} from '@stellar/stellar-sdk';
 
+process.on('uncaughtException', error=>{const message=String(error.stack||error).replaceAll('%','%25').replaceAll('\r','%0D').replaceAll('\n','%0A');console.error('::error title=Restoration rehearsal failed::'+message);process.exit(1);});
+
 // Deliberately fixed to the disposable local network. Cannot target public networks.
 const server=new rpc.Server('http://127.0.0.1:8000/rpc',{allowHttp:true}),network=Networks.STANDALONE;
-assert.equal((await server.getNetwork()).passphrase,network);
+let ready=false;
+for(let attempt=0;attempt<60;attempt++){try{assert.equal((await server.getNetwork()).passphrase,network);await server.getLatestLedger();ready=true;break;}catch(error){if(attempt===59)throw error;await new Promise(resolve=>setTimeout(resolve,2000));}}
+assert.ok(ready,'Local RPC did not become ready');
 const buyer=Keypair.random(),seller=Keypair.random(),operator=Keypair.random(),receipts=[];
 const delay=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 for(const k of [buyer,seller,operator]){const response=await fetch('http://127.0.0.1:8000/friendbot?addr='+k.publicKey());assert.ok(response.ok,'Local Friendbot failed');}
