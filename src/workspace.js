@@ -45,7 +45,7 @@ function render(){list();const r=current();window.dispatchEvent(new CustomEvent(
  $('studio-copy-summary').onclick=()=>copyText(summary(),handoffStatus);
  $('studio-export').onclick=()=>downloadText(r.id+'.json',JSON.stringify({version:1,network:'testnet',contract:config.contractId,id:r.id,title:r.title,terms:r.terms,events:r.events},null,2),'application/json');
  if(proofDrafts.get(r.id)&&chain?.evidence){const button=document.createElement('button');button.className='secondary';button.textContent='Copy delivery reference';button.onclick=async()=>{const proof=proofDrafts.get(r.id).trim();if(equal(await digest(proof),chain.evidence))await copyText(proof,handoffStatus);else handoffStatus('This draft does not match the submitted delivery reference.')};handoff.querySelector('.actions').append(button)}
- for(const b of document.querySelectorAll('[data-studio-action]'))b.onclick=()=>act(b.dataset.studioAction);
+ for(const b of $('studio-detail').querySelectorAll('[data-studio-action]'))b.onclick=()=>act(b.dataset.studioAction);
  if($('studio-verify'))$('studio-verify').onclick=async()=>{$('studio-verify-result').textContent=equal(await digest($('studio-verify-text').value.trim()),chain.evidence)?'Match: this is the submitted reference.':'Does not match the submitted reference.'};
  if($('studio-proof')){$('studio-proof').value=proofDrafts.get(r.id)||'';$('studio-proof').oninput=e=>proofDrafts.set(r.id,e.target.value)}
  if($('studio-verify-text')){$('studio-verify-text').value=verificationDrafts.get(r.id)||'';$('studio-verify-text').oninput=e=>verificationDrafts.set(r.id,e.target.value)}
