@@ -11,16 +11,24 @@ export function buildCourtyard({scene,box,register,actions,focus,speak,wake,paus
   const group=new THREE.Group();group.position.set(p.x,0,p.z);scene.add(group);
   // Flush paving keeps the walking surface continuous; open pergolas retain sightlines.
   box(3.6,.04,2.7,0,-.13,0,'plaster',group);
-  if(p.id==='room'){for(const dx of [-1.65,1.65])box(.16,2.8,.16,dx,1.25,-.9,'wood',group);
-  for(let i=0;i<4;i++)box(.1,.08,2.1,-1.5+i,2.6,0,'wood',group);}
-  box(2.1,.12,.7,0,.85,0,'wood',group);box(.55,.85,.5,0,.35,0,'green',group);
+  if(p.id==='room'){
+   for(const dx of [-1.65,1.65]){
+    box(.16,2.8,.16,dx,1.25,-.9,'wood',group);
+    const brace=box(.1,.1,Math.hypot(.8,1.7),dx,2.1,-.05,'wood',group);brace.rotation.x=-Math.atan2(.8,1.7);
+   }
+   for(const z of [-.9,.8])box(3.5,.18,.16,0,2.56,z,'wood',group);
+   for(let i=0;i<4;i++)box(.1,.08,2.1,-1.5+i,2.69,0,'wood',group);
+  }
+  box(2.1,.12,.7,0,.85,0,'wood',group);box(.55,.94,.5,0,.32,0,'green',group);
   box(1.7,.025,.48,0,.925,0,'paper',group);
   const c=document.createElement('canvas');c.width=768;c.height=192;const ctx=c.getContext('2d');
   ctx.fillStyle='#123d30';ctx.fillRect(0,0,768,192);ctx.textAlign='center';ctx.fillStyle='#e1ecad';ctx.font='bold 38px Arial';ctx.fillText(p.title,384,72);ctx.fillStyle='#fff8e6';ctx.font='28px Arial';ctx.fillText(p.caption,384,128);
   const texture=new THREE.CanvasTexture(c);texture.colorSpace=THREE.SRGBColorSpace;textures.push(texture);
-  const sign=new THREE.Mesh(new THREE.PlaneGeometry(2.2,.55),new THREE.MeshBasicMaterial({map:texture,side:THREE.FrontSide}));sign.position.set(0,1.75,.4);group.add(sign);
+  for(const x of [-.8,.8])box(.06,.84,.06,x,1.33,.38,'wood',group);
+  box(2.24,.59,.04,0,1.75,.38,'wood',group);
+  const sign=new THREE.Mesh(new THREE.PlaneGeometry(2.2,.55),new THREE.MeshBasicMaterial({map:texture,side:THREE.FrontSide}));sign.position.set(0,1.75,.405);group.add(sign);
   // Courtyard is viewed from the entrance as well as from the front-facing overview.
-  const reverse=sign.clone();reverse.material=sign.material.clone();reverse.rotation.y=Math.PI;reverse.position.z=-.4;group.add(reverse);
+  const reverse=sign.clone();reverse.material=sign.material.clone();reverse.rotation.y=Math.PI;reverse.position.z=.355;group.add(reverse);
   const material=new THREE.MeshStandardMaterial({color:'#e1ecad',emissive:'#a3c887',emissiveIntensity:.25});
   const light=new THREE.Mesh(new THREE.SphereGeometry(.12,10,8),material);light.position.set(.85,1.05,0);group.add(light);lamps.push({id:p.id,material});
   const activate=()=>{focus(p);actions[p.id]();};register(group,p.title+' — '+p.caption,activate);
