@@ -34,3 +34,35 @@ test('disposable auth signer rejects a mainnet payload even with testnet options
  const w=createDisposableWallets(),p=await fixture();const entry=xdr.SorobanAuthorizationEntry.fromXdr(p.authorization,'base64');
  await assert.rejects(w.signAuthEntry(buildAuthorizationEntryPreimage(entry,110,Networks.PUBLIC).toXdr('base64'),{networkPassphrase:Networks.TESTNET,address:w.address()}),/Testnet/);
 });
+
+import {roomSettlement,authorizeSettlementSession} from '../server/room-settlement.js';
+import {sha} from '../server/room-auth.js';
+import {setRoomBridge,roomRequest} from '../src/room-bridge.js';
+test('shared approvals require an unexpired matching participant room and seller-only writes',()=>{
+ const room='room',parties={client:buyer.publicKey(),freelancer:seller.publicKey()},session={room,wallet:seller.publicKey(),expires_at:new Date(Date.now()+60000).toISOString()};
+ assert.equal(authorizeSettlementSession(session,room,parties,'settlement-share'),seller.publicKey());
+ assert.throws(()=>authorizeSettlementSession({...session,room:'other'},room,parties,'settlement-get'));
+ assert.throws(()=>authorizeSettlementSession({...session,expires_at:new Date(0).toISOString()},room,parties,'settlement-get'));
+ assert.throws(()=>authorizeSettlementSession({...session,wallet:Keypair.random().publicKey()},room,parties,'settlement-get'));
+ assert.throws(()=>authorizeSettlementSession({...session,wallet:buyer.publicKey()},room,parties,'settlement-share'));
+});
+test('shared settlement transport validates signatures before storage and scopes reads to the session room',async()=>{
+ const room=sha(config.contractId+':'+id),offer=await fixture();let stored=null,writes=0,selected=seller.publicKey();
+ const fetcher=async(url,options)=>{
+  if(url.includes('/accord_room_sessions?'))return Response.json([{room,wallet:selected,expires_at:new Date(Date.now()+60000).toISOString()}]);
+  if(url.includes('/accord_rooms?'))return Response.json([{client:buyer.publicKey(),freelancer:seller.publicKey()}]);
+  if(url.includes('/storage/')){assert.ok(url.endsWith(room+'.json'));if(options.method==='POST'){stored=JSON.parse(options.body);writes++;return Response.json({});}return stored?Response.json(stored):new Response('',{status:404});}
+  return new Response(null,{status:202});
+ };
+ const deps={config,membership:async()=>agreement,stellar:{getLatestLedger:async()=>({sequence:100})},env:{SUPABASE_URL:'https://test.invalid',SUPABASE_SECRET_KEY:'test-only'},fetcher};
+ const body={action:'settlement-share',id,session:'test-session',offer};
+ await assert.rejects(roomSettlement({...body,offer:{...offer,sellerUnits:'1'}},deps));assert.equal(writes,0);
+ assert.equal((await roomSettlement(body,deps)).shared,true);assert.equal(writes,1);
+ selected=buyer.publicKey();assert.deepEqual((await roomSettlement({...body,action:'settlement-get'},deps)).offer,offer);
+ await assert.rejects(roomSettlement(body,deps));assert.equal(writes,1);
+});
+test('room switching discards a delayed shared approval response',async()=>{
+ let finish;setRoomBridge({id:'a',wallet:'buyer',request:()=>new Promise(resolve=>finish=resolve)});
+ const request=roomRequest('a','buyer','settlement-get');setRoomBridge(null);finish({offer:{}});await assert.rejects(request,/changed/);
+ await assert.rejects(roomRequest('a','buyer','settlement-get'),/Join/);
+});

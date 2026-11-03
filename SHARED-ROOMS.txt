@@ -51,3 +51,14 @@ Verification update — 2026-11-03
 - Still outstanding: manual network-loss/reconnect, session-expiry and cross-device layout checks. This is not a security audit or Mainnet signoff.
 
 Signoff clarification: User subsequently confirmed both sessions used tabs in the same Edge profile. Varial account switching caused a wallet mismatch. Independent two-wallet signoff must be repeated in separate profiles/devices; earlier user-reported messaging results do not establish independent wallet isolation.
+
+Direct settlement approvals — 2026-11-03
+- Private bucket accord-settlement-approvals: JSON only, 24 KB maximum, no public bucket access.
+- Room sessions authorize reads; only the agreement freelancer can share an approval. The server checks the current chain state, split, signature and expiry before storage.
+- One latest approval per room is stored. Superseding it does not revoke earlier signed approvals; signatures expire by Stellar ledger.
+- A private invalidation broadcast prompts the other participant to reload. No signed authorization is broadcast publicly.
+- The client reviews a fetched approval, revalidates against Stellar, simulates authorization enforcement and signs the final transaction. Sharing alone moves no funds.
+- File import/export remains a fallback. The normal joined-room flow does not download a file.
+- Storage retains the latest approval until overwritten; ledger expiry prevents later use. No automatic storage deletion is claimed.
+- 70 automated tests passed, including room/session isolation, seller-only sharing, signature validation before upload and stale browser response rejection. Live server storage read/write and anonymous denial verified with a removed probe object.
+- Actual two-wallet direct settlement signing still requires user signoff.

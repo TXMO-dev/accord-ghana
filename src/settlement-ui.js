@@ -1,3 +1,4 @@
+import {roomConnected,roomRequest} from './room-bridge.js';
 import {account,assertWallet,readAgreement,server,signAuthorization,signAndSubmit,digest} from './stellar.js';
 import {splitUnits,validateSettlement,assertDisputed,settlementSnapshot} from './settlement-model.js';
 import {prepareSellerOffer,prepareBuyerSettlement} from './settlement-service.js';
@@ -10,7 +11,7 @@ const drafts=new Map();
 export function mountSettlement(container,{config,record,agreement,context,lock,status,pending,confirmed,refresh}){
  if(stateName(agreement)!=='Disputed'||![agreement.buyer,agreement.seller].includes(account))return;
  const seller=account===agreement.seller,section=document.createElement('section');section.className='settlement-panel';section.id='settlement-panel';section.tabIndex=-1;
- section.innerHTML='<span class="eyebrow">A SHARED WAY FORWARD / TESTNET</span><h3>Find your middle ground.</h3><p>One exact split. Two independent approvals. The freelancer authorizes first; the client signs and submits.</p><ol class="settlement-steps"><li>Agree on the split</li><li>Freelancer exports approval</li><li>Client reviews & settles</li></ol><p class="muted">Approvals expire after 120 ledgers (roughly ten minutes, network-dependent). Export only when both parties are ready. Deleting a file does not revoke its signature.</p>';
+ section.innerHTML='<span class="eyebrow">A SHARED WAY FORWARD / TESTNET</span><h3>Find your middle ground.</h3><p>One exact split. Two independent approvals. The freelancer authorizes first; the client signs and submits.</p><ol class="settlement-steps"><li>Agree on the split</li><li>Freelancer shares approval</li><li>Client reviews & settles</li></ol><p class="muted">Approvals expire after 120 ledgers (roughly ten minutes, network-dependent). Authorize only when both parties are ready. Sharing a new approval does not revoke an earlier signature; signed approvals remain usable until expiry.</p>';
  const body=document.createElement('div');body.className='settlement-body';section.append(body);container.append(section);
  const walletAtMount=account;
  function checkContext(){if(context().record!==record||account!==walletAtMount||record.pending)throw Error('Wallet, agreement or pending transaction changed. Refresh before continuing.')}
@@ -24,20 +25,20 @@ export function mountSettlement(container,{config,record,agreement,context,lock,
    const update=()=>{drafts.set(record.id,input.value);try{const split=splitUnits(input.value,agreement.amount);preview.textContent='Freelancer '+formatUnits(split.seller)+' / Client refund '+formatUnits(split.buyer)+' test XLM'}catch(e){preview.textContent=e.message}};input.oninput=update;update();
    const approve=document.createElement('button');approve.dataset.studioAction='settlement-offer';approve.textContent='Review & authorize split';buttons.push(approve);
    approve.onclick=()=>action(async()=>{
+     if(!roomConnected(record.id,walletAtMount))throw Error('Join this agreement’s project room first to share the approval directly.');
      const split=splitUnits(input.value,agreement.amount),a=await fresh();
-     if(!await reviewAction({title:'A fair close, together.',description:'Authorize this exact split, then send the approval file privately to the client.',fields:fields(a,split),warning:'This authorization can be used until its ledger expiry. It cannot be revoked by deleting the file. The client must also sign. No funds move in this step.',confirmLabel:'Authorize split'})){status('Cancelled. No authorization requested.');return}
+     if(!await reviewAction({title:'A fair close, together.',description:'Authorize this exact split and share it in your private project room for the client to review.',fields:fields(a,split),warning:'This authorization can be used until its ledger expiry. Sharing a new approval does not revoke an earlier one. The client must also sign. No funds move in this step.',confirmLabel:'Authorize split'})){status('Cancelled. No authorization requested.');return}
      await fresh();status('Preparing freelancer authorization…');
      const offer=await prepareSellerOffer({server,config,id:record.id,agreement:a,sellerUnits:split.seller,sign:(entry,expiry)=>signAuthorization(entry,expiry,walletAtMount)});
-     checkContext();offers.set(record.id,offer);downloadText(record.id+'-settlement.json',JSON.stringify(offer,null,2),'application/json');status('Approval downloaded. Send it privately to the client before ledger '+offer.expiresLedger+'. No funds moved.');
+     checkContext();offers.set(record.id,offer);await roomRequest(record.id,walletAtMount,'settlement-share',offer);status('Approval shared in your project room. The client can review it before ledger '+offer.expiresLedger+'. No funds moved.');
    });body.append(label,preview,approve);
-   if(offers.has(record.id)){const again=document.createElement('button');again.className='secondary';again.textContent='Download last approval';again.onclick=()=>downloadText(record.id+'-settlement.json',JSON.stringify(offers.get(record.id),null,2),'application/json');body.append(again)}
+   if(offers.has(record.id)){const retry=document.createElement('button');retry.className='secondary';retry.textContent='Share last signed approval';buttons.push(retry);retry.onclick=()=>action(async()=>{await fresh();await roomRequest(record.id,walletAtMount,'settlement-share',offers.get(record.id));status('Signed approval shared. Waiting for the client to review.');});body.append(retry);const again=document.createElement('button');again.className='secondary';again.textContent='Download last approval';again.onclick=()=>downloadText(record.id+'-settlement.json',JSON.stringify(offers.get(record.id),null,2),'application/json');body.append(again)}
  }else{
-   const explanation=document.createElement('p');explanation.textContent='Ask the freelancer to authorize the agreed split and send you the downloaded file ending in -settlement.json. Choose that file here, not the original agreement export. You do not need to open or edit its contents. Accord verifies the signature and shows both amounts before you approve.';
+   const explanation=document.createElement('p');explanation.textContent='Join the shared project room. When the freelancer shares a signed split, review it here and approve in your wallet. Accord checks the signature, amounts and expiry before submitting.';const shared=document.createElement('button');shared.textContent='Review shared approval';shared.dataset.studioAction='settlement-review';buttons.push(shared);body.append(explanation,shared);
    const input=document.createElement('input');input.type='file';input.accept='.json,application/json';input.hidden=true;input.id='settlement-file';
-   const open=document.createElement('button');open.dataset.studioAction='settlement-import';open.textContent='Import signed approval file';open.onclick=()=>input.click();buttons.push(open);body.append(explanation,open,input);
-   input.onchange=()=>action(async()=>{
-     const file=input.files[0];input.value='';if(!file)return;if(file.size>24000)throw Error('Settlement file is too large.');
-     const offer=JSON.parse(await file.text()),a=await fresh();
+   const open=document.createElement('button');open.dataset.studioAction='settlement-import';open.textContent='Import signed approval file';open.onclick=()=>input.click();buttons.push(open);const fallback=document.createElement('details');const summary=document.createElement('summary');summary.textContent='Use an approval file instead';fallback.append(summary,open,input);body.append(fallback);
+   const settle=async offer=>{
+     const a=await fresh();
      const split=await validateSettlement(offer,{config,id:record.id,agreement:a,ledger:(await server.getLatestLedger()).sequence});
      if(!await reviewAction({title:'Close on common ground.',description:'The freelancer has authorized this split. Your signature submits the settlement and closes the milestone.',fields:[...fields(a,split),['Expires at ledger',offer.expiresLedger]],warning:'Settlement cannot be undone. The amounts shown exclude the client’s Testnet transaction fee. An expired or already-used approval cannot settle again.',confirmLabel:'Approve split & continue'})){status('Cancelled. Nothing was submitted.');return}
      const current=await fresh();status('Verifying both authorizations with Stellar…');
@@ -45,6 +46,8 @@ export function mountSettlement(container,{config,record,agreement,context,lock,
      checkContext();
      const result=await signAndSubmit(tx,walletAtMount,status,(hash,info)=>pending(hash,info));
      confirmed(result.hash);offers.delete(record.id);status('Settlement confirmed. Freelancer payment and client refund completed on Testnet.');
-   });
+   };
+   shared.onclick=()=>action(async()=>{const data=await roomRequest(record.id,walletAtMount,'settlement-get');if(!data.offer)throw Error('No shared approval yet. Ask the freelancer to authorize and share the split.');await settle(data.offer);});
+   input.onchange=()=>action(async()=>{const file=input.files[0];input.value='';if(!file)return;if(file.size>24000)throw Error('Settlement file is too large.');await settle(JSON.parse(await file.text()));});
  }
 }

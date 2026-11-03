@@ -1,3 +1,4 @@
+import {roomSettlement} from '../server/room-settlement.js';
 import {randomBytes} from 'node:crypto';
 import {rpc,Networks,TransactionBuilder,Contract,BASE_FEE,nativeToScVal,scValToNative} from '@stellar/stellar-sdk';
 import config from '../public/network.json' with {type:'json'};
@@ -31,7 +32,7 @@ export default async function handler(req,res){
  if(!enabled)return res.status(503).json({error:'Shared rooms are being prepared. Your agreement remains available.'});
  try{
   const b=typeof req.body==='string'?JSON.parse(req.body):req.body;
-  if(!b||JSON.stringify(b).length>6000)return res.status(413).json({error:'Request too large.'});
+  if(!b||JSON.stringify(b).length>28000)return res.status(413).json({error:'Request too large.'});
   if(b.action==='challenge')return res.status(200).json(makeChallenge({wallet:b.wallet,id:b.id,contract:config.contractId,origin,secret:process.env.ROOM_AUTH_SECRET}));
   if(b.action==='join'){
    const proof=verifyChallenge({token:b.token,signature:b.signature,secret:process.env.ROOM_AUTH_SECRET,origin,contract:config.contractId});
@@ -41,6 +42,7 @@ export default async function handler(req,res){
    return res.status(200).json({token,room,expiresIn:1800,realtime});
   }
   if(!/^[a-f0-9]{64}$/.test(b.session||''))return res.status(401).json({error:'Join the room with your wallet first.'});
+  if(['settlement-get','settlement-share'].includes(b.action))return res.status(200).json(await roomSettlement(b,{config,membership,stellar}));
   if(!['poll','comment','leave'].includes(b.action))return res.status(400).json({error:'Unknown room action.'});
   if(b.action==='comment'&&(typeof b.text!=='string'||!b.text.trim()||b.text.length>1500||!/^[a-f0-9-]{36}$/.test(b.messageId||'')))return res.status(400).json({error:'Write a comment of 1–1500 characters.'});
   return res.status(200).json(await db('accord_room_request',{p_token:sha(b.session),p_action:b.action,p_text:b.action==='comment'?b.text.trim():null,p_message:b.action==='comment'?b.messageId:null,p_station:Number.isInteger(b.station)&&b.station>=0&&b.station<4?b.station:0}));
