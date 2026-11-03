@@ -12,11 +12,11 @@ export async function connectTestnet(api, passphrase, reviewHold = WALLET_REVIEW
   if (reviewHold) throw Error(REVIEW_MESSAGE);
   const installed = await api.isConnected();
   if (installed.error || !installed.isConnected) throw Error('Varial (formerly Freighter) was not detected. Open Accord in the same browser profile where Varial is installed, unlock the extension, and reload.');
-  const before = await api.getNetworkDetails();
-  if (before.error || before.networkPassphrase !== passphrase) throw Error('Select Stellar Testnet in Varial Settings → Network before connecting. No connection request was sent.');
+  // Ask for address access first so the wallet can show its own connection UI.
+  // A granted address is not an Accord session until its network is verified.
   const result = await api.requestAccess();
   if (result.error || !result.address) throw Error(result.error?.message || 'Wallet connection was declined.');
   const after = await api.getNetworkDetails();
-  if (after.error || after.networkPassphrase !== passphrase) throw Error('The wallet network changed. Select Stellar Testnet and reconnect.');
+  if (after.error || after.networkPassphrase !== passphrase) throw Error('Wallet access approved. Select Stellar Testnet in Varial Settings → Network, then reconnect. No transaction was signed.');
   return result.address;
 }
