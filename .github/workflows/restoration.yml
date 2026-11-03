@@ -1,0 +1,63 @@
+name: Restoration rehearsal
+on: workflow_dispatch
+permissions:
+  contents: read
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Build isolated short-TTL fixture
+        run: |
+          rustup toolchain install stable --profile minimal
+          rustup target add wasm32v1-none --toolchain stable
+          mkdir -p work/fixture/src
+          cp contracts/Cargo.toml contracts/Cargo.lock work/fixture/
+          python3 - <<'PY'
+          from pathlib import Path
+          source=Path('contracts/src/lib.rs').read_text()
+          assert source.count('100_000') == 5 and source.count('500_000') == 5
+          source=source.replace('100_000','32').replace('500_000','96')
+          Path('work/fixture/src/lib.rs').write_text(source)
+          PY
+          cargo +stable build --locked --manifest-path work/fixture/Cargo.toml --target wasm32v1-none --release
+          cp work/fixture/target/wasm32v1-none/release/accord_escrow.wasm work/short-ttl.wasm
+      - name: Start isolated accelerated Stellar network
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/stellar/quickstart/cb64aee580f1589c79264a98eaad839628074cd8/local/core/etc/config-settings/p23/testnet.json -o work/settings.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('work/settings.json'); config=json.loads(p.read_text())
+          settings=next(e['state_archival'] for e in config['updated_entry'] if 'state_archival' in e)
+          settings['min_persistent_ttl']=64
+          settings['min_temporary_ttl']=16
+          settings['starting_eviction_scan_level']=1
+          p.write_text(json.dumps(config))
+          PY
+          docker run -d --name accord-restoration -p 127.0.0.1:8000:8000 -v "$PWD/work/settings.json:/opt/stellar-default/local/core/etc/config-settings/p23/testnet.json:ro" stellar/quickstart:latest --local --protocol-version 23 --limits testnet --enable rpc
+          for i in $(seq 1 120); do
+            if docker exec accord-restoration test -f /opt/stellar/core/.upgrade-config-initialized; then exit 0; fi
+            sleep 2
+          done
+          docker logs --tail 100 accord-restoration
+          exit 1
+      - name: Verify actual expiry and restoration
+        run: node scripts/verify-restoration.mjs
+      - name: Collect network diagnostics
+        if: always()
+        run: docker logs --tail 300 accord-restoration > work/network-log.txt 2>&1 || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: restoration-evidence
+          path: |
+            work/restoration-evidence.json
+            work/network-log.txt
+            work/settings.json
