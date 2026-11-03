@@ -14,9 +14,5 @@ function update(){
 addEventListener('scroll',()=>{if(!ticking){requestAnimationFrame(update);ticking=true}},{passive:true});
 const observer = new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('revealed');observer.unobserve(e.target)}}),{threshold:.08});
 document.querySelectorAll('.reveal').forEach(e=>observer.observe(e));
-document.querySelector('#motion-toggle').addEventListener('click',e=>{
-  document.documentElement.classList.toggle('still');
-  e.currentTarget.setAttribute('aria-pressed',document.documentElement.classList.contains('still'));
-  e.currentTarget.textContent=document.documentElement.classList.contains('still')?'Motion off':'Pause motion';
-});
+document.documentElement.classList.remove('still');
 update();
