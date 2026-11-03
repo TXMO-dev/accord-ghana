@@ -15,8 +15,8 @@ function shape(t,u,v){
 }
 function size(){w=innerWidth;h=innerHeight;dpr=Math.min(devicePixelRatio,1.5);canvas.width=w*dpr;canvas.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}size();addEventListener('resize',size,{passive:true});
 const scenes=[document.querySelector('.hero'),document.querySelector('#story'),document.querySelector('.journey'),document.querySelector('#workspace')];
-function scroll(){let s=0;for(let i=1;i<scenes.length;i++){const r=scenes[i].getBoundingClientRect();if(r.top<h*.7)s=i}target=s;const y=scrollY;canvas.style.opacity=y< h*.7?'.45':target===3?'.035':'.16';}
-addEventListener('scroll',scroll,{passive:true});scroll();
+function scroll(){let s=0;for(let i=1;i<scenes.length;i++){const r=scenes[i].getBoundingClientRect();if(r.top<h*.7)s=i}target=s;canvas.dataset.scene=String(s);canvas.style.opacity=s===0?'.4':s===3?'.10':'.48';}
+addEventListener('scroll',scroll,{passive:true});addEventListener('resize',scroll,{passive:true});scroll();
 function draw(time){
  frame=requestAnimationFrame(draw);if(!visible||time-last<33)return;last=time;
  const paused=reduced.matches||document.documentElement.classList.contains('still');
@@ -27,7 +27,7 @@ function draw(time){
  particles.forEach((p,i)=>{
   const a=shape(lo,p.u,p.v),b=shape(hi,p.u,p.v),drift=paused?0:Math.sin(time*.0004+i)*.003;
   const x=cx+(a[0]+(b[0]-a[0])*mix+drift)*scale,y=cy+(a[1]+(b[1]-a[1])*mix)*scale;
-  ctx.fillStyle=i%5===0?'#b78f67':target===0?'#d5d9bb':'#345b45';
+  ctx.fillStyle=i%5===0?'#b78f67':target===0||target===2?'#d5d9bb':'#345b45';
   ctx.beginPath();ctx.arc(x,y,i%9===0?1.8:1,0,Math.PI*2);ctx.fill();
  });
 }

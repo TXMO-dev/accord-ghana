@@ -1,3 +1,4 @@
+import './backdrop.js';
 import './atlas.js';
 import {LOCAL_TESTING} from './local-mode.js';
 import {openAccount} from './accounts.js';
