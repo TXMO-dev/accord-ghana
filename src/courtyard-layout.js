@@ -5,5 +5,5 @@ export const courtyardPlaces=[
 ];
 export const courtyardObstacles=courtyardPlaces.flatMap(p=>[
  {x:p.x,z:p.z,w:2.1,d:.84},
- ...(p.id==='room'?[-1.65,1.65].map(dx=>({x:p.x+dx,z:p.z-.9,w:.16,d:.16})):[])
+ ...[-1.65,1.65].flatMap(dx=>[-.9,.9].map(dz=>({x:p.x+dx,z:p.z+dz,w:.16,d:.16})))
 ]);
