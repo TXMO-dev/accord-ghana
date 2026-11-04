@@ -201,3 +201,11 @@ html.studio-experience.studio-focus-mode .room-layout{height:calc(100dvh - var(-
 .brief-builder-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.brief-builder button{min-height:44px}
 @media(max-width:480px){.brief-builder-row{grid-template-columns:1fr;gap:0}}
 .milestone-planner fieldset{min-width:0;border:1px solid var(--line);border-radius:10px;padding:12px;margin:14px 0}.milestone-planner legend{font-weight:600;padding:0 8px}.planner-actions{display:flex;flex-wrap:wrap;gap:8px}.planner-total{font-weight:600}.milestone-planner .planner-actions button{font-size:12px}
+
+/* One flow layout prevents the agreement record and navigation hint overlapping. */
+.studio-experience .room-view .room-status-stack{position:absolute;top:12px;left:12px;z-index:3;display:grid;gap:6px;width:min(480px,calc(100% - 24px));pointer-events:none}
+.studio-experience .room-view .room-status-stack>.room-live-record,.studio-experience .room-view .room-status-stack>.room-feedback{position:static;inset:auto;margin:0!important;width:auto;max-width:none!important;box-sizing:border-box;overflow-wrap:anywhere}
+.studio-experience .workspace-active .room-status-stack{max-width:38%}
+.third-person-active .room-feedback{display:none!important}
+.room-layout:has(.third-person-active)>.room-quest,.room-layout:has(.third-person-active)>.room-station-card,.room-layout:has(.third-person-active)>.room-journey{display:none!important}
+@media(max-width:650px){.studio-experience .room-view .room-status-stack{top:8px;left:8px;width:calc(100% - 16px)}.studio-experience .workspace-active .room-status-stack{display:none}}
