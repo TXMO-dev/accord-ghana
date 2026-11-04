@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {courtyardPlaces,loungeSeats,gardenTreeSpots,treeClearsPlots} from '../src/courtyard-layout.js';
 import {blocked,findStudioPath} from '../src/studio-navigation.js';
-import {cyclingLane,createGuideBicycle} from '../src/guide-bicycle.js';
+import {cyclingLane,createGuideBicycle,createRideState} from '../src/guide-bicycle.js';
 import * as THREE from 'three';
 test('destination plots are separate with reachable approaches',()=>{
  for(const p of courtyardPlaces){for(const q of courtyardPlaces)if(p!==q)assert.ok(Math.hypot(p.x-q.x,p.z-q.z)>18);assert.ok(findStudioPath({x:0,z:6},{x:p.x,z:p.z-1.5}).length);}
@@ -22,3 +22,13 @@ test('tree crowns and gust clearance cannot intersect destination plots',()=>{
  for(const p of gardenTreeSpots())assert.equal(treeClearsPlots(p.x,p.z),true);
 });
 
+
+test('cycling stays mounted across lane boundaries and eases off near arrival',()=>{
+ const ride=createRideState(),goal={x:23,z:26};
+ for(let i=0;i<20;i++)ride.update({x:0,z:8},goal,.05);
+ assert.equal(ride.update({x:12,z:18.9},goal,.05).amount,1);
+ assert.equal(ride.update({x:12,z:19.1},goal,.05).amount,1);
+ const arrival=ride.update({x:23,z:25},goal,.05);assert.ok(arrival.amount>0&&arrival.amount<1);
+ for(let i=0;i<20;i++)ride.update({x:23,z:25},goal,.05);
+ assert.equal(ride.update({x:23,z:25},goal,.05).amount,0);
+});

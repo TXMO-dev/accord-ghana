@@ -230,3 +230,9 @@ html.studio-experience.studio-focus-mode .room-layout{height:calc(100dvh - var(-
 .room-back-neighbourhood{position:absolute;top:5.4rem;left:1rem;z-index:8;min-height:44px;padding:.7rem 1rem;border:1px solid #a8b879;border-radius:24px;background:#123d30;color:#fff8e6;box-shadow:0 4px 12px #001c1633}
 .room-back-neighbourhood[hidden]{display:none}
 @media(max-width:650px){.room-back-neighbourhood{top:6.5rem;left:.5rem;font-size:.8rem}}
+
+.studio-experience .room-view details.room-status-stack{display:block;width:auto;max-width:min(360px,calc(100% - 24px));pointer-events:auto}
+.room-status-stack>summary{list-style:none;display:inline-flex;align-items:center;min-height:44px;padding:8px 14px;border:1px solid #a5b78566;border-radius:22px;background:#123d30dd;color:#f4f1df;font:12px var(--accord-sans);cursor:pointer}
+.room-status-stack>summary::after{content:' +';margin-left:8px}.room-status-stack[open]>summary::after{content:' −'}
+.room-status-stack[open]>.room-live-record,.room-status-stack[open]>.room-feedback{margin-top:6px!important;font-size:12px;padding:10px!important}
+.explorer-open .room-status-stack{display:none!important}
