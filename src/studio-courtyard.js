@@ -1,3 +1,4 @@
+import {buildDestinationPlot} from './destination-plot.js';
 import * as THREE from 'three';
 import {createPavilionRoof} from './pavilion-roof.js';
 import {courtyardPlaces} from './courtyard-layout.js';
@@ -6,9 +7,10 @@ export function buildCourtyard({scene,box,register,actions,focus,speak,wake,paus
  const textures=[],lamps=[],roofs=[];
  for(const p of courtyardPlaces){
   const group=new THREE.Group();group.position.set(p.x,0,p.z);scene.add(group);
+  buildDestinationPlot({group,box,place:p});
   // Flush paving keeps the walking surface continuous; open pergolas retain sightlines.
   box(3.6,.04,2.7,0,-.13,0,'plaster',group);
-  {
+  if(p.id!=='lounge'){
    for(const dx of [-1.65,1.65]){
     for(const z of [-.9,.9])box(.16,2.8,.16,dx,1.25,z,'wood',group);
     const brace=box(.1,.1,Math.hypot(.8,1.7),dx,2.1,-.05,'wood',group);brace.rotation.x=-Math.atan2(.8,1.7);
@@ -16,6 +18,7 @@ export function buildCourtyard({scene,box,register,actions,focus,speak,wake,paus
    for(const z of [-.9,.8])box(3.5,.18,.16,0,2.56+z*.055,z,'wood',group);
    roofs.push(createPavilionRoof(group,box));
   }
+  if(p.id==='lounge'){const roofGroup=new THREE.Group();roofGroup.scale.set(3.3,1,3.5);group.add(roofGroup);roofs.push(createPavilionRoof(roofGroup,box));}
   box(2.1,.12,.7,0,.85,0,'wood',group);box(.55,.94,.5,0,.32,0,'green',group);
   box(1.7,.025,.48,0,.925,0,'paper',group);
   if(p.id==='lounge'){
@@ -40,9 +43,10 @@ export function buildCourtyard({scene,box,register,actions,focus,speak,wake,paus
   const activate=()=>{focus(p);actions[p.id]();};register(group,p.title+' — '+p.caption,activate);
   const button=document.createElement('button');button.type='button';button.textContent='Visit '+p.title.toLowerCase();button.onclick=()=>{focus(p);speak(p.caption+'. Select the pavilion desk to open it.');};shortcuts.append(button);
  }
- for(let z=7;z<=15;z+=1)box(2,.02,.8,0,-.18,z,'plaster');
- for(let x=-7;x<0;x+=1)box(.8,.02,1.6,x,-.18,12.4,'plaster');
- for(let x=-9;x<=9;x+=1)box(.8,.02,1.6,x,-.18,6.2,'plaster');
+ for(let z=7;z<=28;z+=1)box(2,.02,.8,0,-.18,z,'plaster');
+ for(let x=-23;x<0;x+=1)box(.8,.02,1.6,x,-.18,12.4,'plaster');
+ for(let x=-23;x<=23;x+=1)box(.8,.02,1.6,x,-.18,6.2,'plaster');
+ for(const p of courtyardPlaces)for(let z=7;z<p.z-1;z+=1)box(2,.02,.85,p.x,-.18,z,'plaster');
  // Low-cost paving accents connect the three destinations without blocking the entrance.
  for(let x=-6;x<=6;x+=.75)box(.32,.012,.12,x,-.165,6.8,'gold');
  // Instanced planting adds a soft green boundary with one draw call.

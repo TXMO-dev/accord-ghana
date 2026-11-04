@@ -11,6 +11,7 @@ export function plantGarden(scene,wind){
  trunks.castShadow=leaves.castShadow=true;scene.add(trunks,leaves);wind?.sway(leaves,{amplitude:.18,base:-1,height:2});
  const shrubs=new THREE.InstancedMesh(new THREE.SphereGeometry(.45,8,6),new THREE.MeshStandardMaterial({color:'#6e8c50',roughness:1}),80);
  const blossoms=new THREE.InstancedMesh(new THREE.SphereGeometry(.065,6,4),new THREE.MeshStandardMaterial({color:'#eab9a0',roughness:.8}),160);
- for(let i=0;i<80;i++){const x=i<40?-13.3:14.1,z=-3+(i%40)*.5;dummy.position.set(x,.05,z);dummy.scale.set(1.2,.75,1.15);dummy.rotation.y=i;dummy.updateMatrix();shrubs.setMatrixAt(i,dummy.matrix);for(let j=0;j<2;j++){dummy.position.set(x+Math.sin(i+j)*.25,.4+(i%3)*.04,z+Math.cos(i+j)*.2);dummy.scale.set(1,1,1);dummy.updateMatrix();blossoms.setMatrixAt(i*2+j,dummy.matrix);blossoms.setColorAt(i*2+j,new THREE.Color(['#f4d785','#d5a0b2','#eee3bd'][i%3]));}}
+ for(let i=0;i<80;i++){const x=i<40?-13.3:14.1,z=-3+(i%40)*.5;const pathGap=z>5&&z<18;
+ dummy.position.set(x,.05,z);dummy.scale.setScalar(pathGap?0:1);if(!pathGap)dummy.scale.set(1.2,.75,1.15);dummy.rotation.y=i;dummy.updateMatrix();shrubs.setMatrixAt(i,dummy.matrix);for(let j=0;j<2;j++){dummy.position.set(x+Math.sin(i+j)*.25,.4+(i%3)*.04,z+Math.cos(i+j)*.2);dummy.scale.setScalar(pathGap?0:1);dummy.updateMatrix();blossoms.setMatrixAt(i*2+j,dummy.matrix);blossoms.setColorAt(i*2+j,new THREE.Color(['#f4d785','#d5a0b2','#eee3bd'][i%3]));}}
  scene.add(shrubs,blossoms);wind?.sway(shrubs,{amplitude:.08,base:-.45,height:.9});wind?.sway(blossoms,{amplitude:.04,base:-.065,height:.13});
 }

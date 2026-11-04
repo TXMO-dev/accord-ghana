@@ -11,7 +11,7 @@ export const studioObstacles=[
  ...[-8,8].flatMap(x=>[-5,4].map(z=>({x,z,w:.22,d:.22}))),{x:-4.2,z:1.8,w:.45,d:.45},{x:1,z:-2.1,w:.45,d:.45}
 ];
 export function blocked(x,z,obstacles=studioObstacles,radius=.27){
- if(x < -12||x>13||z < -9||z>17)return true;
+ if(x < -33||x>33||z < -9||z>37)return true;
  return obstacles.some(o=>{const cx=Math.max(o.x-o.w/2,Math.min(x,o.x+o.w/2)),cz=Math.max(o.z-o.d/2,Math.min(z,o.z+o.d/2));return (x-cx)**2+(z-cz)**2<radius**2-1e-10;});
 }
 export function walkWithCollisions(position,delta,obstacles=studioObstacles){
@@ -25,13 +25,15 @@ export function findStudioPath(start,goal,obstacles=studioObstacles){
  const step=.25,key=p=>`${p.x},${p.z}`;
  const clear=(a,b)=>{const n=Math.ceil(Math.hypot(b.x-a.x,b.z-a.z)/.05);for(let i=0;i<=n;i++){const t=n?i/n:0;if(blocked(a.x+(b.x-a.x)*t,a.z+(b.z-a.z)*t,obstacles))return false;}return true;};
  if(!clear(start,start)||!clear(goal,goal))return [];
+ if(clear(start,goal))return [goal];
  const rounded={x:Math.round(start.x/step)*step,z:Math.round(start.z/step)*step};
  const candidates=[];for(let dx=-2;dx<=2;dx++)for(let dz=-2;dz<=2;dz++)candidates.push({x:rounded.x+dx*step,z:rounded.z+dz*step});
  candidates.sort((a,b)=>Math.hypot(a.x-start.x,a.z-start.z)-Math.hypot(b.x-start.x,b.z-start.z));
  const origin=candidates.find(p=>clear(start,p));if(!origin)return [];
  const queue=[origin],parents=new Map([[key(origin),null]]);let end;
- for(let i=0;i<queue.length&&i<15000;i++){
-  const p=queue[i];if(Math.hypot(p.x-goal.x,p.z-goal.z)<.4&&clear(p,goal)){end=p;break;}
+ for(let i=0;queue.length&&i<50000;i++){
+  let best=0;for(let j=1;j<queue.length;j++)if(Math.hypot(queue[j].x-goal.x,queue[j].z-goal.z)<Math.hypot(queue[best].x-goal.x,queue[best].z-goal.z))best=j;
+  const p=queue.splice(best,1)[0];if(Math.hypot(p.x-goal.x,p.z-goal.z)<.4&&clear(p,goal)){end=p;break;}
   for(const [dx,dz] of [[step,0],[-step,0],[0,step],[0,-step]]){const q={x:p.x+dx,z:p.z+dz};if(!parents.has(key(q))&&clear(p,q)){parents.set(key(q),p);queue.push(q);}}
  }
  if(!end)return [];

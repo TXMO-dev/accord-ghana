@@ -8,7 +8,7 @@ export function dressStudio({scene,renderer,materials,box,cylinder,sphere,desk,d
  const grain=texture('wood'),plaster=texture('plaster');materials.wood.map=grain;materials.wood.bumpMap=grain;materials.wood.bumpScale=.035;materials.floor.map=grain;materials.plaster.map=plaster;materials.plaster.bumpMap=plaster;materials.plaster.bumpScale=.025;
  const room=new RoomEnvironment(),pmrem=new THREE.PMREMGenerator(renderer),env=pmrem.fromScene(room,.06);scene.environment=env.texture;scene.environmentIntensity=.35;room.dispose();pmrem.dispose();resources.push(env);
  const stone=new THREE.MeshStandardMaterial({color:'#a6a18d',roughness:.95,map:plaster});const clay=new THREE.MeshStandardMaterial({color:'#a85d3e',roughness:.9});const foliage=new THREE.MeshStandardMaterial({color:'#375a35',roughness:.85,side:THREE.DoubleSide});const glass=new THREE.MeshPhysicalMaterial({color:'#acc8b9',metalness:.1,roughness:.15,transparent:true,opacity:.28});
- const lawn=new THREE.MeshStandardMaterial({color:'#7e9160',roughness:1,map:plaster});box(70,.15,70,0,-.55,0,lawn);plantGarden(scene,wind);box(17,.25,14,0,-.4,0,clay);
+ const lawn=new THREE.MeshStandardMaterial({color:'#7e9160',roughness:1,map:plaster});box(90,.15,100,0,-.55,12,lawn);plantGarden(scene,wind);box(17,.25,14,0,-.4,0,clay);
  // Shaded courtyard and a paved approach outside the open studio.
  for(let x=-8;x<=8;x+=2)for(let z=6;z<=12;z+=2)box(1.91,.06,1.91,x,-.21,z,stone);
  for(let i=0;i<3;i++)box(4.5,.12,1.2,0,-.25-i*.09,5.5+i*.8,'plaster');

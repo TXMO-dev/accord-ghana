@@ -6,6 +6,6 @@ export const tourStops=[
  {x:-2,z:-1.4,station:1,text:'Next, funding. The client funds the milestone before work begins. Always check the actual agreement record.'},
  {x:2.5,z:-1.2,station:2,text:'Here, the freelancer submits delivery. Accord keeps the next action tied to the right wallet.'},
  {x:1,z:2.8,station:3,text:'At the review gallery, the client reviews delivery before approving payment. Now let’s explore the courtyard.'},
- ...courtyardPlaces.map(p=>({x:p.x,z:p.z-1.5,text:descriptions[p.id]})),
+ ...courtyardPlaces.map(p=>({x:p.x,z:p.z-1.5,place:p.id,text:descriptions[p.id]})),
  tourHome
 ];
