@@ -194,3 +194,9 @@ html.studio-experience.studio-focus-mode .room-layout{height:calc(100dvh - var(-
 .explorer-saved ul{list-style:none;padding:0;margin:10px 0}.explorer-saved li{display:flex;gap:8px;justify-content:space-between;margin-top:6px}.explorer-saved li button:first-child{flex:1;text-align:left;overflow-wrap:anywhere}.explorer-saved [role=status]{display:block;line-height:1.5}
 .studio-experience .explorer-map footer{max-height:58%;overflow:auto}
 @media(max-width:650px){.studio-experience .explorer-map footer{max-height:48%}.studio-leave-focus{font-size:10px!important;padding:8px!important}.explorer-saved form{flex-wrap:wrap}}
+.brief-builder{margin:12px 0 24px;padding:16px;border:1px solid var(--line);border-radius:12px;background:#80916d0d}
+.brief-builder summary{cursor:pointer;font-weight:600;min-height:36px;display:flex;align-items:center}
+.brief-builder p{font-size:13px;line-height:1.5}.brief-builder label{display:grid;gap:8px;margin:14px 0;font-size:13px}
+.brief-builder textarea,.brief-builder input,.brief-builder select{width:100%;min-width:0;padding:10px;border:1px solid #a5b29a;border-radius:6px;background:var(--paper);color:var(--ink);font:14px var(--accord-sans)}
+.brief-builder-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.brief-builder button{min-height:44px}
+@media(max-width:480px){.brief-builder-row{grid-template-columns:1fr;gap:0}}
