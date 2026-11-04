@@ -236,3 +236,9 @@ html.studio-experience.studio-focus-mode .room-layout{height:calc(100dvh - var(-
 .room-status-stack>summary::after{content:' +';margin-left:8px}.room-status-stack[open]>summary::after{content:' −'}
 .room-status-stack[open]>.room-live-record,.room-status-stack[open]>.room-feedback{margin-top:6px!important;font-size:12px;padding:10px!important}
 .explorer-open .room-status-stack{display:none!important}
+/* Welcome: one clear entrance, with world controls revealed after entry. */
+#studio-room:has(.studio-entrance) .explorer-map-fab{display:none!important}
+.entrance-destinations{display:flex;gap:8px;flex-wrap:wrap;max-width:480px;margin-top:20px}
+.entrance-destinations span{border:1px solid #b9ca9b50;border-radius:20px;padding:7px 11px;font-size:12px;color:#e0e8cf}
+.entrance-copy>p{max-width:490px}.entrance-copy h1{font-size:clamp(44px,4.8vw,78px);line-height:1.02}
+@media(max-width:800px){.entrance-diorama{height:clamp(200px,30vh,280px);min-height:200px;flex-shrink:0}.entrance-copy h1{font-size:clamp(38px,8vw,52px)}.entrance-destinations{gap:6px;margin-top:14px}.entrance-destinations span{font-size:11px}.entrance-actions button{width:100%}.studio-entrance{padding-bottom:max(24px,env(safe-area-inset-bottom))}}
