@@ -103,6 +103,6 @@ status.textContent=live?'Live conversation connected':'Conversation up to date Â
  };
  const stopVoice=mountLoungeVoice(panel,()=>{lastFetch=0;read();});
  const refresh=setInterval(read,12000),expiry=setInterval(()=>{const current=rows.filter(r=>Date.parse(r.expires_at)>Date.now());if(current.length!==rows.length){rows=current;render();}},1000);
- stop=()=>{feed.removeEventListener('scroll',markRead);stopVoice();feed.querySelectorAll('audio').forEach(a=>a.pause());stopPresence();stopProfiles();closed=true;epoch++;clearInterval(refresh);clearInterval(expiry);removeEventListener('accord-wallet',changed);client?.removeAllChannels();};
+ stop=()=>{feed.removeEventListener('scroll',markRead);stopVoice();feed.querySelectorAll('audio').forEach(a=>a.pause());if(!panel.keepLoungePresence)stopPresence();panel.keepLoungePresence=false;stopProfiles();closed=true;epoch++;clearInterval(refresh);clearInterval(expiry);removeEventListener('accord-wallet',changed);client?.removeAllChannels();};
  render();read();
 }

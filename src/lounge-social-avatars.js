@@ -1,9 +1,11 @@
+import {cleanLoungePose,smoothPose} from './lounge-motion-model.js';
 import * as THREE from 'three';
 import {createAvatar} from './avatar-character.js';
 import {cleanAvatar} from './avatar-model.js';
 export function createLoungeSocialAvatars({group,register,open,wake}){
  // Fixed social spots represent recent participation, not tracked player positions.
- let rows=[],time=0;
+ let rows=[],time=0,previousTime=0,selfWallet='',selfWalking=false;
+ const self=e=>{selfWallet=e.detail?.wallet||'';};const local=e=>{selfWalking=e.detail?.active===true;};addEventListener('accord-lounge-self',self);addEventListener('accord-local-motion',local);
  const slots=Array.from({length:6},(_,i)=>{const slot=new THREE.Group();slot.position.set(-1.4+(i%3)*1.4,0,5.5+Math.floor(i/3)*1.4);slot.visible=false;group.add(slot);register(slot,'Lounge participant - view public profile',()=>open({wallet:rows[i]?.wallet,people:true}));return slot;});
  const looks=Array(6).fill('');
  const models=slots.map(slot=>{const model=createAvatar(cleanAvatar());slot.add(model.group);return model;});
@@ -24,5 +26,5 @@ export function createLoungeSocialAvatars({group,register,open,wake}){
   }wake();
  };
  addEventListener('accord-lounge-people',changed);addEventListener('accord-lounge-posts',posted);
- return {update(t,paused){time=t;models.forEach((m,i)=>{if(slots[i].visible)m.update(t,paused);if(performance.now()>bubbles[i].until)bubbles[i].sprite.visible=false;});},dispose(){removeEventListener('accord-lounge-people',changed);removeEventListener('accord-lounge-posts',posted);bubbles.forEach(b=>{b.sprite.removeFromParent();b.texture.dispose();b.material.dispose();});models.forEach(m=>{m.dispose();});slots.forEach(s=>group.remove(s));}};
+ return {update(t,paused){const dt=previousTime?Math.min((t-previousTime)/1000,.1):.016;previousTime=t;time=t;models.forEach((m,i)=>{const slot=slots[i],p=rows[i];slot.visible=!!p&&!(p.wallet===selfWallet&&selfWalking);if(slot.visible){let pose;try{pose=cleanLoungePose(p.pose);}catch{pose={active:false};}const fresh=Date.parse(p.motion_at)>Date.now()-4000;const target=pose.active?{x:pose.x-group.position.x,z:pose.z-group.position.z,yaw:pose.yaw}:{x:-1.4+(i%3)*1.4,z:5.5+Math.floor(i/3)*1.4,yaw:0};const next=smoothPose({x:slot.position.x,z:slot.position.z,yaw:slot.rotation.y},target,dt);slot.position.x=next.x;slot.position.z=next.z;slot.rotation.y=next.yaw;m.update(t,paused);m.walk(t,!paused&&fresh&&pose.active&&pose.moving);}if(performance.now()>bubbles[i].until)bubbles[i].sprite.visible=false;});},dispose(){removeEventListener('accord-lounge-self',self);removeEventListener('accord-local-motion',local);removeEventListener('accord-lounge-people',changed);removeEventListener('accord-lounge-posts',posted);bubbles.forEach(b=>{b.sprite.removeFromParent();b.texture.dispose();b.material.dispose();});models.forEach(m=>{m.dispose();});slots.forEach(s=>group.remove(s));}};
 }

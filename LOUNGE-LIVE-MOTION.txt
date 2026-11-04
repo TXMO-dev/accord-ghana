@@ -1,0 +1,28 @@
+LIVE LOUNGE MOVEMENT - ACTIVATION AND CHECK
+
+Run LOUNGE-LIVE-MOTION.sql in the Accord Supabase SQL Editor.
+Expected: motion_ready true, public_can_move false, browser_can_move false.
+No new keys or environment variables are needed.
+
+In two independent browser profiles/devices:
+1. Reload Accord and connect a different Testnet wallet in each.
+2. Open Accord Lounge. Leave any old presence session.
+3. Tick Share my live Lounge movement, enter your presence name, and Join
+   visibly with wallet. Review the public movement consent and sign.
+4. Choose Walk together in the Lounge. Chat closes; movement sharing stays on.
+5. Use arrow keys/WASD or mobile direction controls. Other participants should
+   see your character walking and turning, with smoothed snapshot updates.
+6. Save a character change and check the other session.
+7. Choose Leave live Lounge. Your peer should see you disappear. A disconnected
+   session ages out after 75 seconds; stale walking animation stops sooner.
+
+Only in-world coordinates within the Lounge plot are shared. No real location,
+movement history, payments or permissions change. Latest positions expire with
+presence; the existing scheduled cleanup removes expired rows. Server updates
+are rate limited, ordered and bound to the wallet-approved presence session.
+Up to six participants render. This is snapshot-based social movement, not
+competitive game networking. It uses existing Realtime invalidations, verified
+HTTP reads, and a 10-second polling fallback. Two-device visual testing remains
+required after SQL activation. Voice/chat remain in the Lounge panel.
+
+Supabase reference: https://supabase.com/docs/guides/realtime/authorization

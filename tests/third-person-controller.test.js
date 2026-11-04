@@ -14,8 +14,8 @@ class Element extends EventTarget{
  close(){if(this.open){this.open=false;this.dispatchEvent(new Event('close'));}}
 }
 test('walking reentry keeps Kobi visible; wallet switching controls the real avatar; dialogue types without moving',()=>{
- const saved={document:globalThis.document,addEventListener:globalThis.addEventListener,removeEventListener:globalThis.removeEventListener};
- const bus=new EventTarget();globalThis.document={createElement:()=>new Element()};globalThis.addEventListener=bus.addEventListener.bind(bus);globalThis.removeEventListener=bus.removeEventListener.bind(bus);
+ const saved={dispatchEvent:globalThis.dispatchEvent,document:globalThis.document,addEventListener:globalThis.addEventListener,removeEventListener:globalThis.removeEventListener};
+ const bus=new EventTarget();globalThis.dispatchEvent=bus.dispatchEvent.bind(bus);globalThis.document={createElement:()=>new Element()};globalThis.addEventListener=bus.addEventListener.bind(bus);globalThis.removeEventListener=bus.removeEventListener.bind(bus);
  const scene=new Scene(),mascot=new Group(),clientGuide=new Group(),freelancerGuide=new Group(),host=new Element(),held=new Set();clientGuide.position.set(0,0,4);freelancerGuide.position.set(8,0,8);scene.add(mascot,clientGuide,freelancerGuide);let self=null;
  const controller=createThirdPerson({scene,camera:new PerspectiveCamera(),host,canvas:new Element(),avatars:{getSelf:()=>self,getPeers:()=>[],setControlled(){}},mascot,clientGuide,freelancerGuide,citizens:[],stations:[],held,obstacles:()=>[],wake(){},paused:()=>false,useStation(){},openProjectRoom(){},tour(){},key:()=> 'e'});
  try{
@@ -36,6 +36,7 @@ test('walking reentry keeps Kobi visible; wallet switching controls the real ava
    for(let i=0;i<1000&&self.group.position.distanceTo(mascot.position)>1.5;i++)controller.update(.05,0,0);
    assert.ok(self.group.position.distanceTo(mascot.position)<=1.5,'Avatar must follow to '+stop.text);
   }
+  assert.equal(controller.travelTo(-23,23.5),true);assert.equal(controller.position().x,-23);assert.equal(controller.travelTo(100,100),false);
   controller.followGuide(false);const ended=controller.position();controller.update(.05,0,0);assert.deepEqual(controller.position(),ended);
   held.add('back');controller.update(.05,0,0);assert.notDeepEqual(controller.position(),ended);
 

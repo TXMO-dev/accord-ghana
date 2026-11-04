@@ -10,3 +10,5 @@
 .accord-lounge [data-new-posts]{position:sticky;top:0;z-index:2;width:100%;background:#d7e99b;color:#163d31;box-shadow:0 3px 12px #123d3022}.accord-lounge [data-new-posts][hidden]{display:none}
 
 .accord-moderator [data-reports] article{padding:18px;border:1px solid #a3b294;border-radius:16px;margin:18px 0}.accord-moderator [data-reports] p{white-space:pre-wrap;overflow-wrap:anywhere}.accord-moderator [data-reports] button{margin:5px}.accord-moderator [data-reports] small{overflow-wrap:anywhere;letter-spacing:0}
+
+.lounge-presence-exit{position:absolute;left:50%;top:5rem;transform:translateX(-50%);z-index:12;background:#173e32;color:#fff8e6;border:1px solid #d5e99e;border-radius:2rem;padding:.7rem 1rem;max-width:70%;}.lounge-presence-exit[hidden]{display:none;}

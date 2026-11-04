@@ -42,5 +42,5 @@ test('appearance updates require consent and target only the signed session wall
  assert.equal(calls.length,1);assert.ok(calls[0][0].includes('wallet=eq.'+p.wallet));assert.match(calls[0][0],/departed=eq.false/);assert.equal(calls[0][1].avatar.hair,'bun');assert.equal(calls[0][1].avatar.url,undefined);
 });
 test('presence remains available before the avatar migration',async()=>{
- let count=0;const handler=createPresenceHandler({env,request:async()=>++count===1?{ok:false,status:400}:{ok:true,json:async()=>[]}});const r=response();await handler({method:'GET'},r);assert.equal(r.code,200);assert.equal(r.data.avatarSharing,false);
+ let count=0;const handler=createPresenceHandler({env,request:async()=>++count<=2?{ok:false,status:400}:{ok:true,json:async()=>[]}});const r=response();await handler({method:'GET'},r);assert.equal(r.code,200);assert.equal(r.data.avatarSharing,false);
 });
