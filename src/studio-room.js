@@ -55,7 +55,7 @@ export function mountStudioRoom(){
  plant(-5.6,-3.8);plant(5.4,-3.8);plant(5.3,3.7);
  // Each real workflow has a physical workstation.
  const groups=stations.map(s=>{const g=new THREE.Group();g.position.set(...s.pos);scene.add(g);return g;});
- const desk=groups[0];box(2.4,.14,1.2,0,1,0,'wood',desk);for(const x of [-1,1])for(const z of [-.45,.45])box(.09,1,.09,x,.5,z,'gold',desk);box(.8,.02,.55,-.35,1.09,.1,'paper',desk);
+ const desk=groups[0];box(2.4,.14,1.2,0,1,0,'wood',desk);for(const x of [-1,1])for(const z of [-.45,.45])box(.09,1,.09,x,.5,z,'gold',desk);
  const vault=groups[1];box(1.5,1.65,1.2,0,.83,0,'green',vault);box(1.25,1.35,.08,0,.83,.65,'gold',vault);const dial=cylinder(.18,.07,0,.9,.73,'wood',vault);dial.rotation.x=Math.PI/2;for(let i=0;i<3;i++)box(.45,.04,.03,.23,.5+i*.15,.72,'green',vault);
  const delivery=groups[2];box(2.2,.13,1.1,0,1,0,'wood',delivery);for(const x of [-.9,.9])box(.13,1,.8,x,.5,0,'green',delivery);
  function desktopPC(parent,x){
@@ -65,7 +65,7 @@ export function mountStudioRoom(){
   for(let i=0;i<3;i++){box(.28,.085,.012,x-.3,1.66-i*.12,-.2,'green',parent);box(.43,.018,.012,x+.13,1.67-i*.12,-.2,'paper',parent);}
   box(.72,.035,.24,x,1.09,.25,'green',parent);
   for(let row=0;row<3;row++)for(let col=0;col<10;col++)box(.045,.008,.045,x-.3+col*.065,1.112,.18+row*.065,'paper',parent);
-  const mouse=sphere(.075,x+.49,1.12,.25,'green',parent);mouse.scale.set(.65,.35,1.15);
+  const mouse=sphere(.075,x+.49,1.09625,.25,'green',parent);mouse.scale.set(.65,.35,1.15);
   box(.2,.48,.38,x+.71,1.31,-.21,'green',parent);box(.14,.35,.012,x+.71,1.31,-.013,'wood',parent);
   sphere(.015,x+.71,1.48,-.001,'screen',parent);
  }
