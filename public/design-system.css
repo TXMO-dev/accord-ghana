@@ -223,3 +223,6 @@ html.studio-experience.studio-focus-mode .room-layout{height:calc(100dvh - var(-
  .studio-experience .explorer-map header{inset:max(8px,env(safe-area-inset-top)) 10px auto!important;gap:8px}
  .explorer-map header h2{font-size:20px}.explorer-map header small{font-size:8px}
 }
+
+/* Keep the neighbourhood visible; expand controls only when needed. */
+.explorer-map .explorer-options-toggle{display:block;grid-column:1/-1;min-height:44px}.explorer-map footer:not(.options-expanded)>.explorer-next,.explorer-map footer:not(.options-expanded)>nav,.explorer-map footer:not(.options-expanded)>.explorer-saved{display:none!important}.studio-experience .explorer-map footer{max-height:42%;gap:8px;padding:12px 16px}.explorer-map footer>p{display:none}.explorer-map header>[data-close]{display:flex;align-items:center;gap:6px;min-height:48px;padding:8px 12px}.map-close-icon{display:grid;place-items:center;width:32px;height:32px;pointer-events:none;transition:transform .2s}.map-close-icon img{width:32px;height:32px}.explorer-map header>[data-close]:hover .map-close-icon{transform:rotate(12deg)}@media(prefers-reduced-motion:reduce){.map-close-icon{transition:none}}

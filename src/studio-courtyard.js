@@ -1,24 +1,20 @@
+import {createGardeners} from './studio-gardeners.js';
+import {neighbourhoodMaterials} from './neighbourhood-materials.js';
 import {buildDestinationPlot} from './destination-plot.js';
 import * as THREE from 'three';
 import {createPavilionRoof} from './pavilion-roof.js';
 import {courtyardPlaces} from './courtyard-layout.js';
 
 export function buildCourtyard({scene,box,register,actions,focus,speak,wake,paused,shortcuts}){
- const textures=[],lamps=[],roofs=[];
+ const textures=[],lamps=[],roofs=[],materials=neighbourhoodMaterials();
+ const gardeners=createGardeners(scene,register,speak);
+ const useDestination=e=>actions[e.detail]?.();addEventListener('accord-use-destination',useDestination);
  for(const p of courtyardPlaces){
   const group=new THREE.Group();group.position.set(p.x,0,p.z);scene.add(group);
-  buildDestinationPlot({group,box,place:p});
+  buildDestinationPlot({group,box,place:p,materials});
   // Flush paving keeps the walking surface continuous; open pergolas retain sightlines.
   box(3.6,.04,2.7,0,-.13,0,'plaster',group);
-  if(p.id!=='lounge'){
-   for(const dx of [-1.65,1.65]){
-    for(const z of [-.9,.9])box(.16,2.8,.16,dx,1.25,z,'wood',group);
-    const brace=box(.1,.1,Math.hypot(.8,1.7),dx,2.1,-.05,'wood',group);brace.rotation.x=-Math.atan2(.8,1.7);
-   }
-   for(const z of [-.9,.8])box(3.5,.18,.16,0,2.56+z*.055,z,'wood',group);
-   roofs.push(createPavilionRoof(group,box));
-  }
-  if(p.id==='lounge'){const roofGroup=new THREE.Group();roofGroup.scale.set(3.3,1,3.5);group.add(roofGroup);roofs.push(createPavilionRoof(roofGroup,box));}
+  const roofGroup=new THREE.Group();roofGroup.scale.set(...(p.id==='lounge'?[3.3,1,3.5]:[2.2,1.12,2.15]));group.add(roofGroup);roofs.push(createPavilionRoof(roofGroup,box));
   box(2.1,.12,.7,0,.85,0,'wood',group);box(.55,.94,.5,0,.32,0,'green',group);
   box(1.7,.025,.48,0,.925,0,'paper',group);
   if(p.id==='lounge'){
@@ -56,5 +52,5 @@ export function buildCourtyard({scene,box,register,actions,focus,speak,wake,paus
  const notice=()=>{unread=true;wake();},read=()=>{unread=false;wake();};
  addEventListener('accord-review-notice',notice);addEventListener('accord-room-new-comment',notice);
  addEventListener('accord-open-review-table',read);addEventListener('accord-open-project-room',read);addEventListener('accord-wallet',read);
- return {updateRoofs(camera,target,dt){return roofs.map(roof=>roof.update(camera,target,dt,paused())).some(Boolean);},update(t){for(const lamp of lamps)lamp.material.emissiveIntensity=unread&&lamp.id!=='archive'?(paused()?.45:.45+Math.sin(t*.002)*.15):.2;},dispose(){for(const roof of roofs)roof.dispose();for(const t of textures)t.dispose();removeEventListener('accord-review-notice',notice);removeEventListener('accord-room-new-comment',notice);removeEventListener('accord-open-review-table',read);removeEventListener('accord-open-project-room',read);removeEventListener('accord-wallet',read);}};
+ return {updateRoofs(camera,target,dt){return roofs.map(roof=>roof.update(camera,target,dt,paused())).some(Boolean);},update(t){gardeners.update(t,paused());for(const lamp of lamps)lamp.material.emissiveIntensity=unread&&lamp.id!=='archive'?(paused()?.45:.45+Math.sin(t*.002)*.15):.2;},dispose(){removeEventListener('accord-use-destination',useDestination);gardeners.dispose();materials.dispose();for(const roof of roofs)roof.dispose();for(const t of textures)t.dispose();removeEventListener('accord-review-notice',notice);removeEventListener('accord-room-new-comment',notice);removeEventListener('accord-open-review-table',read);removeEventListener('accord-open-project-room',read);removeEventListener('accord-wallet',read);}};
 }

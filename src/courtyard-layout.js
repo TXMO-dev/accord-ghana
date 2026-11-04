@@ -12,8 +12,12 @@ export const courtyardObstacles=courtyardPlaces.flatMap(p=>p.id==='lounge'?[
  ...loungeSeats.flatMap(([x,z])=>[{x:p.x+x,z:p.z+z,w:1.2,d:.8},...[-1,1].map(side=>({x:p.x+x+side*.95,z:p.z+z,w:.5,d:.55}))])
 ]:[
  {x:p.x,z:p.z,w:2.1,d:.84},
- ...[-1.65,1.65].flatMap(dx=>[-.9,.9].map(dz=>({x:p.x+dx,z:p.z+dz,w:.16,d:.16})))
+ {x:p.x,z:p.z-2.8,w:8,d:.2},
+ ...[-3.9,3.9].flatMap(dx=>[-2.5,2.5].map(dz=>({x:p.x+dx,z:p.z+dz,w:.18,d:.18}))),
+ ...(p.id==='room'?[-1,1].map(side=>({x:p.x+side*2.8,z:p.z+.2,w:.8,d:2})):[])
 ]);
 
 // Raised planters are solid; openings between them preserve the approaches.
 for(const p of courtyardPlaces){const w=p.id==='lounge'?16:10;for(const side of [-1,1])for(const z of [-2,2,5])courtyardObstacles.push({x:p.x+side*(w/2-.45),z:p.z+z,w:.6,d:1.2});}
+
+for(const p of courtyardPlaces){const w=p.id==='lounge'?16:10;for(const side of [-1,1])courtyardObstacles.push({x:p.x+side*(w/2-1.3),z:p.z+6,w:1.5,d:.5});}
