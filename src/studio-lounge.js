@@ -1,4 +1,5 @@
 import './lounge.css';
+import {mountLoungePresence} from './lounge-presence.js';
 import {mountProfiles} from './lounge-profiles.js';
 let dialog,stop=()=>{};
 export function openLounge(options={}){
@@ -14,7 +15,7 @@ export function openLounge(options={}){
  if(options.people||options.wallet)dispatchEvent(new CustomEvent('accord-select-lounge-profile',{detail:options}));
 }
 function startLounge(panel){
- const stopProfiles=mountProfiles(panel);
+ const stopProfiles=mountProfiles(panel),stopPresence=mountLoungePresence(panel);
  let closed=false,loading=false,posting=false,rows=[],client=null,live=false,lastFetch=0,epoch=0,reportTarget=null;
  const feed=panel.querySelector('[data-feed]'),status=panel.querySelector('[data-live]'),result=panel.querySelector('[data-result]'),form=panel.querySelector('form:not([data-profile-form])'),submit=form.querySelector('button');
  const reportPanel=panel.querySelector('[data-report]'),reportSend=panel.querySelector('[data-report-send]');
@@ -85,6 +86,6 @@ function startLounge(panel){
   }catch(e){if(!closed)result.textContent=e.message;}finally{posting=false;submit.disabled=false;}
  };
  const refresh=setInterval(read,12000),expiry=setInterval(()=>{const current=rows.filter(r=>Date.parse(r.expires_at)>Date.now());if(current.length!==rows.length){rows=current;render();}},1000);
- stop=()=>{stopProfiles();closed=true;epoch++;clearInterval(refresh);clearInterval(expiry);removeEventListener('accord-wallet',changed);client?.removeAllChannels();};
+ stop=()=>{stopPresence();stopProfiles();closed=true;epoch++;clearInterval(refresh);clearInterval(expiry);removeEventListener('accord-wallet',changed);client?.removeAllChannels();};
  read();
 }

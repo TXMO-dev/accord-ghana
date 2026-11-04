@@ -25,3 +25,5 @@ Opt-in profiles: implemented; apply LOUNGE-PROFILES.sql, then verify publish/edi
 Profile migration applied by user. Community board: shows three latest opt-in profiles in 3D, refreshes every minute; cards open searchable profile directory and public greeting drafts. This is not live avatar presence. Wallet verification, richer live presence and voice notes remain outstanding.
 
 Community board moved outside the roof to a freestanding entrance display. Profile realtime invalidation prepared: apply LOUNGE-PROFILES-REALTIME.sql. A 60-second fallback refresh remains. Two-session live verification pending.
+
+2026-11-04: User reports prior verification complete (user-verified, not independently observed). Opt-in wallet-signed Lounge presence prepared. Apply LOUNGE-PRESENCE.sql and test join/leave across independent sessions. Presence expires after 30 minutes; stale entries disappear after 75 seconds. Up to six generic 3D representatives occupy fixed social spots; movement/custom outfits are not synced. Voice notes remain outstanding.

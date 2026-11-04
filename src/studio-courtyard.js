@@ -1,3 +1,4 @@
+import {createLoungeSocialAvatars} from './lounge-social-avatars.js';
 import {createCommunityBoard} from './lounge-community-board.js';
 import {createGardenParticles} from './garden-particles.js';
 import {createGardeners} from './studio-gardeners.js';
@@ -8,7 +9,7 @@ import {createPavilionRoof} from './pavilion-roof.js';
 import {courtyardPlaces} from './courtyard-layout.js';
 
 export function buildCourtyard({scene,box,register,actions,focus,speak,wake,paused,shortcuts}){
- const communityBoards=[],textures=[],lamps=[],roofs=[],materials=neighbourhoodMaterials();
+ const socialAvatars=[],communityBoards=[],textures=[],lamps=[],roofs=[],materials=neighbourhoodMaterials();
  const particles=createGardenParticles(scene);
  const gardeners=createGardeners(scene,register,speak);
  const useDestination=e=>actions[e.detail]?.();addEventListener('accord-use-destination',useDestination);
@@ -30,6 +31,7 @@ export function buildCourtyard({scene,box,register,actions,focus,speak,wake,paus
    }
   }
   if(p.id==='lounge'){
+   socialAvatars.push(createLoungeSocialAvatars({group,register,open:actions.lounge,wake}));
    communityBoards.push(createCommunityBoard({group,box,register,open:actions.lounge,wake}));
    // Coffee machine, cups and a woven counter runner distinguish the café.
    box(.55,.48,.32,-.48,1.18,0,'green',group);
@@ -65,5 +67,5 @@ export function buildCourtyard({scene,box,register,actions,focus,speak,wake,paus
  const notice=()=>{unread=true;wake();},read=()=>{unread=false;wake();};
  addEventListener('accord-review-notice',notice);addEventListener('accord-room-new-comment',notice);
  addEventListener('accord-open-review-table',read);addEventListener('accord-open-project-room',read);addEventListener('accord-wallet',read);
- return {updateRoofs(camera,target,dt){return roofs.map(roof=>roof.update(camera,target,dt,paused())).some(Boolean);},update(t){particles.update(t,paused());gardeners.update(t,paused());for(const lamp of lamps)lamp.material.emissiveIntensity=unread&&lamp.id!=='archive'?(paused()?.45:.45+Math.sin(t*.002)*.15):.2;},dispose(){for(const board of communityBoards)board.dispose();removeEventListener('accord-use-destination',useDestination);gardeners.dispose();particles.dispose();materials.dispose();for(const roof of roofs)roof.dispose();for(const t of textures)t.dispose();removeEventListener('accord-review-notice',notice);removeEventListener('accord-room-new-comment',notice);removeEventListener('accord-open-review-table',read);removeEventListener('accord-open-project-room',read);removeEventListener('accord-wallet',read);}};
+ return {updateRoofs(camera,target,dt){return roofs.map(roof=>roof.update(camera,target,dt,paused())).some(Boolean);},update(t){for(const social of socialAvatars)social.update(t,paused());particles.update(t,paused());gardeners.update(t,paused());for(const lamp of lamps)lamp.material.emissiveIntensity=unread&&lamp.id!=='archive'?(paused()?.45:.45+Math.sin(t*.002)*.15):.2;},dispose(){for(const social of socialAvatars)social.dispose();for(const board of communityBoards)board.dispose();removeEventListener('accord-use-destination',useDestination);gardeners.dispose();particles.dispose();materials.dispose();for(const roof of roofs)roof.dispose();for(const t of textures)t.dispose();removeEventListener('accord-review-notice',notice);removeEventListener('accord-room-new-comment',notice);removeEventListener('accord-open-review-table',read);removeEventListener('accord-open-project-room',read);removeEventListener('accord-wallet',read);}};
 }
