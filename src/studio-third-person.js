@@ -4,7 +4,7 @@ import {walkWithCollisions,blocked} from './studio-navigation.js';
 import {movementDelta,nearestInteraction} from './third-person-model.js';
 import {cameraCollision} from './third-person-camera.js';
 
-export function createThirdPerson({scene,camera,host,canvas,avatars,mascot,clientGuide,freelancerGuide,citizens,stations,held,obstacles,wake,paused,useStation,openProjectRoom,tour,key}){
+export function createThirdPerson({scene,camera,host,canvas,avatars,mascot,clientGuide,freelancerGuide,citizens,stations,held,obstacles,wake,paused,useStation,openProjectRoom,tour,key,exitWalk}){
  let active=false,actor=null,time=0,nearest=null,yaw=0,pitch=0;
  const guestGroup=mascot.clone(true);guestGroup.visible=false;scene.add(guestGroup);
  const guestFeet=guestGroup.children.filter(o=>Math.abs(o.position.y-.4)<.01),guestArm=guestGroup.children.find(o=>o.isGroup&&o.position.x>.2);
@@ -14,7 +14,7 @@ export function createThirdPerson({scene,camera,host,canvas,avatars,mascot,clien
  const talk=document.createElement('button');talk.type='button';talk.onclick=interact;
  const pad=document.createElement('div');pad.className='third-person-pad';pad.setAttribute('aria-label','Walk controls');
  for(const [direction,label] of [['forward','↑'],['left','←'],['back','↓'],['right','→']]){const b=document.createElement('button');b.type='button';b.textContent=label;b.setAttribute('aria-label','Walk '+direction);b.onpointerdown=e=>{e.preventDefault();canvas.focus({preventScroll:true});b.setPointerCapture(e.pointerId);step(direction,yaw);held.add(direction);wake();};for(const event of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(event,()=>held.delete(direction));b.onclick=e=>{if(e.detail===0)step(direction,yaw);};pad.append(b);}
- hud.append(hint,talk,pad);host.append(hud);
+ const exit=document.createElement('button');exit.type='button';exit.className='third-person-exit';exit.textContent='Exit walk · Esc';exit.onclick=()=>exitWalk?.();hud.append(hint,talk,pad,exit);host.append(hud);
  const dialog=document.createElement('dialog');dialog.className='room-keyboard-help studio-conversation';dialog.dataset.worldConversation='true';dialog.setAttribute('aria-labelledby','studio-conversation-title');
  const title=document.createElement('h2'),copy=document.createElement('p'),choices=document.createElement('div'),end=document.createElement('button');title.id='studio-conversation-title';end.textContent='End conversation';end.type='button';end.onclick=()=>dialog.close();dialog.append(title,copy,choices,end);host.append(dialog);const advance=document.createElement('button');advance.type='button';advance.textContent='Show full message';dialog.insertBefore(advance,choices);let fullText='',typed=0,speaker=null,speakerRotation=0;advance.onclick=()=>{typed=fullText.length;copy.textContent=fullText;advance.hidden=true;};
  dialog.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();dialog.close();}});

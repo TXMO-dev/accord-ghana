@@ -7,3 +7,5 @@
 .room-view .studio-conversation[open]{position:absolute;inset:auto 16px 20px;margin:0 auto;width:min(720px,calc(100% - 32px));max-width:720px;max-height:46%;overflow:auto;z-index:30;padding:22px 28px;background:#102e25f5;color:#fff7e7;border:1px solid #c5d992;border-radius:18px;box-shadow:0 16px 50px #0005}
 .room-view .studio-conversation h2{font-size:25px;margin:0 0 10px;color:#d5e898}.room-view .studio-conversation p{min-height:3.4em;margin:8px 0 16px;color:#fff7e7;font-size:16px}.room-view .studio-conversation button{padding:10px 16px;background:#d5e898;color:#123b2e;margin:4px;border-radius:8px}.room-view .studio-conversation>div{margin:8px 0}.room-view .studio-conversation button[hidden]{display:none}
 @media(max-width:650px){.room-view .studio-conversation[open]{inset:auto 8px 8px;width:calc(100% - 16px);padding:16px;max-height:53%}.room-view .studio-conversation p{font-size:14px}}
+
+.third-person-hud .third-person-exit{background:transparent;color:#fff7e7;border:1px solid #9fb49b;font-size:12px;min-height:44px}
