@@ -1,0 +1,21 @@
+ACCORD LOUNGE — NEXT PRIORITIES
+
+First finish the welcome layout and keyboard help polish.
+Before declaring public chat complete, verify posting and realtime delivery with two independent participant sessions.
+
+1. Scheduled cleanup
+Schedule server-side deletion of expired messages. Verify the job runs and that expired rows are physically removed. Feed hiding alone is not deletion.
+
+2. Reporting and moderation
+Add message reporting, protected moderation actions and abuse controls. Keep moderator privileges server-side.
+
+3. Persistent opt-in profiles
+Let users explicitly publish and edit introductions, skills and availability, and remove their profile. Keep profile consent separate from public messages.
+
+4. Richer 3D social interactions
+Connect lounge presence, avatars and nearby conversation interactions to realtime state, with mobile-friendly controls.
+
+5. Voice notes
+Add recording, playback, size/duration limits and abuse reporting. Expire both records and stored audio, and explain retention accurately.
+
+Status: These items remain outstanding. This list is a priority plan, not a completion claim.

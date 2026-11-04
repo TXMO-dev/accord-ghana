@@ -2,9 +2,9 @@ import * as THREE from 'three';
 // Reuse the actual studio characters; this preview never loads wallet code.
 export function mountEntranceScene({mascot,desk}){
  const entrance=document.querySelector('.studio-entrance');if(!entrance)return;
- const launch=document.createElement('button');launch.type='button';launch.className='entrance-diorama';launch.setAttribute('aria-label','Enter Accord’s neighbourhood with Kobi');entrance.prepend(launch);
+ const launch=document.createElement('button');launch.type='button';launch.className='entrance-diorama';launch.setAttribute('aria-label','Enter Accord’s neighbourhood with Kobi');const visual=entrance.querySelector('.entrance-visual');if(!visual)return;visual.append(launch);
  let renderer;try{renderer=new THREE.WebGLRenderer({alpha:true,antialias:true,powerPreference:'low-power'});}catch{launch.remove();return;}
- renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.outputColorSpace=THREE.SRGBColorSpace;launch.append(renderer.domElement);
+ renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.outputColorSpace=THREE.SRGBColorSpace;launch.append(renderer.domElement);visual.querySelector('.entrance-preview-placeholder')?.remove();
  const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(34,1,.1,30);camera.position.set(5,4.2,6);camera.lookAt(0,.5,0);
  scene.add(new THREE.HemisphereLight('#fff4dc','#173f33',3));const sun=new THREE.DirectionalLight('#ffe2af',3);sun.position.set(3,5,2);scene.add(sun);
  const world=new THREE.Group();scene.add(world);const own=[];
