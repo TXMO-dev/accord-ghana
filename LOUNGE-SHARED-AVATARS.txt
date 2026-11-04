@@ -1,0 +1,22 @@
+SHARED LOUNGE CHARACTERS
+
+1. Run LOUNGE-SHARED-AVATARS.sql in the Accord Supabase SQL Editor.
+   Expected result: avatar_ready=true, public_can_read_presence=false,
+   browser_can_change_presence=false.
+2. Reload Accord in two independent browser profiles/devices.
+3. Customize each wallet's character, then open the Lounge and choose
+   Join visibly with wallet. The signed consent includes appearance sharing.
+4. Check that each participant sees the other's outfit, hair and accessories.
+5. Save a different appearance while visibly joined. The other session should
+   update without reloading (polling fallback is up to 10 seconds).
+6. Leave presence or disconnect. Your figure should disappear; disconnected
+   sessions age out after 75 seconds. Saving while absent does not publish.
+
+These are Three.js character meshes in fixed social places, not live movement
+tracking. Up to six visible participants are rendered. Appearance records have
+existing presence expiry and cleanup. Older sessions must rejoin for consent.
+No new environment variable is required. Without this SQL, basic presence stays
+available and shared appearance remains disabled.
+
+Validation: Supabase JSONB documentation
+https://supabase.com/docs/guides/database/json
