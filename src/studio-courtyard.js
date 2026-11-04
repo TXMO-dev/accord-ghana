@@ -17,6 +17,15 @@ export function buildCourtyard({scene,box,register,actions,focus,speak,wake,paus
   const roofGroup=new THREE.Group();roofGroup.scale.set(...(p.id==='lounge'?[3.3,1,3.5]:[2.2,1.12,2.15]));group.add(roofGroup);roofs.push(createPavilionRoof(roofGroup,box));
   box(2.1,.12,.7,0,.85,0,'wood',group);box(.55,.94,.5,0,.32,0,'green',group);
   box(1.7,.025,.48,0,.925,0,'paper',group);
+  if(p.id!=='lounge'){
+   if(p.id==='archive'){
+    for(let i=0;i<5;i++){box(.38,.035,.3,-.5+i*.025,.97+i*.04,.05,i%2?'paper':'gold',group);box(.12,.27,.22,.2+i*.14,1.08,-.08,i%2?'green':'paper',group);}
+   }else{
+    box(.68,.44,.055,-.25,1.24,-.13,'green',group);box(.59,.35,.015,-.25,1.24,-.095,'screen',group);box(.08,.18,.08,-.25,1,-.13,'gold',group);box(.4,.025,.22,-.25,.96,-.13,'wood',group);
+    box(.5,.025,.18,-.25,.97,.2,'green',group);for(let i=0;i<7;i++)box(.035,.01,.12,-.45+i*.065,.99,.2,'paper',group);
+    box(.16,.035,.23,.35,.97,.12,'gold',group);
+   }
+  }
   if(p.id==='lounge'){
    // Coffee machine, cups and a woven counter runner distinguish the café.
    box(.55,.48,.32,-.48,1.18,0,'green',group);

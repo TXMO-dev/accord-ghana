@@ -1,5 +1,5 @@
 import {beatSeconds,highlifeStep} from './highlife-score.js';
-export function createStudioSoundtrack(getAudio){
+export function createStudioSoundtrack(getAudio,getDestination=null){
  let audio,master,timer=null,next=0,step=0,enabled=false,volume=.25,disposed=false;const sources=new Set();
  const level=()=>enabled&&!document.hidden?volume*.65:0;
  function gainTo(value,seconds=.2){if(!master)return;master.gain.cancelScheduledValues(audio.currentTime);master.gain.setTargetAtTime(value,audio.currentTime,seconds);}
@@ -18,7 +18,7 @@ export function createStudioSoundtrack(getAudio){
  }
  function tick(){if(!enabled||document.hidden||audio.state!=='running')return;if(next<audio.currentTime-.1)next=audio.currentTime+.03;while(next<audio.currentTime+.15){for(const n of highlifeStep(step))note(n,next);step=(step+1)%128;next+=beatSeconds/4;}}
  function pause(){clearInterval(timer);timer=null;gainTo(0,.06);for(const source of sources){try{source.stop(audio.currentTime+.08);}catch{}}}
- function start(){if(disposed||!enabled||document.hidden||timer&&audio?.state==='running')return;try{audio=getAudio();if(!master){master=audio.createGain();master.gain.value=0;master.connect(audio.destination);}audio.resume().then(()=>{if(disposed||!enabled||document.hidden)return;gainTo(level());if(!timer){next=audio.currentTime+.04;timer=setInterval(tick,70);tick();}}).catch(()=>{});}catch{}}
+ function start(){if(disposed||!enabled||document.hidden||timer&&audio?.state==='running')return;try{audio=getAudio();if(!master){master=audio.createGain();master.gain.value=0;master.connect(getDestination?getDestination():audio.destination);}audio.resume().then(()=>{if(disposed||!enabled||document.hidden)return;gainTo(level());if(!timer){next=audio.currentTime+.04;timer=setInterval(tick,70);tick();}}).catch(()=>{});}catch{}}
  const visibility=()=>document.hidden?pause():start();document.addEventListener('visibilitychange',visibility);
  return {enable(value){enabled=value;if(value)start();else pause();},start,setVolume(value){volume=Math.max(0,Math.min(1,value));gainTo(level());},duck(){if(!master||!enabled)return;const now=audio.currentTime;master.gain.cancelScheduledValues(now);master.gain.setTargetAtTime(level()*.3,now,.03);master.gain.setTargetAtTime(level(),now+1.1,.35);},dispose(){disposed=true;enabled=false;pause();document.removeEventListener('visibilitychange',visibility);master?.disconnect();}};
 }

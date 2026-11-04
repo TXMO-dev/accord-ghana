@@ -43,6 +43,11 @@ export function buildDestinationPlot({group,box,place,materials}){
   return;
  }
  box(12,.18,10,0,-.1,0,'floor',group);
+ for(const y of [1.1,1.8]){box(4,.08,.4,-2.5,y,-4.4,'wood',group);for(let i=0;i<8;i++)box(.25,.3,.23,-4.1+i*.45,y+.19,-4.4,i%2?'green':'paper',group);}
+ // Café service cabinet and glass display, distinct from the networking tables.
+ box(2.6,.9,.7,3,.35,-3.8,'green',group);box(2.7,.08,.8,3,.84,-3.8,'wood',group);box(1.8,.5,.65,3,1.1,-3.8,materials.glass,group);
+ for(let i=0;i<5;i++){const pastry=new THREE.Mesh(new THREE.SphereGeometry(.12,8,6),new THREE.MeshStandardMaterial({color:'#b98143',roughness:.9}));pastry.position.set(2.4+i*.3,.95,-3.8);pastry.scale.y=.6;group.add(pastry);}
+
  box(12,2.6,.2,0,1.2,-4.8,materials.wall,group);
  for(let x=-5.5;x<6;x+=.5)box(.08,2.4,.09,x,1.2,-4.65,'wood',group);
  for(const x of [-5.8,5.8])for(const z of [-4.4,4.4])box(.2,3,.2,x,1.35,z,'wood',group);
