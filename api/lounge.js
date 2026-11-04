@@ -8,7 +8,8 @@ export function createLoungeHandler({env=process.env,request=fetch,now=Date.now}
   const db=async(path,options={})=>request(env.SUPABASE_URL+'/rest/v1/accord_lounge_messages'+path,{...options,headers:{apikey:env.SUPABASE_SECRET_KEY,'Content-Type':'application/json',...options.headers},signal:AbortSignal.timeout(12000)});
   try{
    if(req.method==='GET'){
-    const r=await db('?select=id,wallet,display_name,body,created_at,expires_at&network=eq.testnet&hidden=eq.false&expires_at=gt.'+encodeURIComponent(new Date(now()).toISOString())+'&order=created_at.desc&limit=60');
+    let r=await db('?select=id,wallet,display_name,body,created_at,expires_at,voice_seconds&network=eq.testnet&hidden=eq.false&expires_at=gt.'+encodeURIComponent(new Date(now()).toISOString())+'&order=created_at.desc&limit=60');
+    if(!r.ok&&r.status===400)r=await db('?select=id,wallet,display_name,body,created_at,expires_at&network=eq.testnet&hidden=eq.false&expires_at=gt.'+encodeURIComponent(new Date(now()).toISOString())+'&order=created_at.desc&limit=60');
     if(!r.ok)throw Error('Lounge messages could not be loaded. Please retry.');
     return res.status(200).json({messages:await r.json(),realtime:env.SUPABASE_PUBLISHABLE_KEY?{url:env.SUPABASE_URL,key:env.SUPABASE_PUBLISHABLE_KEY,topic:'accord:lounge:testnet'}:null});
    }

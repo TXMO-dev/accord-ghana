@@ -45,3 +45,5 @@ const roomObserver=new IntersectionObserver(async entries=>{
  catch(error){console.error('Studio initialization failed',error);const loading=document.getElementById('room-loading');if(loading)loading.textContent='Continue using the labelled workspace controls below.';window.dispatchEvent(new Event('accord-studio-ready'));}
 },{rootMargin:'300px'});
 roomObserver.observe(document.getElementById('studio-room'));
+
+import './world-form-scenes.js';

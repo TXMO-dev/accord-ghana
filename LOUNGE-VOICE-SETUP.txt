@@ -1,0 +1,19 @@
+ACCORD LOUNGE VOICE NOTES — ACTIVATION
+
+1. Open the accord project in Supabase, then SQL Editor > New query.
+2. Paste the entire LOUNGE-VOICE.sql file and Run.
+3. The final row should show false for public_can_read_uploads, browser_can_upload and audio_bucket_is_public.
+4. Refresh Accord, open the Lounge and check that Record voice note becomes available.
+
+The production CRON_SECRET has been configured in Vercel. The deployment includes a daily 03:00 UTC storage cleanup job. Do not put server secrets in browser variables.
+
+Test with a disposable Testnet wallet:
+- Record a short phrase after granting microphone permission. Stop, preview, then discard. The microphone indicator must stop.
+- Record again, add your public name and a description, then review/sign the publication message. This is not a payment.
+- In another session, load the voice note and press Play. Nothing should autoplay.
+- Confirm text comments still work, and reporting/muting covers voice messages.
+- Closing the Lounge or switching wallets should discard an unfinished recording.
+
+Messages disappear from the feed after 24 hours. Audio is private Storage content accessed by short-lived playback links. The daily cleanup removes tracked audio older than 25 hours, normally within 25–49 hours; failures or a backlog can delay deletion. Cleanup processes at most 500 records per run. Previously copied audio cannot be recalled. A playback link already issued may remain usable for up to 60 seconds, bounded by message expiry.
+
+Not yet verified: live microphone recording and wallet-approved upload, cross-device playback, production scheduled cleanup after applying this SQL. Automated API/schema tests pass; these do not replace the live checks.

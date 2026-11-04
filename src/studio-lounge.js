@@ -1,4 +1,5 @@
 import './lounge.css';
+import {mountLoungeVoice,voicePlayback} from './lounge-voice.js';
 import {mountLoungePresence} from './lounge-presence.js';
 import {mountProfiles} from './lounge-profiles.js';
 let dialog,stop=()=>{};
@@ -20,13 +21,15 @@ function startLounge(panel){
  const feed=panel.querySelector('[data-feed]'),status=panel.querySelector('[data-live]'),result=panel.querySelector('[data-result]'),form=panel.querySelector('form:not([data-profile-form])'),submit=form.querySelector('button');
  const reportPanel=panel.querySelector('[data-report]'),reportSend=panel.querySelector('[data-report-send]');
  const blocked=new Set();try{for(const w of JSON.parse(localStorage.getItem('accord-lounge-muted')||'[]'))if(typeof w==='string')blocked.add(w);}catch{}
+ const items=new Map();
  const render=()=>{
-  const visible=rows.filter(r=>Date.parse(r.expires_at)>Date.now()&&!blocked.has(r.wallet));feed.replaceChildren();
+  const visible=rows.filter(r=>Date.parse(r.expires_at)>Date.now()&&!blocked.has(r.wallet));const ids=new Set(visible.map(r=>r.id));for(const [id,li] of items){if(!ids.has(id)){li.querySelectorAll('audio').forEach(a=>{a.pause();a.removeAttribute('src');a.load();});li.remove();items.delete(id);}}if(!items.size)feed.replaceChildren();
   if(!visible.length){const li=document.createElement('li');li.textContent='The lounge is quiet. Start a conversation.';feed.append(li);}
   for(const r of [...visible].reverse()){
+   if(items.has(r.id))continue;
    const report=document.createElement('button');report.type='button';report.textContent='Report';report.onclick=()=>{reportTarget=r;reportPanel.hidden=false;panel.querySelector('[data-report-preview]').textContent=r.display_name+': '+r.body;panel.querySelector('[data-report-reason]').focus();};
    const li=document.createElement('li'),name=document.createElement('strong'),wallet=document.createElement('small'),body=document.createElement('p'),mute=document.createElement('button');
-   name.textContent=r.display_name;wallet.textContent=`${r.wallet.slice(0,6)}…${r.wallet.slice(-4)} · ${new Date(r.created_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}`;wallet.title=r.wallet;body.textContent=r.body;mute.type='button';mute.textContent='Mute wallet';mute.setAttribute('aria-label','Mute wallet '+r.wallet.slice(0,6));mute.onclick=()=>{blocked.add(r.wallet);try{localStorage.setItem('accord-lounge-muted',JSON.stringify([...blocked]));}catch{}render();result.textContent='Wallet muted on this device.';};li.append(name,wallet,body,mute,report);feed.append(li);
+   name.textContent=r.display_name;wallet.textContent=`${r.wallet.slice(0,6)}…${r.wallet.slice(-4)} · ${new Date(r.created_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}`;wallet.title=r.wallet;body.textContent=r.body;mute.type='button';mute.textContent='Mute wallet';mute.setAttribute('aria-label','Mute wallet '+r.wallet.slice(0,6));mute.onclick=()=>{blocked.add(r.wallet);try{localStorage.setItem('accord-lounge-muted',JSON.stringify([...blocked]));}catch{}render();result.textContent='Wallet muted on this device.';};li.append(name,wallet,body);if(r.voice_seconds)li.append(voicePlayback(r));li.append(mute,report);items.set(r.id,li);feed.append(li);
   }
  };
  async function read(){
@@ -34,7 +37,7 @@ function startLounge(panel){
   loading=true;lastFetch=Date.now();
   try{
    const r=await fetch('/api/lounge',{signal:AbortSignal.timeout(20000)}),data=await r.json();if(!r.ok)throw Error(data.error||'Conversation unavailable.');if(closed)return;
-   rows=data.messages;render();status.textContent=live?'Live conversation connected':'Conversation up to date · checking for new messages';
+   if(JSON.stringify(rows)!==JSON.stringify(data.messages)){rows=data.messages;render();}status.textContent=live?'Live conversation connected':'Conversation up to date · checking for new messages';
    if(!client&&data.realtime){
     const {createClient}=await import('@supabase/supabase-js');if(closed)return;
     client=createClient(data.realtime.url,data.realtime.key,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
@@ -85,7 +88,8 @@ function startLounge(panel){
    form.elements.message.value='';result.textContent='Posted to the public lounge. Visible for 24 hours.';lastFetch=0;await read();
   }catch(e){if(!closed)result.textContent=e.message;}finally{posting=false;submit.disabled=false;}
  };
+ const stopVoice=mountLoungeVoice(panel,()=>{lastFetch=0;read();});
  const refresh=setInterval(read,12000),expiry=setInterval(()=>{const current=rows.filter(r=>Date.parse(r.expires_at)>Date.now());if(current.length!==rows.length){rows=current;render();}},1000);
- stop=()=>{stopPresence();stopProfiles();closed=true;epoch++;clearInterval(refresh);clearInterval(expiry);removeEventListener('accord-wallet',changed);client?.removeAllChannels();};
- read();
+ stop=()=>{stopVoice();feed.querySelectorAll('audio').forEach(a=>a.pause());stopPresence();stopProfiles();closed=true;epoch++;clearInterval(refresh);clearInterval(expiry);removeEventListener('accord-wallet',changed);client?.removeAllChannels();};
+ render();read();
 }

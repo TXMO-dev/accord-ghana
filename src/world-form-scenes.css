@@ -1,0 +1,8 @@
+.world-form-scene{height:100px;min-height:100px;overflow:hidden;border-radius:18px;background:radial-gradient(ellipse at 50% 80%,#c7a06022,transparent 70%);pointer-events:none;margin:0 0 16px}
+.world-form-scene canvas{display:block;width:100%;height:100%}
+.world-form-panel{border-color:#b5c1a7;border-radius:22px}
+.world-form-panel input:not([type=checkbox]):not([type=radio]),.world-form-panel textarea,.world-form-panel select{border-radius:10px;box-shadow:inset 0 1px 3px #0c30200a}
+.world-form-panel input:focus-visible,.world-form-panel textarea:focus-visible,.world-form-panel select:focus-visible{outline:3px solid #a8bd6c;outline-offset:3px}
+#studio-workspace-panel>.world-form-scene{margin:12px 20px 0;height:76px;min-height:76px}
+.accord-review .review-art>.world-form-scene{height:160px;min-height:160px;width:100%}
+@media(max-width:600px){.world-form-scene{height:64px;min-height:64px;margin-bottom:10px}#studio-workspace-panel>.world-form-scene{height:56px;min-height:56px}.world-form-panel{border-radius:16px}}
