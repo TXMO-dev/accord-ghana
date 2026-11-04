@@ -1,4 +1,5 @@
 import './lounge.css';
+import {mountProfiles} from './lounge-profiles.js';
 let dialog,stop=()=>{};
 export function openLounge(){
  if(!dialog){
@@ -13,8 +14,9 @@ export function openLounge(){
  dialog.show();startLounge(dialog);
 }
 function startLounge(panel){
+ const stopProfiles=mountProfiles(panel);
  let closed=false,loading=false,posting=false,rows=[],client=null,live=false,lastFetch=0,epoch=0,reportTarget=null;
- const feed=panel.querySelector('[data-feed]'),status=panel.querySelector('[data-live]'),result=panel.querySelector('[data-result]'),form=panel.querySelector('form'),submit=form.querySelector('button');
+ const feed=panel.querySelector('[data-feed]'),status=panel.querySelector('[data-live]'),result=panel.querySelector('[data-result]'),form=panel.querySelector('form:not([data-profile-form])'),submit=form.querySelector('button');
  const reportPanel=panel.querySelector('[data-report]'),reportSend=panel.querySelector('[data-report-send]');
  const blocked=new Set();try{for(const w of JSON.parse(localStorage.getItem('accord-lounge-muted')||'[]'))if(typeof w==='string')blocked.add(w);}catch{}
  const render=()=>{
@@ -83,6 +85,6 @@ function startLounge(panel){
   }catch(e){if(!closed)result.textContent=e.message;}finally{posting=false;submit.disabled=false;}
  };
  const refresh=setInterval(read,12000),expiry=setInterval(()=>{const current=rows.filter(r=>Date.parse(r.expires_at)>Date.now());if(current.length!==rows.length){rows=current;render();}},1000);
- stop=()=>{closed=true;epoch++;clearInterval(refresh);clearInterval(expiry);removeEventListener('accord-wallet',changed);client?.removeAllChannels();};
+ stop=()=>{stopProfiles();closed=true;epoch++;clearInterval(refresh);clearInterval(expiry);removeEventListener('accord-wallet',changed);client?.removeAllChannels();};
  read();
 }

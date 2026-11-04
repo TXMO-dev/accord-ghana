@@ -1,0 +1,12 @@
+ACCORD LOUNGE PROFILES
+1. In Supabase, open accord -> SQL Editor -> New query.
+2. Paste all of LOUNGE-PROFILES.sql and Run.
+3. Expect public_can_read=true, client_can_edit=false, public_can_write=false.
+4. Open Accord -> Lounge -> People & profiles.
+5. Load or publish a profile using your Testnet wallet. Check the public consent box and review the signed text.
+6. Refresh people in a separate session, then test editing and removing your profile.
+Profile text persists until removed. Removal retains wallet/version metadata for replay protection.
+The directory uses Refresh people; this release does not claim realtime profile updates.
+Moderators can hide a profile in SQL Editor:
+update public.accord_lounge_profiles set hidden=true where network='testnet' and wallet='PUBLIC_WALLET_ADDRESS';
+To restore after review, set hidden=false. Owner edits do not undo moderation.
