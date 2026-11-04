@@ -200,3 +200,4 @@ html.studio-experience.studio-focus-mode .room-layout{height:calc(100dvh - var(-
 .brief-builder textarea,.brief-builder input,.brief-builder select{width:100%;min-width:0;padding:10px;border:1px solid #a5b29a;border-radius:6px;background:var(--paper);color:var(--ink);font:14px var(--accord-sans)}
 .brief-builder-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.brief-builder button{min-height:44px}
 @media(max-width:480px){.brief-builder-row{grid-template-columns:1fr;gap:0}}
+.milestone-planner fieldset{min-width:0;border:1px solid var(--line);border-radius:10px;padding:12px;margin:14px 0}.milestone-planner legend{font-weight:600;padding:0 8px}.planner-actions{display:flex;flex-wrap:wrap;gap:8px}.planner-total{font-weight:600}.milestone-planner .planner-actions button{font-size:12px}

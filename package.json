@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "vite build",
-    "test": "node --test tests/stellar.test.js tests/settlement.test.js tests/recovery.test.js tests/ttl.test.js tests/studio-gestures.test.js tests/studio-navigation.test.js tests/room-auth.test.js tests/room-storage.test.js tests/explorer-next-step.test.js tests/world-views.test.js tests/brief-builder.test.js",
+    "test": "node --test tests/stellar.test.js tests/settlement.test.js tests/recovery.test.js tests/ttl.test.js tests/studio-gestures.test.js tests/studio-navigation.test.js tests/room-auth.test.js tests/room-storage.test.js tests/explorer-next-step.test.js tests/world-views.test.js tests/brief-builder.test.js tests/milestone-planner.test.js",
     "monitor:ttl": "node scripts/monitor-ttl.mjs",
     "test:contract": "cargo test --lib --locked --manifest-path contracts/Cargo.toml",
     "test:settlement": "node scripts/verify-settlement.mjs",

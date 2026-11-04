@@ -1,3 +1,4 @@
+import {mountMilestonePlanner} from './milestone-planner.js';
 import {mountBriefBuilder} from './brief-builder.js';
 import {workstationIntent} from './workstation-flow.js';
 import {mountSharedRoom} from './shared-room.js';
@@ -87,6 +88,9 @@ async function act(method){
 }
 $('studio-connect').onclick=async()=>{if(busy)return;busy=true;controls();try{await connect();$('studio-wallet').textContent=account?account+' · Testnet':'Connect wallet on Testnet to begin.';say('Wallet connected. Create or open an agreement.');chain=null;busy=false;render();await refresh()}catch(e){say(e.message)}finally{busy=false;controls()}};
 $('studio-copy-wallet').onclick=async()=>{if(!account)return;try{await navigator.clipboard.writeText(account);say('Public wallet address copied. Share this address, never your secret key.')}catch{say('Select the public wallet address above and copy it manually.')}};
+mountMilestonePlanner($('studio-create'),{isBusy:()=>busy,download:downloadText,apply:async stage=>{
+ if(busy)return false;const walletAtStart=account;busy=true;controls();try{const approved=await reviewAction({title:'One stage, one clear agreement.',eyebrow:'PROJECT PLAN / DRAFT ONLY',description:'Review this stage before moving it into your agreement draft.',fields:[['Project',stage.title],['Acceptance conditions',stage.terms],['Amount',stage.amount+' test XLM']],warning:'This replaces the project name, conditions and amount in your current draft. The freelancer address stays unchanged. No agreement or payment is created yet.',confirmLabel:'Use this stage'});if(!approved)return false;if(account!==walletAtStart)throw Error('Wallet changed. Review this stage again.');for(const key of ['title','terms','amount'])$('studio-create').elements.namedItem(key).value=stage[key];saveDraft();return true;}finally{busy=false;controls();}
+}});
 mountBriefBuilder($('studio-create'),{isBusy:()=>busy,apply:async terms=>{
  if(busy)return false;const walletAtStart=account;busy=true;controls();
  try{const approved=await reviewAction({title:'Your milestone brief.',eyebrow:'DRAFT ONLY / NO TRANSACTION',description:'Check these terms together before creating the agreement.',fields:[['Acceptance conditions',terms]],warning:'Using this brief replaces the acceptance conditions in your draft. The project name, amount and wallet address stay unchanged.',confirmLabel:'Use this brief'});if(!approved)return false;if(account!==walletAtStart)throw Error('Wallet changed. Review the brief again.');$('studio-create').elements.namedItem('terms').value=terms;saveDraft();return true;}finally{busy=false;controls();}
