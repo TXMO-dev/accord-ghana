@@ -1,7 +1,7 @@
 import './lounge.css';
 import {mountProfiles} from './lounge-profiles.js';
 let dialog,stop=()=>{};
-export function openLounge(){
+export function openLounge(options={}){
  if(!dialog){
   dialog=document.createElement('dialog');dialog.className='accord-lounge';dialog.dataset.worldConversation='';dialog.setAttribute('aria-labelledby','lounge-title');
   dialog.innerHTML=`<button type="button" data-close aria-label="Close Accord Lounge">Close ×</button><small>MEET PEOPLE. FIND YOUR NEXT COLLABORATION.</small><h2 id="lounge-title">Accord Lounge</h2><p>Introduce yourself, share what you do, or find your next collaborator.</p><p class="lounge-disclosure">Public conversation · Testnet community. Messages disappear from this feed after 24 hours. Others can copy them. Names are self-chosen; wallet signatures do not verify someone's identity.</p><p data-live role="status">Connecting to the lounge…</p><ol data-feed aria-label="Recent public lounge messages"></ol><button type="button" data-refresh>Refresh conversation</button><button type="button" data-unmute>Unmute all wallets on this device</button><section data-report hidden aria-label="Report a lounge message"><h3>Report message</h3><p data-report-preview></p><label>Reason<select data-report-reason><option>Spam</option><option>Scam or fraud</option><option>Harassment</option><option>Inappropriate content</option></select></label><p>Your wallet signs a private report to moderators. Reporting does not hide the message. Reports are deleted when the message is deleted.</p><button type="button" data-report-send>Review & sign report</button><button type="button" data-report-cancel>Cancel report</button></section><form><label>Your public name<input name="name" maxlength="60" autocomplete="nickname" required></label><label>Your message<textarea name="message" maxlength="1000" rows="3" placeholder="Hi! I build websites in Accra. I’m looking for a design collaborator…" required></textarea></label><p>No payment is requested. Your wallet signs the exact post before it is published. Never share secret keys or confidential information.</p><button type="submit">Review & sign public post</button></form><p data-result role="status"></p>`;
@@ -10,8 +10,8 @@ export function openLounge(){
   dialog.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();dialog.close();}});
   dialog.addEventListener('close',()=>stop());
  }
- if(dialog.open)return;
- dialog.show();startLounge(dialog);
+ if(!dialog.open){dialog.show();startLounge(dialog);}
+ if(options.people||options.wallet)dispatchEvent(new CustomEvent('accord-select-lounge-profile',{detail:options}));
 }
 function startLounge(panel){
  const stopProfiles=mountProfiles(panel);

@@ -21,3 +21,5 @@ Add recording, playback, size/duration limits and abuse reporting. Expire both r
 Status: These items remain outstanding. This list is a priority plan, not a completion claim.
 
 Opt-in profiles: implemented; apply LOUNGE-PROFILES.sql, then verify publish/edit/remove using a Testnet wallet. Profile directory refresh is manual, not realtime. Voice notes and richer social-avatar interactions remain outstanding.
+
+Profile migration applied by user. Community board: shows three latest opt-in profiles in 3D, refreshes every minute; cards open searchable profile directory and public greeting drafts. This is not live avatar presence. Wallet verification, richer live presence and voice notes remain outstanding.
