@@ -177,3 +177,9 @@ body{font-family:var(--accord-sans);-webkit-font-smoothing:antialiased}button,in
 .studio-experience .room-heading .studio-command-menu{margin-left:auto}
 .studio-command-menu>summary{min-height:40px;padding:8px 14px;box-sizing:border-box}
 @media(max-width:650px){.studio-experience .room-heading{height:52px;padding:4px 10px}.studio-experience .explorer-map-fab{min-width:90px;height:48px;min-height:48px;padding:3px 10px 3px 3px!important;gap:2px}.explorer-map-fab .map-icon-slot{width:38px;height:38px;flex-basis:38px}.explorer-map-fab .map-icon-slot>.map-compass-canvas{width:38px!important;height:38px!important}.explorer-map-fab .map-button-label{font-size:12px}}
+/* Override the page-wide details margin inside the fixed-height studio toolbar. */
+.studio-experience .room-heading .studio-command-menu{margin-top:0;margin-bottom:0;padding:0;align-self:center;flex:0 0 auto;height:40px}
+.studio-experience .room-heading .studio-command-menu>summary{height:40px;min-height:40px;line-height:1;white-space:nowrap}
+.explorer-next{grid-column:1/-1;display:flex;gap:12px;align-items:center;padding-bottom:10px;border-bottom:1px solid #c4d58f40;min-width:0}
+.explorer-next>button{flex:0 0 auto;text-align:left}.explorer-next>span{font:12px/1.4 var(--accord-sans);color:#e3e8d6;min-width:0}
+@media(max-width:650px){.explorer-next{display:grid;gap:6px}.explorer-next>button{white-space:normal}.explorer-next>span{font-size:11px}}
