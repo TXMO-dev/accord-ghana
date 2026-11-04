@@ -1,17 +1,18 @@
+import {createStudioWind} from './studio-wind.js';
 import {plantGarden} from './studio-garden.js';
 import * as THREE from 'three';
 import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
 export function dressStudio({scene,renderer,materials,box,cylinder,sphere,desk,delivery,register,notify}){
- const resources=[];
+ const resources=[];const wind=createStudioWind();
  function texture(kind){const c=document.createElement('canvas');c.width=c.height=256;const ctx=c.getContext('2d');let seed=47;const random=()=>{seed=(seed*16807)%2147483647;return seed/2147483647;};ctx.fillStyle=kind==='wood'?'#ad916f':'#c3b8a2';ctx.fillRect(0,0,256,256);for(let i=0;i<4000;i++){const n=80+Math.floor(random()*110);ctx.fillStyle=`rgba(${n},${n},${n},.12)`;const x=random()*256,y=random()*256;ctx.fillRect(x,y,kind==='wood'?1:2,kind==='wood'?10+random()*70:2);}const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(kind==='wood'?3:2,kind==='wood'?1:2);t.colorSpace=THREE.SRGBColorSpace;resources.push(t);return t;}
  const grain=texture('wood'),plaster=texture('plaster');materials.wood.map=grain;materials.wood.bumpMap=grain;materials.wood.bumpScale=.035;materials.floor.map=grain;materials.plaster.map=plaster;materials.plaster.bumpMap=plaster;materials.plaster.bumpScale=.025;
  const room=new RoomEnvironment(),pmrem=new THREE.PMREMGenerator(renderer),env=pmrem.fromScene(room,.06);scene.environment=env.texture;scene.environmentIntensity=.35;room.dispose();pmrem.dispose();resources.push(env);
  const stone=new THREE.MeshStandardMaterial({color:'#a6a18d',roughness:.95,map:plaster});const clay=new THREE.MeshStandardMaterial({color:'#a85d3e',roughness:.9});const foliage=new THREE.MeshStandardMaterial({color:'#375a35',roughness:.85,side:THREE.DoubleSide});const glass=new THREE.MeshPhysicalMaterial({color:'#acc8b9',metalness:.1,roughness:.15,transparent:true,opacity:.28});
- const lawn=new THREE.MeshStandardMaterial({color:'#7e9160',roughness:1,map:plaster});box(70,.15,70,0,-.55,0,lawn);plantGarden(scene);box(17,.25,14,0,-.4,0,clay);
+ const lawn=new THREE.MeshStandardMaterial({color:'#7e9160',roughness:1,map:plaster});box(70,.15,70,0,-.55,0,lawn);plantGarden(scene,wind);box(17,.25,14,0,-.4,0,clay);
  // Shaded courtyard and a paved approach outside the open studio.
  for(let x=-8;x<=8;x+=2)for(let z=6;z<=12;z+=2)box(1.91,.06,1.91,x,-.21,z,stone);
  for(let i=0;i<3;i++)box(4.5,.12,1.2,0,-.25-i*.09,5.5+i*.8,'plaster');
- function palm(x,z,h){const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.12,.25,h,10),materials.wood);trunk.position.set(x,h/2-.3,z);trunk.castShadow=true;scene.add(trunk);for(let i=0;i<9;i++){const a=i*Math.PI*2/9;const shape=new THREE.Shape();shape.moveTo(0,0);shape.quadraticCurveTo(.55,1.2,0,2.6);shape.quadraticCurveTo(-.55,1.2,0,0);const leaf=new THREE.Mesh(new THREE.ShapeGeometry(shape,8),foliage);leaf.position.set(x,h-.3,z);leaf.rotation.set(-.85,a,0);leaf.rotateZ(a);leaf.castShadow=true;scene.add(leaf);}}
+ function palm(x,z,h){const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.12,.25,h,10),materials.wood);trunk.position.set(x,h/2-.3,z);trunk.castShadow=true;scene.add(trunk);for(let i=0;i<9;i++){const a=i*Math.PI*2/9;const shape=new THREE.Shape();shape.moveTo(0,0);shape.quadraticCurveTo(.55,1.2,0,2.6);shape.quadraticCurveTo(-.55,1.2,0,0);const leaf=new THREE.Mesh(new THREE.ShapeGeometry(shape,8),foliage);leaf.position.set(x,h-.3,z);leaf.rotation.set(-.85,a,0);leaf.rotateZ(a);leaf.castShadow=true;wind.sway(leaf,{amplitude:.24,base:0,height:2.6});scene.add(leaf);}}
  palm(-8,4,4.8);palm(8,-4,5.8);palm(11,9,4.6);palm(-10,-7,5.4);
  for(const x of [-8,8]){for(const z of [-5,4]){box(.22,3.5,.22,x,1.4,z,'wood');const brace=box(Math.hypot(1.35,.77),.1,.1,Math.sign(x)*7.325,2.785,z,'wood');brace.rotation.z=Math.atan2(.77,-Math.sign(x)*1.35);}box(.22,.22,9.4,x,3.1,-.5,'wood');box(.16,.16,9.4,Math.sign(x)*6.65,3.13,-.5,'wood');}for(let z=-5;z<=4;z+=.8){box(1.4,.12,.15,-7.3,3.28,z,'wood');box(1.4,.12,.15,7.3,3.28,z,'wood');}
  // Distant buildings are atmosphere, not a claim of an exact Ghanaian address.
@@ -27,5 +28,5 @@ export function dressStudio({scene,renderer,materials,box,cylinder,sphere,desk,d
  // Desk lamp is an intentional, harmless environmental interaction.
  const lamp=new THREE.Group();lamp.position.set(-1,1.08,-.4);desk.add(lamp);cylinder(.16,.03,0,.015,0,'gold',lamp);cylinder(.025,.6,0,.32,0,'gold',lamp);const shade=new THREE.Mesh(new THREE.ConeGeometry(.23,.27,24,1,true),materials.green);shade.position.set(0,.65,0);shade.rotation.z=.2;lamp.add(shade);const light=new THREE.PointLight('#ffcf89',0,5,2);light.position.set(-.05,.51,.02);lamp.add(light);let lampOn=false;const toggleLamp=()=>{lampOn=!lampOn;light.intensity=lampOn?3:0;notify(lampOn?'Desk lamp on. A little warmth for your next agreement.':'Desk lamp off.');};register(lamp,'Desk lamp',toggleLamp);
  const board=new THREE.Group();board.position.set(-6.31,2,2.6);board.rotation.y=Math.PI/2;scene.add(board);box(1.65,1.05,.08,0,0,0,'wood',board);for(let i=0;i<4;i++)box(.3,.5,.02,-.58+i*.38,0,.06,i%2?'gold':'paper',board);register(board,'Studio notes',()=>notify('Agree → Fund → Deliver → Release. These four stages are the same for every milestone.'));
- return {toggleLamp,dispose(){for(const r of resources)r.dispose();}};
+ return {toggleLamp,update:(t,reduced)=>wind.update(t,reduced),dispose(){for(const r of resources)r.dispose();}};
 }
