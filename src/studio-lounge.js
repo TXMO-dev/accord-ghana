@@ -1,3 +1,4 @@
+import {createLoungeActivityTracker} from './lounge-activity.js';
 import './lounge.css';
 import {mountLoungeVoice,voicePlayback} from './lounge-voice.js';
 import {mountLoungePresence} from './lounge-presence.js';
@@ -13,6 +14,7 @@ export function openLounge(options={}){
   dialog.addEventListener('close',()=>stop());
  }
  if(!dialog.open){dialog.show();startLounge(dialog);}
+ if(options.conversation){const feed=dialog.querySelector('[data-feed]');feed.tabIndex=-1;feed.focus();feed.scrollIntoView({block:'nearest'});}
  if(options.people||options.wallet)dispatchEvent(new CustomEvent('accord-select-lounge-profile',{detail:options}));
 }
 function startLounge(panel){
@@ -21,7 +23,14 @@ function startLounge(panel){
  const feed=panel.querySelector('[data-feed]'),status=panel.querySelector('[data-live]'),result=panel.querySelector('[data-result]'),form=panel.querySelector('form:not([data-profile-form])'),submit=form.querySelector('button');
  const reportPanel=panel.querySelector('[data-report]'),reportSend=panel.querySelector('[data-report-send]');
  const blocked=new Set();try{for(const w of JSON.parse(localStorage.getItem('accord-lounge-muted')||'[]'))if(typeof w==='string')blocked.add(w);}catch{}
- const items=new Map();
+ const items=new Map(),activity=createLoungeActivityTracker();
+ let unread=0;
+ panel.querySelector('[data-new-posts]')?.remove();
+ const news=document.createElement('button');news.type='button';news.dataset.newPosts='';news.hidden=true;news.setAttribute('aria-live','polite');feed.before(news);
+ news.onclick=()=>{unread=0;news.hidden=true;feed.scrollTop=feed.scrollHeight;feed.tabIndex=-1;feed.focus();feed.scrollIntoView({block:'nearest'});};
+ const markRead=()=>{if(feed.scrollHeight-feed.scrollTop-feed.clientHeight<25){unread=0;news.hidden=true;}};
+ feed.addEventListener('scroll',markRead);
+
  const render=()=>{
   const visible=rows.filter(r=>Date.parse(r.expires_at)>Date.now()&&!blocked.has(r.wallet));const ids=new Set(visible.map(r=>r.id));for(const [id,li] of items){if(!ids.has(id)){li.querySelectorAll('audio').forEach(a=>{a.pause();a.removeAttribute('src');a.load();});li.remove();items.delete(id);}}if(!items.size)feed.replaceChildren();
   if(!visible.length){const li=document.createElement('li');li.textContent='The lounge is quiet. Start a conversation.';feed.append(li);}
@@ -37,7 +46,10 @@ function startLounge(panel){
   loading=true;lastFetch=Date.now();
   try{
    const r=await fetch('/api/lounge',{signal:AbortSignal.timeout(20000)}),data=await r.json();if(!r.ok)throw Error(data.error||'Conversation unavailable.');if(closed)return;
-   if(JSON.stringify(rows)!==JSON.stringify(data.messages)){rows=data.messages;render();}status.textContent=live?'Live conversation connected':'Conversation up to date · checking for new messages';
+   const fresh=activity.observe(data.messages,{muted:blocked});
+   if(JSON.stringify(rows)!==JSON.stringify(data.messages)){rows=data.messages;render();}
+   if(fresh.length){unread+=fresh.length;news.textContent=`${unread} new ${unread===1?'message':'messages'} - View conversation`;news.hidden=false;dispatchEvent(new CustomEvent('accord-lounge-posts',{detail:fresh}));}
+status.textContent=live?'Live conversation connected':'Conversation up to date · checking for new messages';
    if(!client&&data.realtime){
     const {createClient}=await import('@supabase/supabase-js');if(closed)return;
     client=createClient(data.realtime.url,data.realtime.key,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
@@ -90,6 +102,6 @@ function startLounge(panel){
  };
  const stopVoice=mountLoungeVoice(panel,()=>{lastFetch=0;read();});
  const refresh=setInterval(read,12000),expiry=setInterval(()=>{const current=rows.filter(r=>Date.parse(r.expires_at)>Date.now());if(current.length!==rows.length){rows=current;render();}},1000);
- stop=()=>{stopVoice();feed.querySelectorAll('audio').forEach(a=>a.pause());stopPresence();stopProfiles();closed=true;epoch++;clearInterval(refresh);clearInterval(expiry);removeEventListener('accord-wallet',changed);client?.removeAllChannels();};
+ stop=()=>{feed.removeEventListener('scroll',markRead);stopVoice();feed.querySelectorAll('audio').forEach(a=>a.pause());stopPresence();stopProfiles();closed=true;epoch++;clearInterval(refresh);clearInterval(expiry);removeEventListener('accord-wallet',changed);client?.removeAllChannels();};
  render();read();
 }
