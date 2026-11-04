@@ -209,3 +209,17 @@ html.studio-experience.studio-focus-mode .room-layout{height:calc(100dvh - var(-
 .third-person-active .room-feedback{display:none!important}
 .room-layout:has(.third-person-active)>.room-quest,.room-layout:has(.third-person-active)>.room-station-card,.room-layout:has(.third-person-active)>.room-journey{display:none!important}
 @media(max-width:650px){.studio-experience .room-view .room-status-stack{top:8px;left:8px;width:calc(100% - 16px)}.studio-experience .workspace-active .room-status-stack{display:none}}
+
+/* Map owns the studio viewport; background sheets must not cover its controls. */
+.studio-experience .explorer-open #studio-workspace-panel,.explorer-open .room-panel,.explorer-open .third-person-hud,.explorer-open .studio-conversation{visibility:hidden!important;pointer-events:none!important}
+.explorer-options-toggle{display:none}
+@media(max-width:650px){
+ .studio-experience .explorer-map footer{bottom:max(8px,env(safe-area-inset-bottom));max-height:42%;padding:10px;gap:8px}
+ .explorer-map .explorer-options-toggle{display:block;grid-column:1/-1;width:100%;min-height:44px}
+ .explorer-map footer:not(.options-expanded)>.explorer-next,.explorer-map footer:not(.options-expanded)>nav,.explorer-map footer:not(.options-expanded)>.explorer-saved{display:none!important}
+ .explorer-map footer .explorer-selection{margin:0;font-size:11px}
+ .explorer-map footer .explorer-actions{display:flex;gap:8px;width:100%}
+ .explorer-map footer .explorer-actions button{flex:1;min-width:0;min-height:44px}
+ .studio-experience .explorer-map header{inset:max(8px,env(safe-area-inset-top)) 10px auto!important;gap:8px}
+ .explorer-map header h2{font-size:20px}.explorer-map header small{font-size:8px}
+}
