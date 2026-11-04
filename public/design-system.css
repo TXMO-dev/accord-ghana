@@ -183,3 +183,14 @@ body{font-family:var(--accord-sans);-webkit-font-smoothing:antialiased}button,in
 .explorer-next{grid-column:1/-1;display:flex;gap:12px;align-items:center;padding-bottom:10px;border-bottom:1px solid #c4d58f40;min-width:0}
 .explorer-next>button{flex:0 0 auto;text-align:left}.explorer-next>span{font:12px/1.4 var(--accord-sans);color:#e3e8d6;min-width:0}
 @media(max-width:650px){.explorer-next{display:grid;gap:6px}.explorer-next>button{white-space:normal}.explorer-next>span{font-size:11px}}
+/* Focus mode frees the global header space, with a persistent exit in the toolbar. */
+html.studio-focus-mode body>header{display:none!important}
+html.studio-experience.studio-focus-mode #studio-room{top:0!important}
+html.studio-experience.studio-focus-mode .room-layout{height:calc(100dvh - var(--studio-toolbar-height,56px))}
+.studio-leave-focus[hidden]{display:none!important}.studio-leave-focus{white-space:nowrap}
+.explorer-saved{grid-column:1/-1;margin:0;border-top:1px solid #c4d58f40;padding-top:10px;font:12px var(--accord-sans)}
+.explorer-saved summary{cursor:pointer;min-height:36px;display:flex;align-items:center;color:#e1efaa}
+.explorer-saved form{display:flex;gap:8px;margin:8px 0}.explorer-saved input{min-width:0;flex:1;padding:10px;border:1px solid #9aaa80;border-radius:8px;background:#fff8e7;color:#173d30}
+.explorer-saved ul{list-style:none;padding:0;margin:10px 0}.explorer-saved li{display:flex;gap:8px;justify-content:space-between;margin-top:6px}.explorer-saved li button:first-child{flex:1;text-align:left;overflow-wrap:anywhere}.explorer-saved [role=status]{display:block;line-height:1.5}
+.studio-experience .explorer-map footer{max-height:58%;overflow:auto}
+@media(max-width:650px){.studio-experience .explorer-map footer{max-height:48%}.studio-leave-focus{font-size:10px!important;padding:8px!important}.explorer-saved form{flex-wrap:wrap}}

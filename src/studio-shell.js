@@ -63,3 +63,10 @@ document.addEventListener('pointerdown',event=>{if(commandMenu.open&&!commandMen
 commandMenu.addEventListener('keydown',event=>{if(event.key==='Escape'){event.preventDefault();commandMenu.open=false;commandSummary.focus();}});
 
 try{if(sessionStorage.getItem('accord-workspace-open')==='1')openWorkspace();}catch{}
+
+// Focus mode preserves the toolbar and all agreement/signing controls.
+const focusButton=document.createElement('button');focusButton.type='button';focusButton.textContent='Focus mode';focusButton.setAttribute('aria-pressed','false');commandList.append(focusButton);
+const leaveFocus=document.createElement('button');leaveFocus.type='button';leaveFocus.className='studio-leave-focus';leaveFocus.textContent='Exit focus mode';leaveFocus.hidden=true;roomHeading.insertBefore(leaveFocus,commandMenu);
+function setFocusMode(enabled){document.documentElement.classList.toggle('studio-focus-mode',enabled);focusButton.setAttribute('aria-pressed',String(enabled));focusButton.textContent=enabled?'Exit focus mode':'Focus mode';leaveFocus.hidden=!enabled;try{localStorage.setItem('accord-focus-mode',enabled?'1':'0');}catch{}if(!enabled&&document.activeElement===leaveFocus)commandSummary.focus({preventScroll:true});}
+focusButton.onclick=()=>setFocusMode(!document.documentElement.classList.contains('studio-focus-mode'));leaveFocus.onclick=()=>setFocusMode(false);
+try{if(localStorage.getItem('accord-focus-mode')==='1')setFocusMode(true);}catch{}
