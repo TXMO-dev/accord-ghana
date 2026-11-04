@@ -30,3 +30,25 @@ test('posting requires proof, checks account, and handles database replay confli
  let res=response();await h({method:'POST',headers:{origin},body:{action:'post',token:c.token,signature:sign(c.message)}},res);assert.equal(res.code,409);assert.equal(writes,1);
  res=response();await h({method:'POST',headers:{origin:'https://other.example'},body:{}},res);assert.equal(res.code,403);assert.equal(writes,1);
 });
+test('report approvals cannot be replayed as public posts',()=>{
+ const c=makeLoungeProof({...input,purpose:'report',name:'Spam',body:'12345678-1234-1234-1234-123456789abc'});
+ const proof={token:c.token,signature:sign(c.message),origin,secret,now};
+ assert.throws(()=>verifyLoungeProof(proof),/different lounge action/);
+ assert.equal(verifyLoungeProof({...proof,purpose:'report'}).name,'Spam');
+ assert.match(c.message,/PRIVATE Lounge report/);
+ assert.throws(()=>makeLoungeProof({...input,purpose:'report',name:'Invented',body:'12345678-1234-1234-1234-123456789abc'}));
+});
+test('reports require a visible message and persist only signed values',async()=>{
+ const messageId='12345678-1234-1234-1234-123456789abc';
+ const c=makeLoungeProof({...input,purpose:'report',name:'Spam',body:messageId});
+ let visible=true,writes=0;
+ const h=createLoungeHandler({env,now:()=>now,request:async(u,o)=>{
+  if(u.includes('horizon-'))return {ok:true,json:async()=>({signers:[{key:key.publicKey(),weight:1}],thresholds:{low_threshold:1,med_threshold:1,high_threshold:1}})};
+  if(u.includes('accord_lounge_messages'))return {ok:true,json:async()=>visible?[{id:messageId}]:[]};
+  writes++;const row=JSON.parse(o.body);assert.equal(row.reason,'Spam');assert.equal(row.reporter,key.publicKey());assert.equal(row.message_id,messageId);assert.equal(row.body,undefined);
+  return {ok:true,status:201};
+ }});
+ const req={method:'POST',headers:{origin},body:{action:'report',token:c.token,signature:sign(c.message),reason:'tampered'}};
+ let res=response();await h(req,res);assert.equal(res.code,201);assert.equal(writes,1);
+ visible=false;res=response();await h(req,res);assert.equal(res.code,410);assert.equal(writes,1);
+});

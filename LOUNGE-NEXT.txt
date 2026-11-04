@@ -7,7 +7,7 @@ Before declaring public chat complete, verify posting and realtime delivery with
 Schedule server-side deletion of expired messages. Verify the job runs and that expired rows are physically removed. Feed hiding alone is not deletion.
 
 2. Reporting and moderation
-Add message reporting, protected moderation actions and abuse controls. Keep moderator privileges server-side.
+Wallet-signed reporting and SQL Editor moderation implemented and locally tested. Apply LOUNGE-MODERATION.sql and verify with two wallets before marking live. Moderator dashboard, proactive alerts and broader abuse controls remain outstanding.
 
 3. Persistent opt-in profiles
 Let users explicitly publish and edit introductions, skills and availability, and remove their profile. Keep profile consent separate from public messages.

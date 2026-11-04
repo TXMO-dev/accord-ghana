@@ -1,0 +1,27 @@
+ACCORD LOUNGE — MODERATOR GUIDE
+
+1. Apply LOUNGE-MODERATION.sql in the Accord Supabase SQL Editor.
+   Verification must return four false values.
+2. Reports are signed by wallets and private. They do not automatically remove messages.
+   Open SQL Editor and run this queue query:
+
+select r.message_id, r.reason, r.created_at, m.display_name, m.wallet, m.body, m.hidden
+from public.accord_lounge_reports r
+join public.accord_lounge_messages m on m.id = r.message_id
+where r.decision is null and m.expires_at > now()
+order by r.created_at;
+
+3. Review the text and reason. Replace MESSAGE_UUID with the selected message ID:
+
+select public.accord_lounge_moderate('MESSAGE_UUID'::uuid, 'hide');
+
+Use 'dismiss' to close reports without hiding the message.
+Use 'restore' to reverse a hide. Expired messages remain excluded even if restored.
+Hide/restore triggers the existing realtime feed refresh.
+
+4. Scheduled message cleanup also deletes associated reports through a cascading foreign key.
+   Reports are not retained as a permanent abuse history. No message-body copies are stored in reports.
+
+This first moderation version uses Supabase SQL Editor, not a public admin dashboard.
+No automatic bans, email notifications, or guaranteed review turnaround are provided.
+Check the queue regularly while public chat is available.
