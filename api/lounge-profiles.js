@@ -18,7 +18,7 @@ export function createProfilesHandler({env=process.env,request=fetch,now=Date.no
     if(wallet&&!StrKey.isValidEd25519PublicKey(wallet))throw Error('Invalid wallet.');
     const r=await db('accord_lounge_profiles?select=wallet,display_name,intro,skills,availability,updated_at&network=eq.testnet&published=eq.true&hidden=eq.false&order=updated_at.desc&limit=60'+(wallet?'&wallet=eq.'+wallet:''));
     if(!r.ok)return res.status(503).json({error:'The people directory is being prepared. Public chat remains available.'});
-    return res.status(200).json({profiles:await r.json()});
+    return res.status(200).json({profiles:await r.json(),realtime:env.SUPABASE_PUBLISHABLE_KEY?{url:env.SUPABASE_URL,key:env.SUPABASE_PUBLISHABLE_KEY,topic:'accord:profiles:testnet'}:null});
    }
    if(req.method!=='POST')return res.status(405).json({error:'Method not allowed.'});
    if(req.headers.origin!==origin)return res.status(403).json({error:'Open profiles from Accord.'});

@@ -55,5 +55,6 @@ export function mountProfiles(panel){
   }catch(e){if(!closed)status.textContent=e.message;}finally{busy=false;root.querySelectorAll('button').forEach(b=>b.disabled=false);}
  }
  form.onsubmit=e=>{e.preventDefault();write('save');};root.querySelector('[data-remove]').onclick=()=>write('remove');
- read();return()=>{closed=true;epoch++;removeEventListener('accord-wallet',changed);removeEventListener('accord-select-lounge-profile',select);};
+ const refreshProfiles=()=>read();addEventListener('accord-profiles-updated',refreshProfiles);const refreshTimer=setInterval(()=>{if(!document.hidden)read();},60000);
+ read();return()=>{clearInterval(refreshTimer);removeEventListener('accord-profiles-updated',refreshProfiles);closed=true;epoch++;removeEventListener('accord-wallet',changed);removeEventListener('accord-select-lounge-profile',select);};
 }

@@ -40,6 +40,6 @@ export function gardenTreeSpots(){
 
 // Rear display shelves and café cabinet are physical fixtures.
 for(const p of courtyardPlaces){
- if(p.id==='lounge')courtyardObstacles.push({x:p.x+3,z:p.z-3.8,w:2.7,d:.8},{x:p.x-3.5,z:p.z-4.6,w:3.8,d:.15});
+ if(p.id==='lounge')courtyardObstacles.push({x:p.x+3,z:p.z-3.8,w:2.7,d:.8},{x:p.x-3.6,z:p.z+7.07,w:3.2,d:.6});
  else courtyardObstacles.push({x:p.x,z:p.z-2.42,w:7.5,d:.55});
 }
