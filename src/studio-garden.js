@@ -1,10 +1,9 @@
 import * as THREE from 'three';
-import {courtyardPlaces} from './courtyard-layout.js';
+import {courtyardPlaces,gardenTreeSpots} from './courtyard-layout.js';
 
 // Planting stays beyond the walking boundary, preserving all project routes.
 export function plantGarden(scene,wind){
- const spots=[];for(let x=-18;x<=18;x+=3)spots.push({x,z:-19-(Math.abs(x)%2)});
- for(const x of [-24,24])for(let z=-12;z<=6;z+=3.5)spots.push({x,z});
+ const spots=gardenTreeSpots();
  const dummy=new THREE.Object3D();
  const trunks=new THREE.InstancedMesh(new THREE.CylinderGeometry(.12,.22,2.5,7),new THREE.MeshStandardMaterial({color:'#77563b',roughness:1}),spots.length);
  const leaves=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1,1),new THREE.MeshStandardMaterial({color:'#547444',roughness:1}),spots.length*3);

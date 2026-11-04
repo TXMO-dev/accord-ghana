@@ -21,3 +21,25 @@ export const courtyardObstacles=courtyardPlaces.flatMap(p=>p.id==='lounge'?[
 for(const p of courtyardPlaces){const w=p.id==='lounge'?16:10;for(const side of [-1,1])for(const z of [-2,2,5])courtyardObstacles.push({x:p.x+side*(w/2-.45),z:p.z+z,w:.6,d:1.2});}
 
 for(const p of courtyardPlaces){const w=p.id==='lounge'?16:10;for(const side of [-1,1])courtyardObstacles.push({x:p.x+side*(w/2-1.3),z:p.z+6,w:1.5,d:.5});}
+
+// Include crown radius and gust displacement, not only the trunk position.
+export function treeClearsPlots(x,z,radius=2.4){
+ return courtyardPlaces.every(p=>{
+  const halfWidth=p.id==='lounge'?8:5,halfDepth=p.id==='lounge'?7:4;
+  const dx=Math.max(Math.abs(x-p.x)-halfWidth,0);
+  const dz=Math.max(Math.abs(z-(p.z+1))-halfDepth,0);
+  return Math.hypot(dx,dz)>radius;
+ });
+}
+export function gardenTreeSpots(){
+ const candidates=[];
+ for(let x=-18;x<=18;x+=3)candidates.push({x,z:-19-Math.abs(x)%2});
+ for(const x of [-24,24])for(let z=-12;z<=6;z+=3.5)candidates.push({x,z});
+ return candidates.filter(p=>treeClearsPlots(p.x,p.z));
+}
+
+// Rear display shelves and caf� cabinet are physical fixtures.
+for(const p of courtyardPlaces){
+ if(p.id==='lounge')courtyardObstacles.push({x:p.x+3,z:p.z-3.8,w:2.7,d:.8});
+ else courtyardObstacles.push({x:p.x,z:p.z-2.42,w:7.5,d:.55});
+}

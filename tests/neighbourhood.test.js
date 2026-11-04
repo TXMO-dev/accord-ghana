@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {courtyardPlaces,loungeSeats} from '../src/courtyard-layout.js';
+import {courtyardPlaces,loungeSeats,gardenTreeSpots,treeClearsPlots} from '../src/courtyard-layout.js';
 import {blocked,findStudioPath} from '../src/studio-navigation.js';
 import {cyclingLane,createGuideBicycle} from '../src/guide-bicycle.js';
 import * as THREE from 'three';
@@ -14,3 +14,11 @@ test('guide cycles on long lanes but dismounts around destinations',()=>{
  assert.equal(cyclingLane({x:0,z:3}),false);assert.equal(cyclingLane({x:-16,z:7}),true);for(const p of courtyardPlaces)assert.equal(cyclingLane(p),false);
  const scene=new THREE.Scene(),bike=createGuideBicycle(scene);bike.update({x:-16,z:7},.5,true,.016);assert.equal(scene.children[0].visible,true);bike.update({x:0,z:0},0,false,.016);assert.equal(scene.children[0].visible,false);bike.dispose();assert.equal(scene.children.length,0);
 });
+
+test('tree crowns and gust clearance cannot intersect destination plots',()=>{
+ assert.equal(treeClearsPlots(24,5.5),false);
+ assert.equal(treeClearsPlots(24,3),false);
+ assert.ok(gardenTreeSpots().length>15);
+ for(const p of gardenTreeSpots())assert.equal(treeClearsPlots(p.x,p.z),true);
+});
+

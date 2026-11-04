@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import {decorateDestination} from './destination-decor.js';
 import {loungeSeats} from './courtyard-layout.js';
 // Every destination has its own plot, with a clear approach down its centre.
 export function buildDestinationPlot({group,box,place,materials}){
@@ -40,6 +41,7 @@ export function buildDestinationPlot({group,box,place,materials}){
    box(2.8,1.2,.08,0,1.8,-2.64,'green',group);
    for(let i=0;i<5;i++)box(.35,.35,.02,-1+i*.5,1.85,-2.58,i%2?'paper':'gold',group);
   }
+  decorateDestination({group,box,place,materials});
   return;
  }
  box(12,.18,10,0,-.1,0,'floor',group);
@@ -58,5 +60,6 @@ export function buildDestinationPlot({group,box,place,materials}){
   for(const side of [-1,1]){box(.5,.12,.55,x+side*.95,.4,z,'wood',group);box(.12,.8,.55,x+side*1.17,.7,z,'green',group);for(const dz of [-.2,.2])box(.07,.4,.07,x+side*.95,.15,z+dz,'wood',group);}
   const cup=new THREE.Mesh(new THREE.CylinderGeometry(.07,.06,.13,10),new THREE.MeshStandardMaterial({color:'#fff8e6'}));cup.position.set(x,.87,z);group.add(cup);
  }
+ decorateDestination({group,box,place,materials});
  // Terrace tables sit under the open sides of a broad roof; the centre aisle stays clear.
 }
