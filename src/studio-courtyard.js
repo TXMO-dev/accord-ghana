@@ -18,6 +18,15 @@ export function buildCourtyard({scene,box,register,actions,focus,speak,wake,paus
   }
   box(2.1,.12,.7,0,.85,0,'wood',group);box(.55,.94,.5,0,.32,0,'green',group);
   box(1.7,.025,.48,0,.925,0,'paper',group);
+  if(p.id==='lounge'){
+   // Coffee machine, cups and a woven counter runner distinguish the café.
+   box(.55,.48,.32,-.48,1.18,0,'green',group);
+   box(.42,.08,.38,-.48,.98,.06,'gold',group);
+   for(const x of [.15,.46,.77]){
+    const cup=new THREE.Mesh(new THREE.CylinderGeometry(.07,.055,.13,12),new THREE.MeshStandardMaterial({color:'#fff8e6',roughness:.65}));cup.position.set(x,1,.08);group.add(cup);
+   }
+   for(let i=0;i<9;i++)box(.035,.008,.42,-.05+i*.1,.948,0,i%2?'gold':'green',group);
+  }
   const c=document.createElement('canvas');c.width=768;c.height=192;const ctx=c.getContext('2d');
   ctx.fillStyle='#123d30';ctx.fillRect(0,0,768,192);ctx.textAlign='center';ctx.fillStyle='#e1ecad';ctx.font='bold 38px Arial';ctx.fillText(p.title,384,72);ctx.fillStyle='#fff8e6';ctx.font='28px Arial';ctx.fillText(p.caption,384,128);
   const texture=new THREE.CanvasTexture(c);texture.colorSpace=THREE.SRGBColorSpace;textures.push(texture);
@@ -32,6 +41,7 @@ export function buildCourtyard({scene,box,register,actions,focus,speak,wake,paus
   const button=document.createElement('button');button.type='button';button.textContent='Visit '+p.title.toLowerCase();button.onclick=()=>{focus(p);speak(p.caption+'. Select the pavilion desk to open it.');};shortcuts.append(button);
  }
  for(let z=7;z<=15;z+=1)box(2,.02,.8,0,-.18,z,'plaster');
+ for(let x=-7;x<0;x+=1)box(.8,.02,1.6,x,-.18,12.4,'plaster');
  for(let x=-9;x<=9;x+=1)box(.8,.02,1.6,x,-.18,6.2,'plaster');
  // Low-cost paving accents connect the three destinations without blocking the entrance.
  for(let x=-6;x<=6;x+=.75)box(.32,.012,.12,x,-.165,6.8,'gold');

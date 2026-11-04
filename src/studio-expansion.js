@@ -1,3 +1,4 @@
+import {openLounge} from './studio-lounge.js';
 import {buildCourtyard} from './studio-courtyard.js';
 import * as THREE from 'three';
 // Physical controls mirror verified state; they never authorize transactions.
@@ -19,7 +20,7 @@ export function expandStudio({scene,box,register,openRoom,openArchive,openReview
  register(archive,'Receipt archive — review confirmed history',openArchive);
  const shortcuts=document.createElement('div');shortcuts.className='room-world-shortcuts';
  for(const [label,action] of [['Project board',visit],['Project inbox',readUpdates],['Receipt archive',openArchive]]){const b=document.createElement('button');b.type='button';b.textContent=label;b.onclick=action;shortcuts.append(b);}document.querySelector('.room-panel').append(shortcuts);
- const courtyard=buildCourtyard({scene,box,register,actions:{room:openRoom,review:openReview,archive:openArchive},focus:focusCourtyard,speak,wake,paused,shortcuts});
+ const courtyard=buildCourtyard({scene,box,register,actions:{lounge:openLounge,room:openRoom,review:openReview,archive:openArchive},focus:focusCourtyard,speak,wake,paused,shortcuts});
  function changed(e){state=e.detail;const same=lastId===state.id;if(!same)unread=0;if(state.verified&&!state.pending){if(state.state==='Disputed'&&(!same||lastState!=='Disputed'))speak('The milestone is disputed. Funds are frozen, not lost. Agree on a split in your project room. The freelancer authorizes first; the client reviews and signs.');if(same&&lastState==='Disputed'&&['Settled','Cancelled'].includes(state.state)){reliefUntil=performance.now()+4500;speak('Whew — both parties agreed. Stellar confirmed the settlement and this agreement is now closed. Keep your receipt.');}lastId=state.id;lastState=state.state;}draw();}
  function comment(){unread++;draw();}
  function read(){unread=0;draw();}
