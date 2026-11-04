@@ -1,9 +1,15 @@
 import {LOCAL_TESTING} from './local-mode.js';
 import {requireWalletReviewClear, WALLET_REVIEW_HOLD, REVIEW_MESSAGE} from './wallet-policy.js';
 const dialog=document.querySelector('#account-dialog'),note=document.querySelector('#account-status');
-let account='';
+let account='',workspaceLocked=false;
+const disconnectButton=document.createElement('button');disconnectButton.type='button';disconnectButton.id='account-disconnect';disconnectButton.className='secondary';disconnectButton.textContent='Disconnect wallet';disconnectButton.hidden=true;document.querySelector('#account-connect').after(disconnectButton);
+function syncDisconnect(){disconnectButton.hidden=!account;disconnectButton.disabled=workspaceLocked||dialog.getAttribute('aria-busy')==='true';}
+addEventListener('accord-workspace-lock',e=>{workspaceLocked=!!e.detail;syncDisconnect();});
+new MutationObserver(syncDisconnect).observe(dialog,{attributes:true,attributeFilter:['aria-busy']});
+disconnectButton.onclick=async()=>{if(disconnectButton.disabled)return;disconnectButton.disabled=true;try{const {disconnect}=await import('./stellar.js');disconnect();document.querySelector('#wallet-address').textContent='';note.textContent='Wallet disconnected. Your saved agreements remain on this device.';}catch{note.textContent='Could not disconnect. Please try again.';}finally{syncDisconnect();}};
+
 window.addEventListener('accord-wallet',async event=>{
- const wallet=event.detail?.wallet||'';account=wallet;
+ const wallet=event.detail?.wallet||'';account=wallet;syncDisconnect();document.querySelector('#wallet-address').textContent=wallet;document.querySelector('#account-connect').textContent=wallet?'Switch wallet ↗':'Connect wallet ↗';
  const session=document.querySelector('#account-session');
  session.textContent=wallet?wallet.slice(0,6)+'…'+wallet.slice(-4)+' · Testnet':'';
  session.title=wallet;
@@ -22,7 +28,7 @@ window.addEventListener('accord-wallet',async event=>{
   document.querySelector('#account-register').disabled=!!profile;
  }catch{/* The wallet remains connected even if its profile cannot be read. */}
 });
-export function openAccount(mode){import('./three-feedback.js').then(m=>m.mountAccountVisuals()).catch(()=>{});if(!dialog.open)dialog.showModal();note.textContent=LOCAL_TESTING?'Local disposable Testnet wallet selected. Keys stay in this tab.':WALLET_REVIEW_HOLD?REVIEW_MESSAGE:'Connect your wallet to continue.';document.querySelector('#account-title').textContent=account?'Your wallet. Your profile.':mode==='register'?'Make room for your next chapter.':'Welcome back to your work.'}
+export function openAccount(mode){import('./three-feedback.js').then(m=>m.mountAccountVisuals()).catch(()=>{});if(!dialog.open)dialog.showModal();note.textContent=LOCAL_TESTING?'Local disposable Testnet wallet selected. Keys stay in this tab.':WALLET_REVIEW_HOLD?REVIEW_MESSAGE:account?'Wallet connected. You can switch or disconnect below.':'Connect your wallet to continue.';syncDisconnect();document.querySelector('#account-title').textContent=account?'Your wallet. Your profile.':mode==='register'?'Make room for your next chapter.':'Welcome back to your work.'}
 document.querySelector('#close-account').onclick=()=>dialog.close();
 document.querySelector('#account-connect').onclick=async()=>{
  const connectButton=document.querySelector('#account-connect');

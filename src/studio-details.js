@@ -23,8 +23,8 @@ export function dressStudio({scene,renderer,materials,box,cylinder,sphere,desk,d
  for(const y of [1,1.7,2.4]){box(.7,.08,2.8,-6,y,-1,'wood');for(let i=0;i<7;i++)box(.36,.35,.12,-5.9,y+.22,-2.1+i*.3,i%2?'paper':'green');}
  function mug(x,y,z,parent){const m=cylinder(.085,.15,x,y,z,'paper',parent);const handle=new THREE.Mesh(new THREE.TorusGeometry(.055,.015,8,16),materials.gold);handle.position.set(x+.09,y,z);parent.add(handle);return m;}
  mug(-.85,1.15,-.2,desk);mug(.8,1.16,.25,delivery);
- for(let i=0;i<3;i++)box(.45,.035,.3,.2+i*.02,1.12+i*.04,.25,i%2?'green':'gold',desk);
- box(.5,.03,.28,.6,1.1,.2,'green',desk);for(let row=0;row<3;row++)for(let col=0;col<7;col++)box(.045,.006,.045,-.27+col*.09,1.123,.19+row*.08,'green',delivery);
+ for(let i=0;i<3;i++)box(.35,.035,.25,-.7+i*.02,1.12+i*.04,.25,i%2?'green':'gold',desk);
+
  // Desk lamp is an intentional, harmless environmental interaction.
  const lamp=new THREE.Group();lamp.position.set(-1,1.08,-.4);desk.add(lamp);cylinder(.16,.03,0,.015,0,'gold',lamp);cylinder(.025,.6,0,.32,0,'gold',lamp);const shade=new THREE.Mesh(new THREE.ConeGeometry(.23,.27,24,1,true),materials.green);shade.position.set(0,.65,0);shade.rotation.z=.2;lamp.add(shade);const light=new THREE.PointLight('#ffcf89',0,5,2);light.position.set(-.05,.51,.02);lamp.add(light);let lampOn=false;const toggleLamp=()=>{lampOn=!lampOn;light.intensity=lampOn?3:0;notify(lampOn?'Desk lamp on. A little warmth for your next agreement.':'Desk lamp off.');};register(lamp,'Desk lamp',toggleLamp);
  const board=new THREE.Group();board.position.set(-6.31,2,2.6);board.rotation.y=Math.PI/2;scene.add(board);box(1.65,1.05,.08,0,0,0,'wood',board);for(let i=0;i<4;i++)box(.3,.5,.02,-.58+i*.38,0,.06,i%2?'gold':'paper',board);register(board,'Studio notes',()=>notify('Agree → Fund → Deliver → Release. These four stages are the same for every milestone.'));

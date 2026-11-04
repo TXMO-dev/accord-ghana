@@ -17,11 +17,18 @@ export async function restoreWallet(){
  try{requireWalletReviewClear();const expected=localStorage.getItem(rememberedWalletKey);const restored=await discoverRememberedWallet(extensionWallet,expected,NETWORK);if(version!==connectionVersion||account)return account;if(restored){account=restored;window.dispatchEvent(new CustomEvent('accord-wallet',{detail:{wallet:account,restored:true}}));}return account;}catch{return '';}
 }
 
+export function disconnect(){
+ connectionVersion++;account='';
+ try{localStorage.removeItem(rememberedWalletKey);}catch{}
+ window.dispatchEvent(new CustomEvent('accord-wallet',{detail:{wallet:'',disconnected:true}}));
+}
 export async function connect() {
-  connectionVersion++;
+  const version=++connectionVersion;
   account = '';
   window.dispatchEvent(new CustomEvent('accord-wallet',{detail:{wallet:account}}));
-  account = await connectTestnet({isConnected,getNetworkDetails,requestAccess},NETWORK,LOCAL_TESTING?false:undefined);
+  const connected=await connectTestnet({isConnected,getNetworkDetails,requestAccess},NETWORK,LOCAL_TESTING?false:undefined);
+  if(version!==connectionVersion)throw Error('Wallet connection cancelled.');
+  account=connected;
   window.dispatchEvent(new CustomEvent('accord-wallet',{detail:{wallet:account}}));
   if(!LOCAL_TESTING)try{localStorage.setItem(rememberedWalletKey,account);}catch{}
   return account;

@@ -25,8 +25,10 @@ export function findStudioPath(start,goal,obstacles=studioObstacles){
  const step=.25,key=p=>`${p.x},${p.z}`;
  const clear=(a,b)=>{const n=Math.ceil(Math.hypot(b.x-a.x,b.z-a.z)/.05);for(let i=0;i<=n;i++){const t=n?i/n:0;if(blocked(a.x+(b.x-a.x)*t,a.z+(b.z-a.z)*t,obstacles))return false;}return true;};
  if(!clear(start,start)||!clear(goal,goal))return [];
- const origin={x:Math.round(start.x/step)*step,z:Math.round(start.z/step)*step};
- if(!clear(start,origin))return [];
+ const rounded={x:Math.round(start.x/step)*step,z:Math.round(start.z/step)*step};
+ const candidates=[];for(let dx=-2;dx<=2;dx++)for(let dz=-2;dz<=2;dz++)candidates.push({x:rounded.x+dx*step,z:rounded.z+dz*step});
+ candidates.sort((a,b)=>Math.hypot(a.x-start.x,a.z-start.z)-Math.hypot(b.x-start.x,b.z-start.z));
+ const origin=candidates.find(p=>clear(start,p));if(!origin)return [];
  const queue=[origin],parents=new Map([[key(origin),null]]);let end;
  for(let i=0;i<queue.length&&i<15000;i++){
   const p=queue[i];if(Math.hypot(p.x-goal.x,p.z-goal.z)<.4&&clear(p,goal)){end=p;break;}

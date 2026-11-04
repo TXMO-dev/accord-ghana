@@ -1,3 +1,4 @@
+import {tourStops,tourHome} from '../src/studio-tour.js';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {Scene,Group,PerspectiveCamera} from 'three';
@@ -29,5 +30,14 @@ test('walking reentry keeps Kobi visible; wallet switching controls the real ava
   assert.equal(clientGuide.userData.conversing,true);dialog.close();assert.equal(clientGuide.userData.conversing,false);
   self.group.position.set(0,0,6);mascot.position.set(0,0,9);assert.equal(controller.followGuide(true),true);for(let i=0;i<40;i++)controller.update(.05,0,0);assert.ok(self.group.position.z>6.5);assert.ok(self.group.position.z<8);
   held.add('left');const x=self.group.position.x;controller.update(.05,0,0);assert.ok(self.group.position.x<x);
+  held.clear();controller.followGuide(true);
+  for(const stop of [...tourStops,tourHome]){
+   mascot.position.set(stop.x,0,stop.z);
+   for(let i=0;i<1000&&self.group.position.distanceTo(mascot.position)>1.5;i++)controller.update(.05,0,0);
+   assert.ok(self.group.position.distanceTo(mascot.position)<=1.5,'Avatar must follow to '+stop.text);
+  }
+  controller.followGuide(false);const ended=controller.position();controller.update(.05,0,0);assert.deepEqual(controller.position(),ended);
+  held.add('back');controller.update(.05,0,0);assert.notDeepEqual(controller.position(),ended);
+
  }finally{controller.dispose();Object.assign(globalThis,saved);}
 });
