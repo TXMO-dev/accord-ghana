@@ -127,3 +127,20 @@ body{font-family:var(--accord-sans);-webkit-font-smoothing:antialiased}button,in
 .studio-experience .room-heading .studio-command-menu{order:3;margin-left:10px}
 .studio-world-map:focus-visible{outline:2px solid #f3f0e6;outline-offset:3px}
 @media(max-width:540px){.studio-experience .room-heading{flex-wrap:wrap;gap:8px}.studio-experience .room-heading .studio-command-menu{margin-left:0}}
+/* The explorer shares the world's WebGL canvas; HTML controls remain keyboard accessible. */
+.explorer-map-fab{position:absolute;right:22px;bottom:94px;z-index:18;display:flex;align-items:center;gap:9px;min-height:52px;padding:13px 18px!important;border-radius:30px!important;background:#113c30!important;color:#f5f0df!important;border:1px solid #c4d58f!important;box-shadow:0 8px 28px #06221b40}
+.explorer-map-fab:focus-visible{outline:3px solid #d9ed9b;outline-offset:4px}
+.explorer-map{position:absolute;inset:0;z-index:40;color:#fcf7e8;background:linear-gradient(#06271e99,transparent 24%,transparent 60%,#06271e99);overflow:hidden;isolation:isolate}
+.explorer-map[hidden]{display:none}
+.explorer-map header{position:absolute!important;inset:18px 22px auto!important;display:flex!important;justify-content:space-between;align-items:center;padding:0!important;border:0!important;background:none!important;gap:12px;z-index:3}
+.explorer-map h2{font-size:clamp(22px,3vw,36px);margin:5px 0;color:#fff8e7}.explorer-map small{font:10px var(--accord-mono);letter-spacing:.2em}
+.explorer-map button{min-height:44px;background:#123e31;color:#fff8e7;border:1px solid #c4d58f80;border-radius:12px;padding:10px 14px;font:12px var(--accord-sans)}
+.explorer-map button:hover,.explorer-map button[aria-pressed=true]{background:#d5e898;color:#173d30}.explorer-map button:focus-visible{outline:3px solid #e8c581;outline-offset:3px}
+.explorer-pins button{position:absolute;transform:translate(-50%,-100%);box-shadow:0 4px 18px #0004;font-size:10px;letter-spacing:.07em;white-space:nowrap;z-index:2}
+.explorer-pins button:after{content:'';position:absolute;width:8px;height:8px;left:calc(50% - 4px);bottom:-5px;transform:rotate(45deg);background:#d5e898}
+.explorer-location{position:absolute;transform:translate(-50%,12px);padding:5px 9px;border-radius:12px;background:#f4d29a;color:#183e32;font:11px var(--accord-sans);white-space:nowrap;pointer-events:none}
+.explorer-map footer{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);width:min(760px,calc(100% - 32px));padding:14px 18px;border:1px solid #c4d58f60;border-radius:18px;background:#0a2e25ed;box-shadow:0 12px 35px #0003;z-index:3}
+.explorer-map footer p{font-size:12px;margin:0 0 10px;color:#e3e8d6}.explorer-map nav{display:flex;gap:6px;flex-wrap:wrap}.explorer-map nav button{font-size:10px;flex:1;white-space:nowrap;padding:8px}
+.explorer-selection{font-size:13px;line-height:1.5;margin:12px 0}.explorer-actions{display:flex;gap:8px}.explorer-actions button:first-child{background:#d5e898;color:#173d30}
+.explorer-open .kobi-bubble,.explorer-open .room-station-card,.explorer-open .room-journey,.explorer-open .room-quest,.explorer-open .explorer-map-fab{visibility:hidden!important}
+@media(max-width:650px){.explorer-map header{inset:12px!important}.explorer-map footer{bottom:10px;padding:12px}.explorer-map nav{display:grid;grid-template-columns:1fr 1fr}.explorer-map footer p{display:none}.explorer-pins button{font-size:8px;padding:7px;min-height:36px}.explorer-map-fab{right:14px;bottom:90px}.explorer-selection{font-size:12px;margin:8px 0}}
