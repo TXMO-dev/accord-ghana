@@ -14,6 +14,7 @@ export function openLounge(options={}){
   dialog.addEventListener('close',()=>stop());
  }
  if(!dialog.open){dialog.show();startLounge(dialog);}
+ if(!dialog.querySelector('[data-moderator]')){const button=document.createElement('button');button.type='button';button.dataset.moderator='';button.textContent='Moderator desk';button.onclick=()=>import('./lounge-moderator.js').then(m=>m.openModerator()).catch(()=>{button.textContent='Reload Accord to open moderation';});dialog.append(button);}
  if(options.conversation){const feed=dialog.querySelector('[data-feed]');feed.tabIndex=-1;feed.focus();feed.scrollIntoView({block:'nearest'});}
  if(options.people||options.wallet)dispatchEvent(new CustomEvent('accord-select-lounge-profile',{detail:options}));
 }

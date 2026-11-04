@@ -8,3 +8,5 @@
 .accord-lounge [data-voice-composer]{border-top:1px solid #789282;padding-top:1.5rem;margin-top:1.5rem}.accord-lounge audio{display:block;width:100%;max-width:100%;margin:.75rem 0}.accord-lounge audio[hidden]{display:none}.accord-lounge [data-voice-composer] input{width:100%;box-sizing:border-box}.accord-lounge [data-voice-composer] button{margin:.4rem .3rem .4rem 0}
 
 .accord-lounge [data-new-posts]{position:sticky;top:0;z-index:2;width:100%;background:#d7e99b;color:#163d31;box-shadow:0 3px 12px #123d3022}.accord-lounge [data-new-posts][hidden]{display:none}
+
+.accord-moderator [data-reports] article{padding:18px;border:1px solid #a3b294;border-radius:16px;margin:18px 0}.accord-moderator [data-reports] p{white-space:pre-wrap;overflow-wrap:anywhere}.accord-moderator [data-reports] button{margin:5px}.accord-moderator [data-reports] small{overflow-wrap:anywhere;letter-spacing:0}

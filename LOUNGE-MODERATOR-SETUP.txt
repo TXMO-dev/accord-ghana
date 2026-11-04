@@ -1,0 +1,18 @@
+ACCORD MODERATOR DESK — ACTIVATION
+
+1. In Supabase > accord > SQL Editor, run the entire LOUNGE-MODERATOR-DASHBOARD.sql file.
+2. Expect public_can_read_audit=false and browser_can_moderate=false.
+3. Refresh Accord. Open the Lounge, then Moderator desk at the bottom.
+4. Use Account 1 on Stellar Testnet: GAANPFPSETJLMJKFZS2RSJASM6ZWLUGTO37FMNN7LE546XI6WVRZUQNX.
+5. Select Sign in & load reports and approve the message signature. No payment is requested.
+6. Review a report and choose Hide message, Dismiss reports, or Restore message. Review the confirmation and sign the exact action in your wallet.
+
+The production server allowlist is configured. Other wallets cannot load reports or make decisions. No moderator credentials are stored in the browser. Each action requires a fresh signature. One mutation is allowed per 30-second approval slot; a duplicate approval cannot be reused.
+
+The queue shows up to 100 recent reports on unexpired Testnet messages, including previously reviewed reports. Reporter identities are excluded from the dashboard response. Voice review uses a short-lived playback URL and no autoplay. Hide does not instantly revoke an already-issued audio URL; it expires within 60 seconds. Restore does not extend the original message expiry.
+
+Audit rows store approval ID, message ID, moderator wallet, decision and timestamp. They persist after message deletion, without message text or reporter identities. There is no automatic audit-retention deletion yet.
+
+Validation performed: targeted signature/allowlist tests and database tests for permissions, atomic audit+decision, replay rejection and expiry rejection. Build passed. Live SQL application and wallet hide/restore signoff still need verification.
+
+If a decision appears interrupted, reload the reports before retrying. The server may already have applied it.
