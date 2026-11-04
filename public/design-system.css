@@ -144,3 +144,21 @@ body{font-family:var(--accord-sans);-webkit-font-smoothing:antialiased}button,in
 .explorer-selection{font-size:13px;line-height:1.5;margin:12px 0}.explorer-actions{display:flex;gap:8px}.explorer-actions button:first-child{background:#d5e898;color:#173d30}
 .explorer-open .kobi-bubble,.explorer-open .room-station-card,.explorer-open .room-journey,.explorer-open .room-quest,.explorer-open .explorer-map-fab{visibility:hidden!important}
 @media(max-width:650px){.explorer-map header{inset:12px!important}.explorer-map footer{bottom:10px;padding:12px}.explorer-map nav{display:grid;grid-template-columns:1fr 1fr}.explorer-map footer p{display:none}.explorer-pins button{font-size:8px;padding:7px;min-height:36px}.explorer-map-fab{right:14px;bottom:90px}.explorer-selection{font-size:12px;margin:8px 0}}
+/* Isolate the explorer from global site header/footer layout rules. */
+.studio-experience .explorer-map header{width:auto;min-width:0;min-height:0;box-sizing:border-box;flex-wrap:nowrap}
+.explorer-map header>div{min-width:0}.explorer-map header>[data-close]{flex:0 0 auto;white-space:nowrap}
+.studio-experience .explorer-map footer{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px 20px;align-items:center;box-sizing:border-box;max-width:760px;margin:0;text-align:left}
+.explorer-map footer>p,.explorer-map footer>nav{grid-column:1/-1;width:100%;min-width:0}
+.explorer-map footer>nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.explorer-map footer>nav button{white-space:normal;min-width:0}
+.explorer-selection{min-width:0;margin:0;overflow-wrap:break-word}
+.explorer-actions{display:flex;flex-wrap:wrap;gap:10px;min-width:0}
+.explorer-actions button{flex:0 0 auto;white-space:nowrap;min-width:110px;min-height:46px;padding:12px 18px}
+.explorer-open .room-feedback,.explorer-open .room-live-record{visibility:hidden!important}
+.explorer-map-fab{bottom:140px;min-height:68px;padding:5px 18px 5px 5px!important;gap:2px;border-radius:22px!important;box-shadow:0 5px 0 #051e17,0 12px 24px #051e1740}
+.explorer-map-fab:active{transform:translateY(2px)}
+.map-compass-canvas{position:static!important;display:block!important;width:58px!important;height:58px!important;pointer-events:none!important;flex:0 0 58px}
+.explorer-map-fab.has-3d-compass>svg{display:none}.explorer-map-fab>span{padding:0 3px}
+.workspace-active .explorer-map-fab,.controls-open .explorer-map-fab{display:none}
+@media(max-width:650px){.explorer-map-fab{top:124px;bottom:auto;right:14px}.studio-experience .explorer-map footer{grid-template-columns:minmax(0,1fr);gap:10px;max-height:44%;overflow:auto}.explorer-map footer>nav{grid-template-columns:1fr 1fr}.explorer-actions{display:grid;grid-template-columns:1fr 1fr}.explorer-actions button{min-width:0;white-space:normal;padding:10px}.explorer-map h2{font-size:24px}.explorer-map header>[data-close]{padding:10px;font-size:11px}}
+.explorer-pins button[hidden],.explorer-location[hidden]{display:none!important}
