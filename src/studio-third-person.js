@@ -1,11 +1,11 @@
 import * as THREE from 'three';
 import {chooseFollowPosition} from './third-person-camera.js';
-import {walkWithCollisions,blocked} from './studio-navigation.js';
+import {walkWithCollisions,blocked,findStudioPath,studioObstacles} from './studio-navigation.js';
 import {movementDelta,nearestInteraction} from './third-person-model.js';
 import {cameraCollision} from './third-person-camera.js';
 
 export function createThirdPerson({scene,camera,host,canvas,avatars,mascot,clientGuide,freelancerGuide,citizens,stations,held,obstacles,wake,paused,useStation,openProjectRoom,tour,key,exitWalk}){
- let active=false,actor=null,time=0,nearest=null,yaw=0,pitch=0;
+ let active=false,actor=null,time=0,nearest=null,yaw=0,pitch=0,following=false,guidePath=[],guideRefresh=0;
  const guestGroup=mascot.clone(true);guestGroup.visible=false;scene.add(guestGroup);
  const guestFeet=guestGroup.children.filter(o=>Math.abs(o.position.y-.4)<.01),guestArm=guestGroup.children.find(o=>o.isGroup&&o.position.x>.2);
  const guest={group:guestGroup,react(){},update(t,reduced){guestGroup.position.y=0;guestGroup.rotation.z=0;if(guestArm)guestArm.rotation.z=reduced?0:Math.sin(t*.003)*.08;},walk(t,moving){guestFeet.forEach((foot,i)=>foot.rotation.x=moving?Math.sin(t*.009+i*Math.PI)*.32:0);if(moving)guestGroup.position.y=Math.abs(Math.sin(t*.009))*.03;},dispose(){}};
@@ -22,7 +22,7 @@ export function createThirdPerson({scene,camera,host,canvas,avatars,mascot,clien
  function model(){return avatars.getSelf()||guest;}
  function adopt(){const next=model();guest.group.visible=active&&next===guest;mascot.visible=!(active&&next===guest);if(next===actor)return;const position=actor?.group.position.clone();actor=next;guest.group.visible=active&&actor===guest;if(position)actor.group.position.copy(position);else actor.group.position.set(0,0,4.7);if(blocked(actor.group.position.x,actor.group.position.z,obstacles())){for(const [x,z] of [[0,5.5],[1,6],[-1,6],[0,7]]){if(!blocked(x,z,obstacles())){actor.group.position.set(x,0,z);break;}}}actor.route=[];}
  function start(){active=true;host.classList.add('third-person-active');avatars.setControlled(true);adopt();actor.group.rotation.y=Math.PI;yaw=0;pitch=0;hud.hidden=false;held.clear();follow(true);wake();}
- function stop(){if(!active)return;active=false;host.classList.remove('third-person-active');hud.hidden=true;guest.group.visible=false;mascot.visible=true;held.clear();dialog.close();avatars.setControlled(false);}
+ function stop(){following=false;guidePath=[];if(!active)return;active=false;host.classList.remove('third-person-active');hud.hidden=true;guest.group.visible=false;mascot.visible=true;held.clear();dialog.close();avatars.setControlled(false);}
  function candidates(){return [
   ...(actor===guest?[]:[{object:mascot,title:'Kobi · studio guide',copy:'Hi, I’m Kobi! I can show you how an agreement moves from clear terms to payment.',choices:[['Show me around',tour],['Open my project room',openProjectRoom]]}]),
   {object:clientGuide,title:'Client guide',copy:'Agree the scope first, fund the milestone, then review the delivery before releasing payment. I’m a studio guide, not your project partner.',choices:[['Agree on the work',()=>useStation(0)],['Review delivery',()=>useStation(3)]]},
@@ -38,7 +38,15 @@ export function createThirdPerson({scene,camera,host,canvas,avatars,mascot,clien
  function follow(snap=false,dt=.016){if(!actor)return;target.copy(actor.group.position);target.y+=.85;
  const next=chooseFollowPosition(target,yaw,pitch,(p)=>collision(scene,target,p,actor.group));desired.set(next.x,next.y,next.z);
  if(snap)camera.position.copy(desired);else camera.position.lerp(desired,1-Math.exp(-dt*10));camera.lookAt(target);}
- function update(dt,angle,tilt){if(!active)return;adopt();yaw=angle;pitch=tilt;time+=dt*1000;if(dialog.open){held.clear();typed=Math.min(fullText.length,typed+dt*38);copy.textContent=fullText.slice(0,Math.floor(typed));advance.hidden=typed>=fullText.length;if(actor===guest)actor.update(time,paused());if(speaker&&!paused()){speaker.rotation.z=Math.sin(time*.004)*.015;speaker.rotation.y=speakerRotation+(Math.atan2(actor.group.position.x-speaker.position.x,actor.group.position.z-speaker.position.z)-speakerRotation)+Math.sin(time*.003)*.025;}follow(false,dt);return;}const f=Number(held.has('forward'))-Number(held.has('back')),r=Number(held.has('right'))-Number(held.has('left'));const distance=move(movementDelta(f,r,yaw,Math.min(dt,.05)*1.8));if(actor===guest)actor.update(time,paused());actor.walk(time,!paused()&&distance>.0001);nearest=nearestInteraction(actor.group.position,candidates());talk.disabled=!nearest;talk.textContent=nearest?'['+key().toUpperCase()+'] '+nearest.title:'Approach someone to talk';hint.textContent=actor===guest?'Explore as Kobi · arrows / WASD · connect a wallet for your avatar':'Your character · arrows / WASD · hold two directions for diagonals';follow(false,dt);}
- const walletChanged=()=>{if(active){actor=null;adopt();held.clear();dialog.close();wake();}};addEventListener('accord-wallet',walletChanged);
- return {start,stop,step,interact,update,look(a,p){yaw=a;pitch=p;if(active)follow(true);},position:()=>actor?.group.position.clone()||new THREE.Vector3(),dispose(){stop();removeEventListener('accord-wallet',walletChanged);hud.remove();dialog.remove();scene.remove(guest.group);guest.dispose();}};
+ function update(dt,angle,tilt){if(!active)return;adopt();yaw=angle;pitch=tilt;time+=dt*1000;if(dialog.open){held.clear();typed=Math.min(fullText.length,typed+dt*38);copy.textContent=fullText.slice(0,Math.floor(typed));advance.hidden=typed>=fullText.length;if(actor===guest)actor.update(time,paused());if(speaker&&!paused()){speaker.rotation.z=Math.sin(time*.004)*.015;speaker.rotation.y=speakerRotation+(Math.atan2(actor.group.position.x-speaker.position.x,actor.group.position.z-speaker.position.z)-speakerRotation)+Math.sin(time*.003)*.025;}follow(false,dt);return;}if(held.size)following=false;const f=Number(held.has('forward'))-Number(held.has('back')),r=Number(held.has('right'))-Number(held.has('left'));let distance=0;
+ if(following&&actor!==guest){
+  guideRefresh-=dt;const gap=actor.group.position.distanceTo(mascot.position);
+  if(gap>1.3){
+   if(guideRefresh<=0){guidePath=findStudioPath(actor.group.position,mascot.position,studioObstacles);guideRefresh=.8;}
+   while(guidePath.length&&Math.hypot(guidePath[0].x-actor.group.position.x,guidePath[0].z-actor.group.position.z)<.12)guidePath.shift();
+   const goal=guidePath[0];if(goal){const dx=goal.x-actor.group.position.x,dz=goal.z-actor.group.position.z,length=Math.hypot(dx,dz),step=Math.min(length,dt*1.65);if(length>.001)distance=move({x:dx/length*step,z:dz/length*step});}
+  }
+ }else distance=move(movementDelta(f,r,yaw,Math.min(dt,.05)*1.8));if(actor===guest)actor.update(time,paused());actor.walk(time,!paused()&&distance>.0001);nearest=nearestInteraction(actor.group.position,candidates());talk.disabled=!nearest;talk.textContent=nearest?'['+key().toUpperCase()+'] '+nearest.title:'Approach someone to talk';hint.textContent=following?'Following Kobi · movement keys take control':actor===guest?'Explore as Kobi · arrows / WASD · connect a wallet for your avatar':'Your character · arrows / WASD · hold two directions for diagonals';follow(false,dt);}
+ const walletChanged=()=>{following=false;guidePath=[];if(active){actor=null;adopt();held.clear();dialog.close();wake();}};addEventListener('accord-wallet',walletChanged);
+ return {followGuide(value){following=!!value&&active&&actor!==guest;guidePath=[];guideRefresh=0;held.clear();wake();return following;},start,stop,step,interact,update,look(a,p){yaw=a;pitch=p;if(active)follow(true);},position:()=>actor?.group.position.clone()||new THREE.Vector3(),dispose(){stop();removeEventListener('accord-wallet',walletChanged);hud.remove();dialog.remove();scene.remove(guest.group);guest.dispose();}};
 }

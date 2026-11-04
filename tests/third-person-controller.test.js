@@ -27,5 +27,7 @@ test('walking reentry keeps Kobi visible; wallet switching controls the real ava
   controller.interact();const dialog=host.children.find(e=>e.dataset.worldConversation);assert.equal(dialog.open,true);
   const p=controller.position();held.add('forward');controller.update(.05,0,0);assert.deepEqual(controller.position(),p);assert.ok(dialog.children[1].textContent.length>0);assert.ok(dialog.children[1].textContent.length<20);
   assert.equal(clientGuide.userData.conversing,true);dialog.close();assert.equal(clientGuide.userData.conversing,false);
+  self.group.position.set(0,0,6);mascot.position.set(0,0,9);assert.equal(controller.followGuide(true),true);for(let i=0;i<40;i++)controller.update(.05,0,0);assert.ok(self.group.position.z>6.5);assert.ok(self.group.position.z<8);
+  held.add('left');const x=self.group.position.x;controller.update(.05,0,0);assert.ok(self.group.position.x<x);
  }finally{controller.dispose();Object.assign(globalThis,saved);}
 });
