@@ -5,3 +5,24 @@ export function stageUnits(value){
 export function displayStageUnits(units){const fraction=String(units%10000000n).padStart(7,'0').replace(/0+$/,'');return String(units/10000000n)+(fraction?'.'+fraction:'');}
 export function validatePlan(rows){if(!Array.isArray(rows)||rows.length<1||rows.length>8)throw Error('Plan between one and eight stages.');const stages=rows.map((row,index)=>{const title=String(row.title??'').trim(),terms=String(row.terms??'').trim();if(!title||title.length>90)throw Error(`Stage ${index+1}: add a name of up to 90 characters.`);if(!terms||terms.length>2000)throw Error(`Stage ${index+1}: describe delivery and acceptance in up to 2,000 characters.`);const units=stageUnits(row.amount);return {title,terms,amount:displayStageUnits(units)};});return {stages,total:displayStageUnits(stages.reduce((sum,s)=>sum+stageUnits(s.amount),0n))};}
 export function planText(plan){return ['ACCORD / MILESTONE PLAN','Planning only. No agreement has been created or funded.','Each stage is a separate agreement; this plan does not enforce ordering or move funds.','',...plan.stages.flatMap((s,i)=>[`${i+1}. ${s.title}`,`${s.amount} test XLM`,s.terms,'']),`Total planned: ${plan.total} test XLM`].join('\n');}
+// Drafts may be incomplete; imported plans must be complete before use.
+export function cleanPlanDraft(rows){
+ if(!Array.isArray(rows)||rows.length<1||rows.length>8)throw Error('A plan needs one to eight stages.');
+ return rows.map(row=>{
+  if(!row||typeof row!=='object')throw Error('Invalid stage.');
+  const result={};
+  for(const [field,max] of [['title',90],['terms',2000],['amount',32]]){
+   if(typeof row[field]!=='string'||row[field].length>max)throw Error('Invalid '+field+' in plan.');
+   result[field]=row[field];
+  }
+  return result;
+ });
+}
+export function encodePlan(plan){return JSON.stringify({format:'accord-project-plan',version:1,network:'testnet',draft:true,stages:cleanPlanDraft(plan)},null,2);}
+export function decodePlan(text){
+ if(typeof text!=='string'||text.length>96000)throw Error('Choose an Accord plan smaller than 96 KB.');
+ let data;try{data=JSON.parse(text);}catch{throw Error('This file is not valid JSON.');}
+ if(data?.format!=='accord-project-plan'||data.version!==1||data.network!=='testnet')throw Error('Choose an Accord Testnet project plan, not an agreement or approval file.');
+ return data.draft===true?cleanPlanDraft(data.stages):validatePlan(cleanPlanDraft(data.stages)).stages;
+}
+export function planDraftKey(scope){return scope?'accord-project-plan-v1:'+scope:null;}
