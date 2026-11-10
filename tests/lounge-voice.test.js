@@ -45,6 +45,36 @@ test('cleanup requires authentication, uses Storage API first and retains record
  res=response();await h({method:'GET',headers:{authorization:'Bearer '+env.CRON_SECRET}},res);assert.equal(res.code,500);assert.equal(deletes,0);
  fail=false;res=response();await h({method:'GET',headers:{authorization:'Bearer '+env.CRON_SECRET}},res);assert.equal(res.code,200);assert.equal(deletes,1);
 });
+test('cleanup preserves retry metadata after database failure and safely retries missing audio',async()=>{
+ let attempts=0,removals=0;
+ const h=createVoiceCleanup({env,now:()=>now,request:async(u,o)=>{
+  if(o.method==='DELETE')return {ok:++attempts>1};
+  return {ok:true,json:async()=>[{id:'12345678-1234-1234-1234-123456789abc'}]};
+ },storageFactory:()=>({remove:async()=>{removals++;return {error:null};}})});
+ const req={method:'GET',headers:{authorization:'Bearer '+env.CRON_SECRET}};
+ let res=response();await h(req,res);assert.equal(res.code,500);assert.match(res.body.error,/retry records retained/);
+ res=response();await h(req,res);assert.equal(res.code,200);assert.equal(res.body.removed,1);assert.equal(removals,2);
+});
+
+test('cleanup bounds the batch, uses the 25 hour cutoff and signals backlog',async()=>{
+ const instant=Date.parse('2026-11-10T03:00:00Z');
+ const rows=Array.from({length:500},(_,i)=>({id:`00000000-0000-4000-8000-${String(i).padStart(12,'0')}`}));
+ const h=createVoiceCleanup({env,now:()=>instant,request:async(u,o)=>{
+  if(o.method==='DELETE')return {ok:true};
+  const url=new URL(u);assert.equal(url.searchParams.get('created_at'),'lt.2026-11-09T02:00:00.000Z');
+  assert.equal(url.searchParams.get('limit'),'500');assert.equal(url.searchParams.get('order'),'created_at.asc');
+  return {ok:true,json:async()=>rows};
+ },storageFactory:()=>({remove:async paths=>{assert.equal(paths.length,500);return {error:null};}})});
+ const res=response();await h({method:'GET',headers:{authorization:'Bearer '+env.CRON_SECRET}},res);
+ assert.equal(res.code,200);assert.deepEqual(res.body,{removed:500,moreMayRemain:true});
+});
+
+test('empty cleanup performs no storage or database deletion',async()=>{
+ const h=createVoiceCleanup({env,request:async(u,o)=>{assert.notEqual(o.method,'DELETE');return {ok:true,json:async()=>[]};},storageFactory:()=>{throw Error('No storage call expected');}});
+ const res=response();await h({method:'GET',headers:{authorization:'Bearer '+env.CRON_SECRET}},res);
+ assert.equal(res.code,200);assert.deepEqual(res.body,{removed:0,moreMayRemain:false});
+});
+
 test('SQL protects audio uploads, private bucket and cleanup metadata survives chat deletion',async()=>{
  const db=new PGlite();try{
  await db.exec("create role anon; create role authenticated; create role service_role bypassrls; create schema realtime; create function realtime.send(jsonb,text,text,boolean) returns void language sql as 'select'; create schema storage; create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]); create table storage.objects(id uuid,bucket_id text); alter table storage.objects enable row level security; grant usage on schema public,storage to anon,authenticated,service_role; grant all on storage.objects to anon,authenticated; create policy broad on storage.objects for all to anon,authenticated using(true) with check(true);");
