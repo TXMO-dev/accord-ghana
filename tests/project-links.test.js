@@ -1,0 +1,11 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {projectLink,linkedRecords,duplicateStage} from '../src/project-links.js';
+import {encodePlan,decodePlan,decodePlanProject} from '../src/milestone-planner-model.js';
+import {validatePackage,cleanDraft} from '../src/workspace-model.js';
+const project={id:'AP-11111111-2222-3333-4444-555555555555',name:'Website',stage:1,total:2};
+const rows=[{title:'Design',terms:'Approve design',amount:'1'},{title:'Build',terms:'Approve build',amount:'2'}];
+test('linked plans preserve identity across editable backup and legacy format remains supported',()=>{const text=encodePlan(rows,project);assert.deepEqual(decodePlan(text),rows);assert.deepEqual(decodePlanProject(text),{id:project.id,name:project.name});assert.equal(decodePlanProject(encodePlan(rows)),null);});
+test('malformed links cannot silently create project groupings',()=>{for(const value of [{...project,id:'bad'},{...project,stage:0},{...project,total:9},{...project,stage:3},{...project,name:''},{...project,stage:1.5}])assert.throws(()=>projectLink(value));const data=JSON.parse(encodePlan(rows,project));data.project.id='bad';assert.throws(()=>decodePlan(JSON.stringify(data)));});
+test('grouping filters by project and orders stages without treating receipts as balances',()=>{const records=[{id:'b',project:{...project,stage:2},events:[{action:'release'}]},{id:'c',project:{...project,id:'AP-aaaaaaaa-2222-3333-4444-555555555555'}},{id:'a',project}];assert.deepEqual(linkedRecords(records,project).map(r=>r.id),['a','b']);assert.equal(duplicateStage(records,project),true);assert.equal(duplicateStage([],project),false);assert.deepEqual(linkedRecords(records,null),[]);});
+test('agreement export import and draft restore preserve only bounded project metadata',()=>{const p={version:1,network:'testnet',contract:'test-contract',id:'AC-11111111-2222-3333-4444-555555555555',title:'Design',terms:'Approve design',project:{...project,verified:true,balance:999}};assert.deepEqual(validatePackage(p,p.contract).project,project);assert.deepEqual(cleanDraft(p).project,project);assert.equal(validatePackage({...p,project:undefined},p.contract).project,undefined);assert.throws(()=>validatePackage({...p,project:{...project,total:0}},p.contract));});

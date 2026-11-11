@@ -6,7 +6,7 @@ clients meet, agree on work, and manage verifiable Stellar milestones.
 The 3D world supports these tasks; success is measured by completed work.
 
 1. DISCOVERY TO AGREEMENT — first implementation slice
-Implemented in source: signed Hiring/Available public opportunity posts in the
+Deployed: signed Hiring/Available public opportunity posts in the
 Lounge. Available posts can prefill a reviewed client draft with the posting
 wallet and editable scope. Hiring posts let interested people draft a public
 introduction. Existing 24-hour visibility and moderation apply.
@@ -18,8 +18,11 @@ Acceptance: two wallets meet, accept an invitation and create a milestone withou
 copying an address; unrelated wallets cannot read invitations or accept them.
 
 2. LINKED PROJECT MILESTONES
-Existing: stage planner; each stage creates an independent escrow agreement.
-Next: project identifier, ordered stage list and participant-owned project room;
+Implemented: project IDs and named, ordered stage grouping preserved across
+wallet-scoped drafts, editable plans and agreement export/import. Saved stages
+link to each other; duplicate saved stages are blocked. Plans can be reset and
+drafts detached. Each stage still creates an independent escrow agreement.
+Next: participant-owned project room and cross-device duplicate prevention;
 show budget, funded/released totals and next action using verified chain state.
 Ordering is planning metadata unless explicitly enforced by a reviewed contract.
 Acceptance: reload/import restores project grouping; retries do not duplicate

@@ -1,3 +1,4 @@
+import {projectLink} from './project-links.js';
 export function stageUnits(value){
  const text=String(value??'').trim();if(!/^\d{1,6}(\.\d{1,7})?$/.test(text))throw Error('Each stage needs a positive amount with up to 7 decimal places.');
  const [whole,fraction='']=text.split('.');const units=BigInt(whole)*10000000n+BigInt(fraction.padEnd(7,'0'));if(units<=0n||units>1000000000000n)throw Error('Each stage must be greater than zero and at most 100,000 test XLM.');return units;
@@ -18,11 +19,14 @@ export function cleanPlanDraft(rows){
   return result;
  });
 }
-export function encodePlan(plan){return JSON.stringify({format:'accord-project-plan',version:1,network:'testnet',draft:true,stages:cleanPlanDraft(plan)},null,2);}
+export function encodePlan(plan,project=null){const stages=cleanPlanDraft(plan);const link=project?projectLink({...project,stage:1,total:stages.length}):null;return JSON.stringify({format:'accord-project-plan',version:link?2:1,network:'testnet',draft:true,stages,...(link?{project:{id:link.id,name:link.name}}:{})},null,2);}
 export function decodePlan(text){
  if(typeof text!=='string'||text.length>96000)throw Error('Choose an Accord plan smaller than 96 KB.');
  let data;try{data=JSON.parse(text);}catch{throw Error('This file is not valid JSON.');}
- if(data?.format!=='accord-project-plan'||data.version!==1||data.network!=='testnet')throw Error('Choose an Accord Testnet project plan, not an agreement or approval file.');
+ if(data?.format!=='accord-project-plan'||![1,2].includes(data.version)||data.network!=='testnet')throw Error('Choose an Accord Testnet project plan, not an agreement or approval file.');
+ if(data.version===2)projectLink({...data.project,stage:1,total:data.stages?.length});
  return data.draft===true?cleanPlanDraft(data.stages):validatePlan(cleanPlanDraft(data.stages)).stages;
 }
 export function planDraftKey(scope){return scope?'accord-project-plan-v1:'+scope:null;}
+
+export function decodePlanProject(text){decodePlan(text);const data=JSON.parse(text);return data.version===2?{id:data.project.id,name:data.project.name}:null;}

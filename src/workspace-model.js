@@ -1,3 +1,4 @@
+import {projectLink} from './project-links.js';
 export const stateName = a => Array.isArray(a.state) ? a.state[0] : a.state;
 export function availableActions(a, wallet) {
   const state=stateName(a), buyer=a.buyer===wallet, seller=a.seller===wallet;
@@ -10,7 +11,7 @@ export function formatUnits(value) {
 export function validatePackage(p, contract) {
   if(p?.version!==1||p.network!=='testnet'||p.contract!==contract)throw Error('This file belongs to a different network or Accord deployment.');
   if(typeof p.id!=='string'||!/^AC-[a-f0-9-]{36}$/.test(p.id)||typeof p.title!=='string'||!p.title.trim()||p.title.length>90||typeof p.terms!=='string'||!p.terms.trim()||p.terms.length>4000)throw Error('Invalid agreement file.');
-  return {id:p.id,title:p.title,terms:p.terms,events:[]};
+  return {id:p.id,title:p.title,terms:p.terms,events:[],...(p.project?{project:projectLink(p.project)}:{})};
 }
 export function nextStep(a, wallet) {
  const role=a.buyer===wallet?'client':a.seller===wallet?'freelancer':'observer';
@@ -41,5 +42,5 @@ export function actionWarning(method) {
 }
 export function cleanDraft(value) {
  if(!value||typeof value!=='object')return {};
- return Object.fromEntries(Object.entries({title:90,seller:56,terms:4000,amount:30}).map(([key,max])=>[key,typeof value[key]==='string'?value[key].slice(0,max):'']));
+ return {...Object.fromEntries(Object.entries({title:90,seller:56,terms:4000,amount:30}).map(([key,max])=>[key,typeof value[key]==='string'?value[key].slice(0,max):''])),...(value.project?{project:projectLink(value.project)}:{})};
 }
