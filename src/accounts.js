@@ -28,7 +28,7 @@ window.addEventListener('accord-wallet',async event=>{
   document.querySelector('#account-register').disabled=!!profile;
  }catch{/* The wallet remains connected even if its profile cannot be read. */}
 });
-export function openAccount(mode){import('./three-feedback.js').then(m=>m.mountAccountVisuals()).catch(()=>{});if(!dialog.open)dialog.showModal();note.textContent=LOCAL_TESTING?'Local disposable Testnet wallet selected. Keys stay in this tab.':WALLET_REVIEW_HOLD?REVIEW_MESSAGE:account?'Wallet connected. You can switch or disconnect below.':'Connect your wallet to continue.';syncDisconnect();document.querySelector('#account-title').textContent=account?'Your wallet. Your profile.':mode==='register'?'Make room for your next chapter.':'Welcome back to your work.'}
+export function openAccount(mode){if(document.documentElement.dataset.workspaceMode!=='lite')import('./three-feedback.js').then(m=>m.mountAccountVisuals()).catch(()=>{});if(!dialog.open)dialog.showModal();note.textContent=LOCAL_TESTING?'Local disposable Testnet wallet selected. Keys stay in this tab.':WALLET_REVIEW_HOLD?REVIEW_MESSAGE:account?'Wallet connected. You can switch or disconnect below.':'Connect your wallet to continue.';syncDisconnect();document.querySelector('#account-title').textContent=account?'Your wallet. Your profile.':mode==='register'?'Make room for your next chapter.':'Welcome back to your work.'}
 document.querySelector('#close-account').onclick=()=>dialog.close();
 document.querySelector('#account-connect').onclick=async()=>{
  const connectButton=document.querySelector('#account-connect');

@@ -47,3 +47,5 @@ const roomObserver=new IntersectionObserver(async entries=>{
 roomObserver.observe(document.getElementById('studio-room'));
 
 import './world-form-scenes.js';
+
+const liteLink=document.createElement('a');liteLink.href='/lite.html';liteLink.textContent='Lightweight workspace';liteLink.className='secondary';document.querySelector('.entrance-actions')?.append(liteLink);const liteMenu=liteLink.cloneNode(true);document.querySelector('header nav')?.append(liteMenu);

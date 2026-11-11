@@ -64,7 +64,8 @@ Existing: freeze/dispute and two-party shared-room settlement approvals.
 Implemented: structured reason, proposed split, private evidence references,
 counteroffer history and expiry/re-sign guidance. Exact refund and freelancer
 amount use integer asset units. Only a disputed milestone accepts new decisions.
-Activation requires DISPUTE-NEGOTIATION.sql and a two-wallet counteroffer check.
+User confirmed SQL activation, rejected/accepted counteroffers and completed
+shared-room settlement on 2026-11-11. Public receipt still needed for evidence.
 Room acceptance is discussion consent, not settlement authorization. The latest
 accepted split can prefill the freelancer settlement input; both signatures remain required.
 Mediation is a separate future contract design: authority and mediator must be
@@ -86,8 +87,9 @@ partner sandbox payout reconciliation before any claim of cash-out support.
 
 7. LOW-BANDWIDTH AND ACCESSIBLE WORKSPACE
 Existing: focus mode and conventional agreement controls inside the 3D experience.
-Next: explicit lightweight entry that does not initialize Three.js; equivalent
-agreement, room and recovery actions; keyboard navigation and screen-reader labels.
+Implemented: /lite.html opens the shared agreement, room and recovery controls
+without initializing the 3D world or account/form WebGL visuals. Same local storage
+and wallet authorization as the studio. Two-wallet lightweight browser signoff pending.
 Acceptance: no world assets downloaded in lightweight mode; mobile keyboard does
 not obscure submission; slow connection and WebGL failure preserve core tasks.
 
