@@ -12,8 +12,9 @@ wallet and editable scope. Hiring posts let interested people draft a public
 introduction. Existing 24-hour visibility and moderation apply.
 Implemented and locally tested: private wallet-signed invitations, accept/decline/
  cancel responses, participant-only inbox, expiry, replay-safe writes and accepted
- invitation handoff to an editable agreement draft. Hosted activation requires
- PRIVATE-INVITATIONS.sql and a two-wallet check. Inbox refresh is every 15 seconds.
+ invitation handoff to an editable agreement draft. Hosted readiness returned 200; user confirmed the SQL run and successful
+ two-wallet invitation acceptance on 2026-11-11. Draft handoff still needs a
+ live confirmation. Inbox refresh is every 15 seconds.
  Not implemented: saved/closed opportunity board, full opportunity search and
  authoritative cross-device invitation-to-agreement linkage. Acceptance expresses
  interest only; it does not accept contract terms or create an escrow.
@@ -33,8 +34,12 @@ stages; actual funds never inferred from chat events or local receipts alone.
 
 3. SCOPE CHANGE CONTROL
 Existing: acceptance-condition hashes, delivery checklist and revision requests.
-Next: immutable proposal containing original terms hash, new scope, reason and
-price/time effect; explicit approvals from each party and version history.
+Implemented: private, versioned scope proposals with original terms hash, full
+proposed scope, reason, price/time effects, proposer approval and an explicit
+counterparty accept/reject response through wallet-authenticated room sessions.
+One pending proposal, seven-day response expiry, stale-version and replay guards.
+Hosted activation requires SCOPE-PROPOSALS.sql and a two-wallet check.
+These are offchain discussion approvals, not signed contract amendments.
 Current funded contract terms must not be silently overwritten. Changed financial
 terms require a separately reviewed contract transition or replacement agreement.
 Acceptance: stale proposals cannot replace newer terms; one party cannot approve

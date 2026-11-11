@@ -1,3 +1,4 @@
+import {roomScope} from './room-scope.js';
 import {cleanReview,reviewPrefix} from '../src/delivery-review-model.js';
 import {cleanAvatar} from '../src/avatar-model.js';
 import {verifiedActivity} from './room-activity.js';
@@ -18,6 +19,7 @@ export async function roomSettlement(body,{config,membership,stellar,env=process
  const sessions=await rows('/rest/v1/accord_room_sessions?select=wallet,room,expires_at&token=eq.'+sha(body.session)+'&limit=1');
  const parties=(await rows('/rest/v1/accord_rooms?select=client,freelancer&id=eq.'+room+'&limit=1'))[0];
  const wallet=authorizeSettlementSession(sessions[0],room,parties,body.action);validateRoom(wallet,body.id);
+ if(body.action.startsWith('scope-'))return roomScope(body,{wallet,room,membership,call});
  if(body.action==='review'){
   if(!/^[a-f0-9-]{36}$/.test(body.messageId||''))throw Error('Invalid review identifier.');
   const agreement=await membership(wallet,body.id),state=Array.isArray(agreement.state)?agreement.state[0]:agreement.state;
