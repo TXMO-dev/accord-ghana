@@ -49,7 +49,8 @@ for the other; old and proposed obligations remain visibly distinct.
 Existing: transaction receipts and opt-in Lounge introductions/skills.
 Implemented: voluntary signed work cards linking contract, network, agreement and release receipt;
 minimal public metadata; no confidential briefs/delivery URLs published by default.
-Activation requires WORK-CARDS.sql and a two-wallet publish/verify/remove check.
+Activated: API returned 200 after SQL. User confirmed two-wallet publishing,
+release verification, blocked non-owner removal and successful owner removal.
 Cards are Testnet only, owner-managed and revision-guarded. Public reads show only
 published, non-hidden cards. Removal clears text and retains replay-prevention metadata.
 Verify release on chain before awarding completed status. A wallet signature does
@@ -60,8 +61,12 @@ profile display; testnet history is clearly separated from real-money activity.
 
 5. DISPUTE NEGOTIATION
 Existing: freeze/dispute and two-party shared-room settlement approvals.
-Next: structured reason, proposed split, private evidence references, counteroffer
-history and expiry/re-sign guidance. Show exact refund and freelancer amount.
+Implemented: structured reason, proposed split, private evidence references,
+counteroffer history and expiry/re-sign guidance. Exact refund and freelancer
+amount use integer asset units. Only a disputed milestone accepts new decisions.
+Activation requires DISPUTE-NEGOTIATION.sql and a two-wallet counteroffer check.
+Room acceptance is discussion consent, not settlement authorization. The latest
+accepted split can prefill the freelancer settlement input; both signatures remain required.
 Mediation is a separate future contract design: authority and mediator must be
 agreed before funding. No unilateral administrator withdrawal in current flow.
 Acceptance: expired/wrong-network/wrong-agreement approvals rejected; both wallets
