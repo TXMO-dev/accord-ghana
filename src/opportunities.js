@@ -10,6 +10,7 @@ export function decorateOpportunity(row,body,panel,form){
  const offer=parseOpportunity(row.body);if(!offer)return;
  body.textContent=(offer.kind==='hiring'?'HIRING · ':'AVAILABLE FOR WORK · ')+offer.title+'\n\n'+offer.details;
  const button=document.createElement('button');button.type='button';button.textContent=offer.kind==='available'?'Draft an agreement':'Introduce myself';body.after(button);
+ if(offer.kind==='available'){const invite=document.createElement('button');invite.type='button';invite.textContent='Invite privately';invite.onclick=()=>dispatchEvent(new CustomEvent('accord-private-invite',{detail:{wallet:row.wallet,title:offer.title,brief:offer.details}}));button.after(invite);}
  button.onclick=async()=>{
   const status=panel.querySelector('[data-result]');button.disabled=true;
   try{

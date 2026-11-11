@@ -180,7 +180,7 @@ export async function draftFromOpportunity(draft){
  if(!account)throw Error('Connect your client wallet first.');
  const walletAtStart=account;busy=true;controls();
  try{
-  const accepted=await reviewAction({title:'Start a conversation with clear terms.',eyebrow:'LOUNGE / DRAFT ONLY',description:'This freelancer has offered their services publicly. Confirm their availability and agree on the terms together.',fields:[['Project',draft.title],['Freelancer',draft.seller],['Starting brief',draft.terms]],warning:'This replaces your saved agreement draft for this wallet. The amount is left empty for you to agree. No invitation is accepted and no funds move.',confirmLabel:'Prepare agreement draft'});
+  const accepted=await reviewAction({title:'Start a conversation with clear terms.',eyebrow:'LOUNGE / DRAFT ONLY',description:draft.source==='invitation'?'The freelancer accepted your invitation to discuss work. Agree on the final scope and price together.':'This freelancer has offered their services publicly. Confirm their availability and agree on the terms together.',fields:[['Project',draft.title],['Freelancer',draft.seller],['Starting brief',draft.terms]],warning:'This replaces your saved agreement draft for this wallet. The amount is left empty for you to agree. No invitation is accepted and no funds move.',confirmLabel:'Prepare agreement draft'});
   if(!accepted)return false;
   if(account!==walletAtStart)throw Error('Wallet changed. Review the opportunity again.');
   dispatchEvent(new CustomEvent('accord-open-workspace'));

@@ -1,3 +1,4 @@
+import {mountInvitations} from './invitations.js';
 import {mountOpportunities,decorateOpportunity} from './opportunities.js';
 import {createLoungeActivityTracker} from './lounge-activity.js';
 import './lounge.css';
@@ -20,7 +21,7 @@ export function openLounge(options={}){
  if(options.people||options.wallet)dispatchEvent(new CustomEvent('accord-select-lounge-profile',{detail:options}));
 }
 function startLounge(panel){
- const stopProfiles=mountProfiles(panel),stopPresence=mountLoungePresence(panel);
+ const stopInvitations=mountInvitations(panel),stopProfiles=mountProfiles(panel),stopPresence=mountLoungePresence(panel);
  let closed=false,loading=false,posting=false,rows=[],client=null,live=false,lastFetch=0,epoch=0,reportTarget=null;
  const feed=panel.querySelector('[data-feed]'),status=panel.querySelector('[data-live]'),result=panel.querySelector('[data-result]'),form=panel.querySelector('form:not([data-profile-form])'),submit=form.querySelector('button');
  mountOpportunities(panel,form);
@@ -105,6 +106,6 @@ status.textContent=live?'Live conversation connected':'Conversation up to date Â
  };
  const stopVoice=mountLoungeVoice(panel,()=>{lastFetch=0;read();});
  const refresh=setInterval(read,12000),expiry=setInterval(()=>{const current=rows.filter(r=>Date.parse(r.expires_at)>Date.now());if(current.length!==rows.length){rows=current;render();}},1000);
- stop=()=>{feed.removeEventListener('scroll',markRead);stopVoice();feed.querySelectorAll('audio').forEach(a=>a.pause());if(!panel.keepLoungePresence)stopPresence();panel.keepLoungePresence=false;stopProfiles();closed=true;epoch++;clearInterval(refresh);clearInterval(expiry);removeEventListener('accord-wallet',changed);client?.removeAllChannels();};
+ stop=()=>{feed.removeEventListener('scroll',markRead);stopVoice();feed.querySelectorAll('audio').forEach(a=>a.pause());if(!panel.keepLoungePresence)stopPresence();panel.keepLoungePresence=false;stopInvitations();stopProfiles();closed=true;epoch++;clearInterval(refresh);clearInterval(expiry);removeEventListener('accord-wallet',changed);client?.removeAllChannels();};
  render();read();
 }

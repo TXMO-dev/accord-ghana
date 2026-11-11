@@ -10,10 +10,13 @@ Deployed: signed Hiring/Available public opportunity posts in the
 Lounge. Available posts can prefill a reviewed client draft with the posting
 wallet and editable scope. Hiring posts let interested people draft a public
 introduction. Existing 24-hour visibility and moderation apply.
-Not implemented: private invitations, acceptance state, saved/closed opportunity
-board, full opportunity search. Public interest is not contract acceptance.
-Next: participant-authorized invite/decline/accept records, wallet-bound replay
-protection, expiry, private reads, idempotent acceptance, agreement linkage.
+Implemented and locally tested: private wallet-signed invitations, accept/decline/
+ cancel responses, participant-only inbox, expiry, replay-safe writes and accepted
+ invitation handoff to an editable agreement draft. Hosted activation requires
+ PRIVATE-INVITATIONS.sql and a two-wallet check. Inbox refresh is every 15 seconds.
+ Not implemented: saved/closed opportunity board, full opportunity search and
+ authoritative cross-device invitation-to-agreement linkage. Acceptance expresses
+ interest only; it does not accept contract terms or create an escrow.
 Acceptance: two wallets meet, accept an invitation and create a milestone without
 copying an address; unrelated wallets cannot read invitations or accept them.
 
