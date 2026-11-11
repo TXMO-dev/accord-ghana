@@ -1,3 +1,4 @@
+import {mountOpportunities,decorateOpportunity} from './opportunities.js';
 import {createLoungeActivityTracker} from './lounge-activity.js';
 import './lounge.css';
 import {mountLoungeVoice,voicePlayback} from './lounge-voice.js';
@@ -22,6 +23,7 @@ function startLounge(panel){
  const stopProfiles=mountProfiles(panel),stopPresence=mountLoungePresence(panel);
  let closed=false,loading=false,posting=false,rows=[],client=null,live=false,lastFetch=0,epoch=0,reportTarget=null;
  const feed=panel.querySelector('[data-feed]'),status=panel.querySelector('[data-live]'),result=panel.querySelector('[data-result]'),form=panel.querySelector('form:not([data-profile-form])'),submit=form.querySelector('button');
+ mountOpportunities(panel,form);
  const reportPanel=panel.querySelector('[data-report]'),reportSend=panel.querySelector('[data-report-send]');
  const blocked=new Set();try{for(const w of JSON.parse(localStorage.getItem('accord-lounge-muted')||'[]'))if(typeof w==='string')blocked.add(w);}catch{}
  const items=new Map(),activity=createLoungeActivityTracker();
@@ -39,7 +41,7 @@ function startLounge(panel){
    if(items.has(r.id))continue;
    const report=document.createElement('button');report.type='button';report.textContent='Report';report.onclick=()=>{reportTarget=r;reportPanel.hidden=false;panel.querySelector('[data-report-preview]').textContent=r.display_name+': '+r.body;panel.querySelector('[data-report-reason]').focus();};
    const li=document.createElement('li'),name=document.createElement('strong'),wallet=document.createElement('small'),body=document.createElement('p'),mute=document.createElement('button');
-   name.textContent=r.display_name;wallet.textContent=`${r.wallet.slice(0,6)}…${r.wallet.slice(-4)} · ${new Date(r.created_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}`;wallet.title=r.wallet;body.textContent=r.body;mute.type='button';mute.textContent='Mute wallet';mute.setAttribute('aria-label','Mute wallet '+r.wallet.slice(0,6));mute.onclick=()=>{blocked.add(r.wallet);try{localStorage.setItem('accord-lounge-muted',JSON.stringify([...blocked]));}catch{}render();result.textContent='Wallet muted on this device.';};li.append(name,wallet,body);if(r.voice_seconds)li.append(voicePlayback(r));li.append(mute,report);items.set(r.id,li);feed.append(li);
+   name.textContent=r.display_name;wallet.textContent=`${r.wallet.slice(0,6)}…${r.wallet.slice(-4)} · ${new Date(r.created_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}`;wallet.title=r.wallet;body.textContent=r.body;mute.type='button';mute.textContent='Mute wallet';mute.setAttribute('aria-label','Mute wallet '+r.wallet.slice(0,6));mute.onclick=()=>{blocked.add(r.wallet);try{localStorage.setItem('accord-lounge-muted',JSON.stringify([...blocked]));}catch{}render();result.textContent='Wallet muted on this device.';};li.append(name,wallet,body);decorateOpportunity(r,body,panel,form);if(r.voice_seconds)li.append(voicePlayback(r));li.append(mute,report);items.set(r.id,li);feed.append(li);
   }
  };
  async function read(){

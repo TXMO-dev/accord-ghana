@@ -1,0 +1,10 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {encodeOpportunity,parseOpportunity,opportunityDraft} from '../src/opportunities-model.js';
+const seller='G'+'A'.repeat(55),client='G'+'B'.repeat(55);
+const body=encodeOpportunity({kind:'available',title:'Web developer',details:'React websites; available next week.'});
+const post={body,wallet:seller,expires_at:'2030-01-01T00:00:00Z'};
+test('opportunities roundtrip within signed public post limit',()=>{assert.equal(parseOpportunity(body).title,'Web developer');assert.ok(body.length<=1000);assert.equal(parseOpportunity('ordinary message'),null);});
+test('reject malformed and oversized opportunity posts',()=>{for(const body of ['ACCORD OPPORTUNITY / 1\nnull','ACCORD OPPORTUNITY / 1\n{}','ACCORD OPPORTUNITY / 1\n'+ 'x'.repeat(1001)])assert.equal(parseOpportunity(body),null);assert.throws(()=>encodeOpportunity({kind:'scam',title:'a',details:'b'}));assert.throws(()=>encodeOpportunity({kind:'hiring',title:'a',details:'b'.repeat(651)}));});
+test('handoff uses posting wallet and leaves price undecided',()=>{const draft=opportunityDraft({...post,seller:client},client,0);assert.equal(draft.seller,seller);assert.equal(draft.amount,undefined);assert.match(draft.terms,/before signing/);});
+test('self hiring, expired, hidden, invalid wallet and hiring posts rejected',()=>{assert.throws(()=>opportunityDraft(post,seller,0));assert.throws(()=>opportunityDraft(post,client,Date.parse(post.expires_at)));assert.throws(()=>opportunityDraft({...post,hidden:true},client,0));assert.throws(()=>opportunityDraft({...post,wallet:'invalid'},client,0));assert.throws(()=>opportunityDraft({...post,body:encodeOpportunity({kind:'hiring',title:'Build website',details:'Discuss scope'})},client,0));});

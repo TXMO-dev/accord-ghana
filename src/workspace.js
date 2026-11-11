@@ -164,3 +164,19 @@ addEventListener('accord-use-workstation',e=>{
 
 // Restore only an already-authorized matching Testnet account; no signing prompt.
 restoreWallet().then(wallet=>{if(wallet){$('studio-wallet').textContent=wallet+' · Testnet';refresh(true);}else if(records.length)say('Your saved agreements are here. Unlock your wallet and connect to verify their latest state.');});
+
+// A public introduction only prefills a draft; creation and funding keep their own reviews.
+export async function draftFromOpportunity(draft){
+ if(busy||refreshing)throw Error('Finish the current ledger action before starting another draft.');
+ if(!account)throw Error('Connect your client wallet first.');
+ const walletAtStart=account;busy=true;controls();
+ try{
+  const accepted=await reviewAction({title:'Start a conversation with clear terms.',eyebrow:'LOUNGE / DRAFT ONLY',description:'This freelancer has offered their services publicly. Confirm their availability and agree on the terms together.',fields:[['Project',draft.title],['Freelancer',draft.seller],['Starting brief',draft.terms]],warning:'This replaces your saved agreement draft for this wallet. The amount is left empty for you to agree. No invitation is accepted and no funds move.',confirmLabel:'Prepare agreement draft'});
+  if(!accepted)return false;
+  if(account!==walletAtStart)throw Error('Wallet changed. Review the opportunity again.');
+  dispatchEvent(new CustomEvent('accord-open-workspace'));
+  const form=$('studio-create');for(const key of ['title','seller','terms'])form.elements.namedItem(key).value=draft[key];form.elements.namedItem('amount').value='';saveDraft();
+  $('studio-create-status').textContent='Agree on the scope and price with the freelancer before signing.';
+  if(!$('studio-dialog').open)$('studio-dialog').show();form.elements.namedItem('terms').focus();return true;
+ }finally{busy=false;controls();}
+}

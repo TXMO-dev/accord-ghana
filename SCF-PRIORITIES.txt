@@ -1,0 +1,100 @@
+ACCORD — ALL-PRIORITY DELIVERY PLAN
+Updated 2026-11-11
+
+Positioning: A Ghana-first collaboration neighbourhood where freelancers and
+clients meet, agree on work, and manage verifiable Stellar milestones.
+The 3D world supports these tasks; success is measured by completed work.
+
+1. DISCOVERY TO AGREEMENT — first implementation slice
+Implemented in source: signed Hiring/Available public opportunity posts in the
+Lounge. Available posts can prefill a reviewed client draft with the posting
+wallet and editable scope. Hiring posts let interested people draft a public
+introduction. Existing 24-hour visibility and moderation apply.
+Not implemented: private invitations, acceptance state, saved/closed opportunity
+board, full opportunity search. Public interest is not contract acceptance.
+Next: participant-authorized invite/decline/accept records, wallet-bound replay
+protection, expiry, private reads, idempotent acceptance, agreement linkage.
+Acceptance: two wallets meet, accept an invitation and create a milestone without
+copying an address; unrelated wallets cannot read invitations or accept them.
+
+2. LINKED PROJECT MILESTONES
+Existing: stage planner; each stage creates an independent escrow agreement.
+Next: project identifier, ordered stage list and participant-owned project room;
+show budget, funded/released totals and next action using verified chain state.
+Ordering is planning metadata unless explicitly enforced by a reviewed contract.
+Acceptance: reload/import restores project grouping; retries do not duplicate
+stages; actual funds never inferred from chat events or local receipts alone.
+
+3. SCOPE CHANGE CONTROL
+Existing: acceptance-condition hashes, delivery checklist and revision requests.
+Next: immutable proposal containing original terms hash, new scope, reason and
+price/time effect; explicit approvals from each party and version history.
+Current funded contract terms must not be silently overwritten. Changed financial
+terms require a separately reviewed contract transition or replacement agreement.
+Acceptance: stale proposals cannot replace newer terms; one party cannot approve
+for the other; old and proposed obligations remain visibly distinct.
+
+4. OPT-IN PROOF OF COMPLETED WORK
+Existing: transaction receipts and opt-in Lounge introductions/skills.
+Next: voluntary work cards linking contract, network, agreement and release receipt;
+minimal public metadata; no confidential briefs/delivery URLs published by default.
+Verify release on chain before awarding completed status. A wallet signature does
+not establish legal identity or quality. Do not equate dispute settlement with
+successful delivery. Self-dealing/duplicate receipts must not inflate reputation.
+Acceptance: another browser verifies the receipt; revoked consent removes public
+profile display; testnet history is clearly separated from real-money activity.
+
+5. DISPUTE NEGOTIATION
+Existing: freeze/dispute and two-party shared-room settlement approvals.
+Next: structured reason, proposed split, private evidence references, counteroffer
+history and expiry/re-sign guidance. Show exact refund and freelancer amount.
+Mediation is a separate future contract design: authority and mediator must be
+agreed before funding. No unilateral administrator withdrawal in current flow.
+Acceptance: expired/wrong-network/wrong-agreement approvals rejected; both wallets
+approve exactly the same split; no payment occurs solely from a room comment.
+
+6. PAYMENT USABILITY AND GHANA PAYOUT VALIDATION
+Existing: working Testnet escrow and Mainnet preparation helpers.
+Next: asset-aware amounts/decimals, fees/reserve/trustline preflight, stablecoin
+selection only for explicitly deployed and verified contract/asset pairs, recovery
+from signing cancellation and network mismatch. Mainnet still needs funded deploy,
+initialization, configuration verification and end-to-end live validation.
+Ghana payout path requires an identified provider, Ghana coverage, compliance,
+pricing and settlement confirmation. Paystack's Sikani correspondence does NOT
+establish Stellar stablecoin-to-mobile-money support or an Accord partnership.
+Acceptance: verified asset/network/issuer, displayed fees, confirmed receipts,
+partner sandbox payout reconciliation before any claim of cash-out support.
+
+7. LOW-BANDWIDTH AND ACCESSIBLE WORKSPACE
+Existing: focus mode and conventional agreement controls inside the 3D experience.
+Next: explicit lightweight entry that does not initialize Three.js; equivalent
+agreement, room and recovery actions; keyboard navigation and screen-reader labels.
+Acceptance: no world assets downloaded in lightweight mode; mobile keyboard does
+not obscure submission; slow connection and WebGL failure preserve core tasks.
+
+DELIVERY ORDER
+A: opportunity handoff (source implementation in this change), then invites and
+linked projects. B: scope proposals and verifiable work cards. C: dispute history
+and lightweight parity. D: asset/payment readiness and separately validated payout
+integration. Track all seven; do not enable money-related changes just to ship.
+
+SCF EVIDENCE AND ELIGIBILITY
+Round 46 deadline listed as November 9, 2026; do not promise entry after deadline.
+Confirm application route with SCF and plan for the next eligible cycle if needed.
+Integration track expects existing traction and eligible ecosystem building blocks.
+Compare maintaining custom escrow against integrating an existing provider such
+as Trustless Work; record requirements, limitations and maintenance costs honestly.
+
+Evidence: user-reported two-wallet Testnet settlement, delivery/release, realtime
+notifications and voice playback. Keep public transaction links for verification.
+Automated tests are engineering evidence, not customer traction or external audit.
+Still needed: Ghana freelancer/client interviews, consented pilot participants,
+observed completion rates, onboarding time, failure/retry rates, paid usage if any,
+security review evidence and realistic milestone budget. Do not invent metrics.
+
+RELEASE GATES
+New discovery work must pass automated tests, production build and a two-wallet
+browser check before calling it live. Preserve unrelated pending visual changes.
+New DB features need versioned migrations, least-privilege access, isolation tests,
+rollback/recovery instructions and deployed verification. No new migration is
+required for this first opportunity-post slice.
