@@ -38,7 +38,7 @@ Implemented: private, versioned scope proposals with original terms hash, full
 proposed scope, reason, price/time effects, proposer approval and an explicit
 counterparty accept/reject response through wallet-authenticated room sessions.
 One pending proposal, seven-day response expiry, stale-version and replay guards.
-Hosted activation requires SCOPE-PROPOSALS.sql and a two-wallet check.
+User confirmed SQL activation and the accepted proposal appearing on 2026-11-11.
 These are offchain discussion approvals, not signed contract amendments.
 Current funded contract terms must not be silently overwritten. Changed financial
 terms require a separately reviewed contract transition or replacement agreement.
@@ -47,8 +47,11 @@ for the other; old and proposed obligations remain visibly distinct.
 
 4. OPT-IN PROOF OF COMPLETED WORK
 Existing: transaction receipts and opt-in Lounge introductions/skills.
-Next: voluntary work cards linking contract, network, agreement and release receipt;
+Implemented: voluntary signed work cards linking contract, network, agreement and release receipt;
 minimal public metadata; no confidential briefs/delivery URLs published by default.
+Activation requires WORK-CARDS.sql and a two-wallet publish/verify/remove check.
+Cards are Testnet only, owner-managed and revision-guarded. Public reads show only
+published, non-hidden cards. Removal clears text and retains replay-prevention metadata.
 Verify release on chain before awarding completed status. A wallet signature does
 not establish legal identity or quality. Do not equate dispute settlement with
 successful delivery. Self-dealing/duplicate receipts must not inflate reputation.

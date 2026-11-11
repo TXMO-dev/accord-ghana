@@ -28,7 +28,7 @@ import {sha as activitySha} from '../server/room-auth.js';
 test('participant notifications require a successful exact transaction and agreement',()=>{
  const contract=ActivityAddress.contract(Buffer.alloc(32,7)).toString(),id=input.id,wallet=key.publicKey();
  const tx=new ActivityBuilder(new ActivityAccount(wallet,'1'),{fee:'100',networkPassphrase:ActivityNetworks.TESTNET}).addOperation(new ActivityContract(contract).call('fund',activityVal(Buffer.from(activitySha(id),'hex'),{type:'bytes'}))).setTimeout(60).build();
- const receipt={status:'SUCCESS',envelopeXdr:tx.toEnvelope()},context={hash:tx.hash().toString('hex'),wallet,contract,id};
+ const receipt={status:'SUCCESS',envelopeXdr:tx.toEnvelope()},context={hash:Buffer.from(tx.hash()).toString('hex'),wallet,contract,id};
  assert.equal(verifiedActivity(receipt,context).action,'fund');
  for(const change of [{wallet:other.publicKey()},{hash:'0'.repeat(64)},{id:id+'different'},{contract:ActivityAddress.contract(Buffer.alloc(32,8)).toString()}])assert.throws(()=>verifiedActivity(receipt,{...context,...change}));
  assert.throws(()=>verifiedActivity({...receipt,status:'FAILED'},context));
